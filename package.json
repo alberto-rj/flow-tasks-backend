@@ -1,0 +1,41 @@
+{
+  "name": "flow-tasks-backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/server.js",
+  "scripts": {
+    "start": "node build/server.js",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc && tsc-alias -f",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "lint": "eslint ."
+  },
+  "keywords": [],
+  "author": {
+    "name": "Alberto José",
+    "email": "albertorauljose2@gmail.com",
+    "url": "https://github.com/alberto-rj"
+  },
+  "license": "ISC",
+  "type": "module",
+  "dependencies": {
+    "@types/dotenv": "^6.1.1",
+    "bcryptjs": "^3.0.3",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
+    "zod": "^4.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.0.3",
+    "eslint": "^9.39.2",
+    "prettier": "^3.7.4",
+    "tsc-alias": "^1.8.16",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.50.1"
+  }
+}
