@@ -28,6 +28,6 @@ export default [
     },
   },
   {
-    ignores: ['build', 'node_modules'],
+    ignores: ['node_modules', 'build', 'dist', 'coverage'],
   },
 ];
