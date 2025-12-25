@@ -1,4 +1,5 @@
 import z from '@/config/zod';
+
 import { CreatedAtSchema, UpdatedAtSchema } from '../shared/shared';
 
 export const UserIdSchema = z
@@ -84,5 +85,3 @@ export const ApiUserSchema = z.object({
 });
 
 export type UserCreateParams = z.infer<typeof ApiUserCreateSchema>;
-
-export type ApiUser = z.infer<typeof ApiUserSchema>;
