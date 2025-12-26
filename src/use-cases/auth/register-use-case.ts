@@ -55,10 +55,11 @@ export class RegisterUseCase {
     user,
     accessToken,
   }: RegisterUseCaseResult): RegisterUseCaseParseResult {
+    const { password, ...userWithoutPassword } = user;
     const userDto: UserDto = {
-      ...user,
+      ...userWithoutPassword,
       createdAt: user.createdAt.toISOString(),
-      updatedAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
     };
 
     return {
