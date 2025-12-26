@@ -1,6 +1,12 @@
 node_modules
 build
+dist
+coverage
 .vscode
 
-.DS_STORE
+log
 .env
+.env.production
+.env.test
+.env.development
+.DS_STORE
