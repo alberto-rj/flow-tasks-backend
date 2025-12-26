@@ -1,4 +1,9 @@
-export { LoginUseCase } from './login-use-case';
+export {
+  type LoginUseCaseParams,
+  type LoginUseCaseResult,
+  type LoginUseCaseParseResult,
+  LoginUseCase,
+} from './login-use-case';
 export { ProfileUseCase } from './profile-use-case';
 export {
   type RegisterUseCaseParams,
