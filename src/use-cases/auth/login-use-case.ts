@@ -52,10 +52,11 @@ export class LoginUseCase {
   }
 
   parse({ user, accessToken }: LoginUseCaseResult): LoginUseCaseParseResult {
+    const { password, ...userWithoutPassword } = user;
     const userDto: UserDto = {
-      ...user,
+      ...userWithoutPassword,
       createdAt: user.createdAt.toISOString(),
-      updatedAt: user.createdAt.toISOString(),
+      updatedAt: user.updatedAt.toISOString(),
     };
 
     return {
