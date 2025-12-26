@@ -1,11 +1,11 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { RegisterUseCase } from '@/use-cases/auth';
 import type { UserRepository } from '@/repositories';
-import { ExistingEmailError } from '@/utils/errors';
-import { createRegisterDto, createUserRepository } from '@/utils/test';
 import type { RegisterDto } from '@/dtos/auth';
+import { RegisterUseCase } from '@/use-cases/auth';
+import { ExistingEmailError } from '@/utils/errors';
 import { hasCorrectHash } from '@/utils/password';
+import { createRegisterDto, createUserRepository, isJWT } from '@/utils/test';
 
 let sut: RegisterUseCase;
 let userRepository: UserRepository;
@@ -22,7 +22,13 @@ describe('Register Use Case', () => {
     it('should register a user successfully', async () => {
       const result = await sut.execute({ data });
 
-      expect(typeof result.user.id).toBe('string');
+      expect(result.user).toEqual(
+        expect.objectContaining({
+          id: expect.any(String),
+          name: data.name,
+          email: data.email,
+        }),
+      );
     });
 
     it('should hash the user password before saving', async () => {
@@ -38,8 +44,8 @@ describe('Register Use Case', () => {
 
     it('should return an access token', async () => {
       const result = await sut.execute({ data });
-
-      expect(typeof result.accessToken).toBe('string');
+      const isValid = isJWT(result.accessToken);
+      expect(isValid).toBe(true);
     });
   });
 
