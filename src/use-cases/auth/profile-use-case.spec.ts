@@ -45,7 +45,7 @@ describe('[Use Case] Profile', () => {
   describe('Failure cases', () => {
     it('should not allow retrieving a profile for a non-existing user', async () => {
       await expect(() =>
-        sut.execute({ userId: 'inexistent-user-id' }),
+        sut.execute({ userId: 'non-existing-user-id' }),
       ).rejects.toBeInstanceOf(ResourceNotFoundError);
     });
   });
