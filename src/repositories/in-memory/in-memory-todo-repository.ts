@@ -1,13 +1,14 @@
+import { randomUUID } from 'node:crypto';
+
 import type {
   TodoCreateParams,
   Todo,
   TodoUpdateParams,
   TodoUpdateOrdersParams,
-} from '@/schemas/todo';
-import type { TodosRepository } from '../todos-repository';
-import { randomUUID } from 'crypto';
+} from '@/schemas/todo/todo-params';
+import type { TodosRepository } from '@/repositories';
 
-class InMemoryTodoRepository implements TodosRepository {
+export class InMemoryTodoRepository implements TodosRepository {
   private items: Todo[];
 
   constructor() {
