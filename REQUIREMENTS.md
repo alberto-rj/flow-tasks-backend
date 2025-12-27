@@ -6,22 +6,20 @@
 
 #### RF-001: Registro de Utilizador
 
-- [ ] O sistema deve permitir que novos utilizadores se registem com email, senha e nome
+- [x] O sistema deve permitir que novos utilizadores se registem com email, senha e nome
 - [ ] O sistema deve validar formato de email
 - [ ] O sistema deve exigir senha com mínimo 8 caracteres
 - [ ] O sistema deve criptografar senhas usando bcrypt
-- [ ] O sistema deve impedir registro com emails duplicados
-- [ ] O sistema deve retornar token JWT após registro bem-sucedido
-- [ ] O sistema deve criar utilizador com tema padrão 'light'
+- [x] O sistema deve impedir registro com emails duplicados
+- [x] O sistema deve retornar token JWT após registro bem-sucedido
 
 #### RF-002: Login de Utilizador
 
-- [ ] O sistema deve permitir login com email e senha
+- [x] O sistema deve permitir login com email e senha
 - [ ] O sistema deve validar credenciais contra a base de dados
-- [ ] O sistema deve retornar token JWT válido após login bem-sucedido
+- [x] O sistema deve retornar token JWT válido após login bem-sucedido
 - [ ] O sistema deve armazenar token em HTTP-only cookie
 - [ ] O sistema deve retornar erro 401 para credenciais inválidas
-- [ ] O sistema deve registar timestamp do último login
 
 #### RF-003: Logout de Utilizador
 
@@ -58,14 +56,14 @@
 
 #### RF-007: Criar Novo Todo
 
-- [ ] O sistema deve permitir criar novo todo com texto obrigatório
+- [x] O sistema deve permitir criar novo todo
 - [ ] O sistema deve associar todo ao utilizador autenticado
-- [ ] O sistema deve definir completed como false por padrão
+- [ ] O sistema deve definir completedAt como nulo por padrão
 - [ ] O sistema deve calcular próxima posição automaticamente (última posição + 1)
 - [ ] O sistema deve validar que texto não está vazio
 - [ ] O sistema deve validar que texto tem máximo 500 caracteres
-- [ ] O sistema deve retornar todo criado com id gerado
-- [ ] O sistema deve definir timestamps (created_at, updated_at)
+- [x] O sistema deve retornar todo criado com id gerado
+- [x] O sistema deve definir timestamps (created_at, updated_at)
 
 #### RF-008: Atualizar Todo
 
@@ -372,15 +370,19 @@
 ## 📝 Formato de Resposta Padronizado da API
 
 ### Sucesso
+
 ```json
 {
   "success": true,
-  "data": { /* payload */ },
+  "data": {
+    /* payload */
+  },
   "message": "Optional success message"
 }
 ```
 
 ### Erro de Validação
+
 ```json
 {
   "success": false,
@@ -395,6 +397,7 @@
 ```
 
 ### Erro Genérico
+
 ```json
 {
   "success": false,
@@ -440,6 +443,7 @@
 ## 📚 Casos de Uso (Use Cases) para Testes
 
 ### UC-001: Registro de Utilizador
+
 ```
 DADO que um novo utilizador acede à aplicação
 QUANDO fornece email válido, senha forte e nome
@@ -447,6 +451,7 @@ ENTÃO conta é criada, token JWT é gerado e retornado
 ```
 
 ### UC-002: Login com Credenciais Válidas
+
 ```
 DADO que um utilizador registado acede ao login
 QUANDO fornece email e senha corretos
@@ -454,6 +459,7 @@ ENTÃO recebe token JWT e pode aceder à aplicação
 ```
 
 ### UC-003: Criar Todo
+
 ```
 DADO que um utilizador está autenticado
 QUANDO cria um novo todo com texto válido
@@ -461,6 +467,7 @@ ENTÃO todo é salvo, associado ao utilizador e retornado com ID
 ```
 
 ### UC-004: Marcar Todo como Completo
+
 ```
 DADO que um utilizador tem um todo ativo
 QUANDO marca como completo
@@ -468,6 +475,7 @@ ENTÃO status é atualizado para true e updated_at é atualizado
 ```
 
 ### UC-005: Reordenar Todos por Drag & Drop
+
 ```
 DADO que um utilizador tem múltiplos todos
 QUANDO arrasta e solta um todo para nova posição
@@ -477,6 +485,7 @@ ENTÃO positions são atualizadas em transação atômica
 ---
 
 Este checklist completo vai ajudá-lo a:
+
 1. ✅ Implementar feature por feature de forma organizada
 2. ✅ Criar testes unitários para cada requisito
 3. ✅ Validar que todas as regras de negócio estão implementadas

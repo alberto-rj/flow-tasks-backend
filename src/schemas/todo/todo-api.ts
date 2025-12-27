@@ -11,7 +11,6 @@ import {
 
 export const ApiCreateTodoBodySchema = z.object({
   title: TodoTitleSchema,
-  order: TodoOrderSchema,
 });
 
 export const ApiUpdateTodoBodySchema = ApiCreateTodoBodySchema.extend({
@@ -40,15 +39,3 @@ export const ApiTodoBodySchema = z.object({
   createdAt: CreatedAtSchema,
   updatedAt: UpdatedAtSchema,
 });
-
-export type ApiCreateTodo = z.infer<typeof ApiCreateTodoBodySchema>;
-
-export type ApiUpdateTodo = z.infer<typeof ApiUpdateTodoBodySchema>;
-
-export type ApiUpdateTodoOrders = z.infer<typeof ApiUpdateTodoOrdersSchema>;
-
-export type ApiUpdateTodoCompletedAt = z.infer<
-  typeof ApiUpdateTodoCompletedAtSchema
->;
-
-export type ApiTodo = z.infer<typeof ApiTodoBodySchema>;
