@@ -1,29 +1,31 @@
+import type { Todo } from '@/entities';
 import type {
-  Todo,
-  TodoCreateParams,
-  TodoFindManyByUserIdParams,
-  TodoUpdateByIdParams,
-  TodoUpdateOrdersParams,
-  TodoDeleteManyCompletedAtParams,
-  TodoDeleteByIdParams,
-} from '@/schemas/todo/todo-params';
+  TodoCreateDto,
+  TodoFindByIdDto,
+  TodoFindManyByUserIdDto,
+  TodoUpdateByIdDto,
+  TodoDeleteManyByUserIdDto,
+  TodoDeleteByIdDto,
+  TodoUpdateManyByUserIdDto,
+  TodoCompleteByIdDto,
+} from '@/dtos/todo';
 
-export interface TodosRepository {
-  create: (data: TodoCreateParams) => Promise<Todo>;
+export interface TodoRepository {
+  create: (params: TodoCreateDto) => Promise<Todo>;
 
-  findManyByUserId: (params: TodoFindManyByUserIdParams) => Promise<Todo[]>;
+  findById: (params: TodoFindByIdDto) => Promise<Todo | null>;
 
-  deleteById: (params: TodoDeleteByIdParams) => Promise<Todo | null>;
+  findManyByUserId: (params: TodoFindManyByUserIdDto) => Promise<Todo[]>;
 
-  deleteManyCompleted: (
-    params: TodoDeleteManyCompletedAtParams,
-  ) => Promise<void>;
+  deleteById: (params: TodoDeleteByIdDto) => Promise<Todo | null>;
 
-  updateById(params: TodoUpdateByIdParams): Promise<void>;
+  deleteManyByUserId: (params: TodoDeleteManyByUserIdDto) => Promise<void>;
 
-  updateMany: (data: TodoUpdateOrdersParams) => Promise<void>;
-}
+  updateById(params: TodoUpdateByIdDto): Promise<Todo | null>;
 
-export interface TodosRepositoryFactory {
-  create: () => TodosRepository;
+  updateManyByUserId: (
+    params: TodoUpdateManyByUserIdDto,
+  ) => Promise<void | null>;
+
+  completeById: (params: TodoCompleteByIdDto) => Promise<Todo | null>;
 }

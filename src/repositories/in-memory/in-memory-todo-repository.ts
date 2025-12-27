@@ -1,66 +1,203 @@
 import { randomUUID } from 'node:crypto';
 
 import type {
-  TodoCreateParams,
-  Todo,
-  TodoUpdateParams,
-  TodoUpdateOrdersParams,
-} from '@/schemas/todo/todo-params';
-import type { TodosRepository } from '@/repositories';
+  TodoCompleteByIdDto,
+  TodoCreateDto,
+  TodoDeleteByIdDto,
+  TodoDeleteManyByUserIdDto,
+  TodoFindByIdDto,
+  TodoFindManyByUserIdDto,
+  TodoUpdateByIdDto,
+  TodoUpdateManyByUserIdDto,
+} from '@/dtos/todo';
+import type { Todo } from '@/entities';
+import type { TodoRepository } from '@/repositories';
 
-export class InMemoryTodoRepository implements TodosRepository {
-  private items: Todo[];
+export class InMemoryTodoRepository implements TodoRepository {
+  private items: Map<string, Todo> = new Map();
 
-  constructor() {
-    this.items = [];
-  }
-
-  async create({ title, order, userId }: TodoCreateParams): Promise<Todo> {
+  async create({ title, userId }: TodoCreateDto): Promise<Todo> {
+    const maxOrder = this.getMaxOrder();
+    const order = maxOrder === null ? 0 : maxOrder + 1;
     const newItem: Todo = {
       title,
-      order,
       userId,
       id: randomUUID(),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      order,
+      createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
-    this.items.push(newItem);
+    this.items.set(newItem.id, newItem);
 
     return newItem;
   }
 
-  async findManyByUserId(userId: string) {
-    const items = this.items.filter((item) => item.userId === userId);
+  async findById({ id, userId }: TodoFindByIdDto) {
+    const foundItem = this.items.get(id);
 
-    return items;
-  }
-
-  async deleteById(id: string) {
-    const index = this.items.findIndex((item) => item.id === id);
-
-    if (index < 0) {
+    if (typeof foundItem === 'undefined') {
       return null;
     }
 
-    const reminderItems = this.items.filter((item) => item.id !== id);
+    if (foundItem.userId !== userId) {
+      return null;
+    }
 
-    const item = this.items[index] as Todo;
+    return foundItem;
+  }
 
-    this.items = reminderItems;
+  async findManyByUserId({ userId, filter = 'all' }: TodoFindManyByUserIdDto) {
+    const userItems = this.getItemsByUserId(userId);
+
+    if (filter === 'active') {
+      return userItems.filter(
+        (item) =>
+          item.userId === userId && typeof item.completedAt !== 'undefined',
+      );
+    } else if (filter === 'inactive') {
+      return userItems.filter(
+        (item) => typeof item.completedAt === 'undefined',
+      );
+    }
+
+    return userItems;
+  }
+
+  async deleteById({ id, userId }: TodoDeleteByIdDto) {
+    const item = this.items.get(id);
+
+    if (typeof item === 'undefined') {
+      return null;
+    }
+
+    if (item.userId != userId) {
+      return null;
+    }
+
+    this.items.delete(id);
 
     return item;
   }
 
-  async deleteManyCompleted() {
-    const foundItems = this.items.filter(
-      (item) => typeof item.completedAt === 'undefined',
-    );
+  async deleteManyByUserId({
+    userId,
+    filter = 'active',
+  }: TodoDeleteManyByUserIdDto) {
+    const userItems = this.getItemsByUserId(userId);
+    let itemsToDelete: Todo[] = [];
 
-    this.items = [...foundItems];
+    if (filter === 'active') {
+      itemsToDelete = userItems.filter(
+        (item) => typeof item.completedAt !== 'undefined',
+      );
+    } else if (filter == 'inactive') {
+      itemsToDelete = userItems.filter(
+        (item) => typeof item.completedAt === 'undefined',
+      );
+    } else {
+      itemsToDelete = userItems;
+    }
+
+    itemsToDelete.forEach((item) => this.items.delete(item.id));
   }
 
-  async updateById(data: TodoUpdateParams, id: string): Promise<void> {}
+  async updateById({ id, title, order, userId }: TodoUpdateByIdDto) {
+    const item = this.items.get(id);
 
-  async updateMany({ todos }: TodoUpdateOrdersParams, id: string) {}
+    if (typeof item === 'undefined') {
+      return null;
+    }
+
+    if (item.userId !== userId) {
+      return null;
+    }
+
+    let newItem: Todo;
+
+    if (typeof order === 'number') {
+      newItem = {
+        ...item,
+        title,
+        order,
+        updatedAt: new Date(),
+      };
+    } else {
+      newItem = { ...item, title, updatedAt: new Date() };
+    }
+
+    this.items.set(id, newItem);
+
+    return newItem;
+  }
+
+  async completeById({ id, userId }: TodoCompleteByIdDto) {
+    const item = this.items.get(id);
+
+    const hasItemExists = typeof item !== 'undefined' && item.userId === userId;
+
+    if (!hasItemExists) {
+      return null;
+    }
+
+    const newItem: Todo = {
+      ...item,
+      completedAt: new Date(),
+      updatedAt: new Date(),
+    };
+
+    this.items.set(id, newItem);
+
+    return newItem;
+  }
+
+  async updateManyByUserId({ todos, userId }: TodoUpdateManyByUserIdDto) {
+    const itemsToUpdate: Map<string, Todo> = new Map();
+
+    for (const todo of todos) {
+      const foundItem = this.items.get(todo.id);
+      if (!foundItem || foundItem.userId !== userId) {
+        return null;
+      }
+      itemsToUpdate.set(todo.id, {
+        ...foundItem,
+        order: todo.order,
+        updatedAt: new Date(),
+      });
+    }
+
+    for (const [id, item] of itemsToUpdate) {
+      this.items.set(id, item);
+    }
+  }
+
+  private getItemsByUserId(userId: string) {
+    const userItems: Todo[] = [];
+
+    for (const [, item] of this.items) {
+      if (item.userId === userId) {
+        userItems.push(item);
+      }
+    }
+
+    return userItems;
+  }
+
+  private getMaxOrder(): number | null {
+    let orders: number[] = [];
+
+    for (const [, a] of this.items) {
+      orders.push(a.order);
+    }
+
+    orders.sort((a, b) => b - a);
+
+    const [max] = orders;
+
+    if (typeof max == 'undefined') {
+      return null;
+    }
+
+    return max;
+  }
 }
