@@ -2,11 +2,21 @@ import {
   ApiCreateTodoBodySchema,
   ApiUpdateTodoBodySchema,
   ApiUpdateTodoOrdersSchema,
-  ApiTodoBodySchema,
+  ApiTodoSchema,
+  ApiTodoFilterSchema,
+  ApiTodoSortBySchema,
+  ApiTodoOrderSchema,
+  ApiTodoQuerySchema,
 } from '@/schemas/todo';
 import z from '@/config/zod';
 
-export type TodoFilterType = 'all' | 'active' | 'inactive';
+export type TodoFilterDto = z.infer<typeof ApiTodoFilterSchema>;
+
+export type TodoSortByDto = z.infer<typeof ApiTodoSortBySchema>;
+
+export type TodoOrderDto = z.infer<typeof ApiTodoOrderSchema>;
+
+export type TodoQueryDto = z.infer<typeof ApiTodoQuerySchema>;
 
 export type TodoCreateDto = z.infer<typeof ApiCreateTodoBodySchema> & {
   userId: string;
@@ -18,7 +28,7 @@ export type TodoDeleteByIdDto = {
 };
 
 export type TodoDeleteManyByUserIdDto = {
-  filter?: TodoFilterType;
+  filter?: TodoFilterDto;
   userId: string;
 };
 
@@ -28,7 +38,10 @@ export type TodoFindByIdDto = {
 };
 
 export type TodoFindManyByUserIdDto = {
-  filter?: TodoFilterType;
+  filter?: TodoFilterDto;
+  sortBy?: TodoSortByDto;
+  order?: TodoOrderDto;
+  query?: TodoQueryDto;
   userId: string;
 };
 
@@ -48,4 +61,4 @@ export type TodoCompleteByIdDto = {
   userId: string;
 };
 
-export type TodoDto = z.infer<typeof ApiTodoBodySchema>;
+export type TodoDto = z.infer<typeof ApiTodoSchema>;

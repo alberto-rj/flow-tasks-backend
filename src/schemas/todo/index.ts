@@ -3,5 +3,9 @@ export {
   ApiUpdateTodoBodySchema,
   ApiUpdateTodoCompletedAtSchema,
   ApiUpdateTodoOrdersSchema,
-  ApiTodoBodySchema,
+  ApiTodoSchema,
+  ApiTodoFilterSchema,
+  ApiTodoSortBySchema,
+  ApiTodoOrderSchema,
+  ApiTodoQuerySchema,
 } from './todo-api';

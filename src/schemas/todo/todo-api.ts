@@ -30,7 +30,17 @@ export const ApiUpdateTodoCompletedAtSchema = z.object({
   completedAt: TodoCompletedAtSchema,
 });
 
-export const ApiTodoBodySchema = z.object({
+export const ApiTodoFilterSchema = z.enum(['all', 'active', 'completed']);
+
+export const ApiTodoSortBySchema = z
+  .enum(['title', 'order', 'createdAt', 'updatedAt'])
+  .default('order');
+
+export const ApiTodoOrderSchema = z.enum(['asc', 'desc']).default('asc');
+
+export const ApiTodoQuerySchema = z.string().optional();
+
+export const ApiTodoSchema = z.object({
   id: TodoIdSchema,
   title: TodoTitleSchema,
   completedAt: TodoCompletedAtSchema.optional(),
