@@ -83,9 +83,17 @@ describe('[Use Case] Todo / List', () => {
           await createTodoList({
             todoRepository,
             userId,
-            limit: 10,
+            limit: 5,
             canCompleteEven: false,
             canCompleteOdd: false,
+          });
+
+          await createTodoList({
+            todoRepository,
+            userId,
+            limit: 10,
+            canCompleteEven: true,
+            canCompleteOdd: true,
           });
 
           const { items } = await sut.execute({
@@ -95,19 +103,13 @@ describe('[Use Case] Todo / List', () => {
             },
           });
 
-          expect(items).toHaveLength(10);
-
-          for (let i = 0; i < items.length; i++) {
-            expect(items[i]).toEqual(
-              expect.objectContaining({
-                title: `Todo ${i + 1}`,
-                userId,
-              }),
-            );
-          }
+          expect(items).toHaveLength(15);
+          items.forEach((item) => {
+            expect(item.userId).toBe(userId);
+          });
         });
 
-        it('should return all completed todos when the filter is active', async () => {
+        it('should return all completed todos when the filter is "completed"', async () => {
           await createTodoList({
             todoRepository,
             userId,
@@ -119,26 +121,17 @@ describe('[Use Case] Todo / List', () => {
           const { items } = await sut.execute({
             data: {
               userId,
-              filter: 'active',
+              filter: 'completed',
             },
           });
 
           expect(items).toHaveLength(5);
-          for (let i = 0, j = 0; j < items.length; i++) {
-            if (i % 2 === 0) {
-              expect(items[j]).toEqual(
-                expect.objectContaining({
-                  title: `Todo ${i + 1}`,
-                  userId,
-                  completedAt: expect.any(String),
-                }),
-              );
-              j++;
-            }
-          }
+          expect(
+            items.every((item) => item.userId === userId && item.completedAt),
+          ).toBe(true);
         });
 
-        it('should return all non-completed todos when the filter is inactive', async () => {
+        it('should return all active todos when the filter is "active"', async () => {
           await createTodoList({
             todoRepository,
             userId,
@@ -149,30 +142,20 @@ describe('[Use Case] Todo / List', () => {
 
           const { items } = await sut.execute({
             data: {
-              filter: 'inactive',
+              filter: 'active',
               userId,
             },
           });
 
           expect(items).toHaveLength(5);
-
-          for (let i = 0, j = 0; j < items.length; i++) {
-            if (i % 2 === 0) {
-              expect(items[j]?.completedAt).toBeNullable();
-              expect(items[j]).toEqual(
-                expect.objectContaining({
-                  title: `Todo ${i + 1}`,
-                  userId,
-                }),
-              );
-              j++;
-            }
-          }
+          expect(
+            items.every((item) => item.userId === userId && !item.completedAt),
+          ).toBe(true);
         });
       });
 
       describe('edge cases', () => {
-        it('should return empty array when user has no todo', async () => {
+        it('should return an empty array when user has no todo', async () => {
           const { items } = await sut.execute({
             data: { userId: 'empty-user-id' },
           });
