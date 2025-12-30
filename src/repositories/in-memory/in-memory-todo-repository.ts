@@ -12,6 +12,7 @@ import type {
 } from '@/dtos/todo';
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
+import { numKeys } from 'node_modules/zod/v4/core/util.cjs';
 
 export class InMemoryTodoRepository implements TodoRepository {
   private items: Map<string, Todo> = new Map();
@@ -55,7 +56,7 @@ export class InMemoryTodoRepository implements TodoRepository {
         (item) =>
           item.userId === userId && typeof item.completedAt !== 'undefined',
       );
-    } else if (filter === 'inactive') {
+    } else if (filter === 'completed') {
       return userItems.filter(
         (item) => typeof item.completedAt === 'undefined',
       );
@@ -89,11 +90,11 @@ export class InMemoryTodoRepository implements TodoRepository {
 
     if (filter === 'active') {
       itemsToDelete = userItems.filter(
-        (item) => typeof item.completedAt !== 'undefined',
-      );
-    } else if (filter == 'inactive') {
-      itemsToDelete = userItems.filter(
         (item) => typeof item.completedAt === 'undefined',
+      );
+    } else if (filter === 'completed') {
+      itemsToDelete = userItems.filter(
+        (item) => typeof item.completedAt !== 'undefined',
       );
     } else {
       itemsToDelete = userItems;
@@ -200,4 +201,6 @@ export class InMemoryTodoRepository implements TodoRepository {
 
     return max;
   }
+
+  private filterItems(): Todo[] {}
 }
