@@ -5,6 +5,7 @@ import type {
   TodoCreateDto,
   TodoDeleteByIdDto,
   TodoDeleteManyByUserIdDto,
+  TodoFilterDto,
   TodoFindByIdDto,
   TodoFindManyByUserIdDto,
   TodoUpdateByIdDto,
@@ -12,19 +13,16 @@ import type {
 } from '@/dtos/todo';
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
-import { numKeys } from 'node_modules/zod/v4/core/util.cjs';
 
 export class InMemoryTodoRepository implements TodoRepository {
   private items: Map<string, Todo> = new Map();
 
   async create({ title, userId }: TodoCreateDto): Promise<Todo> {
-    const maxOrder = this.getMaxOrder();
-    const order = maxOrder === null ? 0 : maxOrder + 1;
     const newItem: Todo = {
       title,
       userId,
       id: randomUUID(),
-      order,
+      order: this.getNexOrder(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -49,20 +47,7 @@ export class InMemoryTodoRepository implements TodoRepository {
   }
 
   async findManyByUserId({ userId, filter = 'all' }: TodoFindManyByUserIdDto) {
-    const userItems = this.getItemsByUserId(userId);
-
-    if (filter === 'active') {
-      return userItems.filter(
-        (item) =>
-          item.userId === userId && typeof item.completedAt !== 'undefined',
-      );
-    } else if (filter === 'completed') {
-      return userItems.filter(
-        (item) => typeof item.completedAt === 'undefined',
-      );
-    }
-
-    return userItems;
+    return this.filterItems({ filter, userId });
   }
 
   async deleteById({ id, userId }: TodoDeleteByIdDto) {
@@ -85,20 +70,9 @@ export class InMemoryTodoRepository implements TodoRepository {
     userId,
     filter = 'active',
   }: TodoDeleteManyByUserIdDto) {
-    const userItems = this.getItemsByUserId(userId);
     let itemsToDelete: Todo[] = [];
 
-    if (filter === 'active') {
-      itemsToDelete = userItems.filter(
-        (item) => typeof item.completedAt === 'undefined',
-      );
-    } else if (filter === 'completed') {
-      itemsToDelete = userItems.filter(
-        (item) => typeof item.completedAt !== 'undefined',
-      );
-    } else {
-      itemsToDelete = userItems;
-    }
+    itemsToDelete = this.filterItems({ filter, userId });
 
     itemsToDelete.forEach((item) => this.items.delete(item.id));
   }
@@ -184,7 +158,7 @@ export class InMemoryTodoRepository implements TodoRepository {
     return userItems;
   }
 
-  private getMaxOrder(): number | null {
+  private getNexOrder(): number {
     let orders: number[] = [];
 
     for (const [, a] of this.items) {
@@ -195,12 +169,35 @@ export class InMemoryTodoRepository implements TodoRepository {
 
     const [max] = orders;
 
-    if (typeof max == 'undefined') {
-      return null;
+    if (typeof max === 'undefined') {
+      return 0;
     }
 
-    return max;
+    return max + 1;
   }
 
-  private filterItems(): Todo[] {}
+  private filterItems({
+    filter,
+    userId,
+  }: {
+    filter: TodoFilterDto;
+    userId: string;
+  }): Todo[] {
+    if (filter === 'active') {
+      return this.getActiveItemsByUserId(userId);
+    } else if (filter === 'completed') {
+      return this.getCompletedItemsByUserId(userId);
+    }
+    return this.getItemsByUserId(userId);
+  }
+
+  private getActiveItemsByUserId(userId: string) {
+    const userItems = this.getItemsByUserId(userId);
+    return userItems.filter((item) => !item.completedAt);
+  }
+
+  private getCompletedItemsByUserId(userId: string) {
+    const userItems = this.getItemsByUserId(userId);
+    return userItems.filter((item) => item.completedAt);
+  }
 }
