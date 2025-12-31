@@ -8,6 +8,9 @@ import type {
   TodoFilterDto,
   TodoFindByIdDto,
   TodoFindManyByUserIdDto,
+  TodoOrderDto,
+  TodoQueryDto,
+  TodoSortByDto,
   TodoUpdateByIdDto,
   TodoUpdateManyByUserIdDto,
 } from '@/dtos/todo';
@@ -46,8 +49,29 @@ export class InMemoryTodoRepository implements TodoRepository {
     return foundItem;
   }
 
-  async findManyByUserId({ userId, filter = 'all' }: TodoFindManyByUserIdDto) {
-    return this.filterItems({ filter, userId });
+  async findManyByUserId({
+    userId,
+    query,
+    filter = 'all',
+    sortBy = 'order',
+    order = 'asc',
+  }: TodoFindManyByUserIdDto) {
+    const userItems = this.getItemsByUserId(userId);
+    const queryItems = this.queryItems({
+      items: userItems,
+      query,
+    });
+    const filteredItems = this.filterItems({
+      items: queryItems,
+      filter,
+    });
+    const sortedItems = this.sortItems({
+      items: filteredItems,
+      sortBy,
+      order,
+    });
+
+    return sortedItems;
   }
 
   async deleteById({ id, userId }: TodoDeleteByIdDto) {
@@ -68,13 +92,14 @@ export class InMemoryTodoRepository implements TodoRepository {
 
   async deleteManyByUserId({
     userId,
-    filter = 'active',
+    filter = 'completed',
   }: TodoDeleteManyByUserIdDto) {
-    let itemsToDelete: Todo[] = [];
+    const userItems = this.getItemsByUserId(userId);
 
-    itemsToDelete = this.filterItems({ filter, userId });
-
-    itemsToDelete.forEach((item) => this.items.delete(item.id));
+    this.filterItems({
+      items: userItems,
+      filter,
+    }).forEach((item) => this.items.delete(item.id));
   }
 
   async updateById({ id, title, order, userId }: TodoUpdateByIdDto) {
@@ -176,28 +201,131 @@ export class InMemoryTodoRepository implements TodoRepository {
     return max + 1;
   }
 
-  private filterItems({
-    filter,
-    userId,
+  private queryItems({
+    items,
+    query,
   }: {
+    items: Todo[];
+    query: TodoQueryDto;
+  }): Todo[] {
+    if (typeof query === 'undefined') {
+      return items;
+    }
+    const regex = new RegExp(`${query}`, 'im');
+    return items.filter((item) => regex.test(item.title));
+  }
+
+  private filterItems({
+    items,
+    filter,
+  }: {
+    items: Todo[];
     filter: TodoFilterDto;
-    userId: string;
   }): Todo[] {
     if (filter === 'active') {
-      return this.getActiveItemsByUserId(userId);
+      return this.getActiveItemsByUserId(items);
     } else if (filter === 'completed') {
-      return this.getCompletedItemsByUserId(userId);
+      return this.getCompletedItemsByUserId(items);
     }
-    return this.getItemsByUserId(userId);
+    return items;
   }
 
-  private getActiveItemsByUserId(userId: string) {
-    const userItems = this.getItemsByUserId(userId);
-    return userItems.filter((item) => !item.completedAt);
+  private getActiveItemsByUserId(items: Todo[]) {
+    return items.filter((item) => !item.completedAt);
   }
 
-  private getCompletedItemsByUserId(userId: string) {
-    const userItems = this.getItemsByUserId(userId);
-    return userItems.filter((item) => item.completedAt);
+  private getCompletedItemsByUserId(items: Todo[]) {
+    return items.filter((item) => item.completedAt);
+  }
+
+  private sortItems({
+    items,
+    sortBy,
+    order,
+  }: {
+    items: Todo[];
+    sortBy: TodoSortByDto;
+    order: TodoOrderDto;
+  }): Todo[] {
+    if (sortBy === 'createdAt') {
+      return this.sortItemsByCreatedAt({ items, order });
+    } else if (sortBy === 'updatedAt') {
+      return this.sortItemsByUpdatedAt({ items, order });
+    } else if (sortBy === 'order') {
+      return this.sortItemsByOrder({ items, order });
+    }
+    return this.sortItemsByTitle({ items, order });
+  }
+
+  private sortItemsByTitle({
+    items,
+    order,
+  }: {
+    items: Todo[];
+    order: TodoOrderDto;
+  }) {
+    if (order === 'desc') {
+      return items.sort((a, b) => this.compareTitle.bind(this)(b, a));
+    }
+    return items.sort(this.compareTitle.bind(this));
+  }
+
+  private sortItemsByOrder({
+    items,
+    order,
+  }: {
+    items: Todo[];
+    order: TodoOrderDto;
+  }) {
+    if (order === 'desc') {
+      return items.sort((a, b) => this.compareOrder.bind(this)(b, a));
+    }
+    return items.sort(this.compareOrder.bind(this));
+  }
+
+  private sortItemsByUpdatedAt({
+    items,
+    order,
+  }: {
+    items: Todo[];
+    order: TodoOrderDto;
+  }) {
+    if (order === 'desc') {
+      return items.sort((a, b) => this.compareUpdatedAt.bind(this)(b, a));
+    }
+    return items.sort(this.compareUpdatedAt.bind(this));
+  }
+
+  private sortItemsByCreatedAt({
+    items,
+    order,
+  }: {
+    items: Todo[];
+    order: TodoOrderDto;
+  }) {
+    if (order === 'desc') {
+      return items.sort((a, b) => this.compareCreatedAt.bind(this)(b, a));
+    }
+    return items.sort(this.compareCreatedAt.bind(this));
+  }
+
+  private compareTitle(a: Todo, b: Todo) {
+    const collator = new Intl.Collator('en-US', {
+      sensitivity: 'base',
+      ignorePunctuation: true,
+    });
+    return collator.compare(a.title, b.title);
+  }
+
+  private compareOrder(a: Todo, b: Todo) {
+    return a.order - b.order;
+  }
+
+  private compareCreatedAt(a: Todo, b: Todo) {
+    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+  }
+
+  private compareUpdatedAt(a: Todo, b: Todo) {
+    return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
   }
 }
