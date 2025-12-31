@@ -48,22 +48,22 @@
 
 #### RF-006: Listar Todos do Utilizador
 
-- [ ] O sistema deve retornar todos os todos do utilizador autenticado
-- [ ] O sistema deve ordenar todos por posição (position) ascendente
-- [ ] O sistema deve permitir filtrar por status: 'all', 'active', 'completed'
-- [ ] O sistema deve incluir todos os campos: id, text, completed, position, timestamps
-- [ ] O sistema deve retornar array vazio se utilizador não tiver todos
+- [x] O sistema deve retornar todos os todos do utilizador autenticado
+- [x] O sistema deve ordenar todos por `order` ascendente
+- [x] O sistema deve permitir filtrar por status: `'all'`, `'active'`, `'completed'`
+- [x] O sistema deve incluir todos os campos: `id`, `title`, `completedAt`, `order`, timestamps
+- [x] O sistema deve retornar array vazio se utilizador não tiver todos
 
 #### RF-007: Criar Novo Todo
 
 - [x] O sistema deve permitir criar novo todo
 - [ ] O sistema deve associar todo ao utilizador autenticado
-- [ ] O sistema deve definir completedAt como nulo por padrão
-- [ ] O sistema deve calcular próxima posição automaticamente (última posição + 1)
-- [ ] O sistema deve validar que texto não está vazio
-- [ ] O sistema deve validar que texto tem máximo 500 caracteres
+- [ ] O sistema deve definir `completedAt` como nulo por padrão
+- [ ] O sistema deve calcular próxima posição automaticamente (`maxOrder + 1`)
+- [ ] O sistema deve validar que `title` não está vazio
+- [ ] O sistema deve validar que `title` tem máximo 500 caracteres
 - [x] O sistema deve retornar todo criado com id gerado
-- [x] O sistema deve definir timestamps (created_at, updated_at)
+- [x] O sistema deve definir timestamps (`createdAt`, `updatedAt`)
 
 #### RF-008: Atualizar Todo
 
@@ -72,7 +72,7 @@
 - [ ] O sistema deve permitir atualizar posição do todo
 - [ ] O sistema deve validar que todo pertence ao utilizador autenticado
 - [ ] O sistema deve validar que texto (se fornecido) não está vazio e tem máx 500 caracteres
-- [ ] O sistema deve atualizar timestamp updated_at automaticamente
+- [ ] O sistema deve atualizar timestamp `updatedAt` automaticamente
 - [ ] O sistema deve retornar todo atualizado
 - [ ] O sistema deve retornar erro 404 se todo não existir
 
@@ -87,20 +87,19 @@
 #### RF-010: Reordenar Múltiplos Todos
 
 - [ ] O sistema deve permitir reordenar múltiplos todos numa única operação
-- [ ] O sistema deve receber array de objetos com {id, position}
+- [ ] O sistema deve receber array de objectos com `{id, order}`
 - [ ] O sistema deve validar que todos os ids pertencem ao utilizador autenticado
-- [ ] O sistema deve atualizar posições em transação (tudo ou nada)
-- [ ] O sistema deve garantir que não há posições duplicadas
+- [ ] O sistema deve actualizar `order` em transação (tudo ou nada)
 - [ ] O sistema deve retornar confirmação de sucesso
 - [ ] O sistema deve reverter mudanças se houver erro
 
 #### RF-011: Limpar Todos Completos
 
-- [ ] O sistema deve permitir eliminar todos os todos com completed = true
+- [ ] O sistema deve permitir eliminar todos os todos com `completedAt` definidos
 - [ ] O sistema deve eliminar apenas todos do utilizador autenticado
 - [ ] O sistema deve retornar número de todos eliminados
 - [ ] O sistema deve executar em transação
-- [ ] O sistema deve reajustar posições dos todos restantes
+- [ ] O sistema deve reajustar `order` dos todos restantes
 
 #### RF-012: Contar Todos
 
@@ -152,21 +151,21 @@
 
 #### RN-005: Criação de Todos
 
-- [ ] Todo deve sempre ter utilizador associado (user_id)
-- [ ] Text é obrigatório e não pode ser vazio
-- [ ] Text deve ter máximo 500 caracteres
-- [ ] Text deve ter espaços em branco removidos (trim)
-- [ ] Completed é false por padrão
-- [ ] Position é calculada automaticamente (max(position) + 1)
+- [ ] Todo deve sempre ter utilizador associado (`userId`)
+- [ ] `title` é obrigatório e não pode ser vazio
+- [ ] `title` deve ter máximo 500 caracteres
+- [ ] `title` deve ter espaços em branco removidos (trim)
+- [ ] `completedAt` é nulo por padrão
+- [ ] `order` é calculada automaticamente (`max(order) + 1`)
 - [ ] Timestamps são gerados automaticamente
 
 #### RN-006: Edição de Todos
 
 - [ ] Utilizador só pode editar seus próprios todos
-- [ ] Completed pode ser alternado entre true/false
-- [ ] Text, se atualizado, deve seguir mesmas regras de criação
-- [ ] Position pode ser atualizada para reordenação
-- [ ] updated_at deve ser atualizado automaticamente
+- [ ] CompletedAt pode ser alternado entre Date/Nulo
+- [ ] `title`, se atualizado, deve seguir mesmas regras de criação
+- [ ] Order pode ser atualizada para reordenação
+- [ ] `updatedAt` deve ser atualizado automaticamente
 
 #### RN-007: Eliminação de Todos
 
@@ -177,15 +176,15 @@
 #### RN-008: Reordenação
 
 - [ ] Positions devem ser números inteiros não-negativos
-- [ ] Não pode haver dois todos com mesma position para mesmo utilizador
+- [ ] Não pode haver dois todos com mesma `order` para mesmo utilizador
 - [ ] Reordenação deve ser atômica (transação)
 - [ ] Se reordenação falhar, nenhuma mudança deve persistir
 
 #### RN-009: Filtragem
 
-- [ ] Filtro 'all' retorna todos os todos
-- [ ] Filtro 'active' retorna apenas completed = false
-- [ ] Filtro 'completed' retorna apenas completed = true
+- [ ] Filtro `'all'` retorna todos os todos
+- [ ] Filtro `'active'` retorna apenas todos nao completados
+- [ ] Filtro `'completed'` retorna apenas todos completados
 - [ ] Filtro inválido deve retornar erro 400
 
 #### RN-010: Privacidade de Dados
@@ -291,9 +290,9 @@
 
 #### RNF-012: Health Checks
 
-- [ ] Endpoint /health deve retornar status do servidor
-- [ ] Endpoint /health/db deve verificar conexão com base de dados
-- [ ] Health checks devem responder em < 100ms
+- [ ] Endpoint `/health` deve retornar status do servidor
+- [ ] Endpoint `/health/db` deve verificar conexão com base de dados
+- [ ] Health checks devem responder em `< 100ms`
 
 ---
 
@@ -301,10 +300,10 @@
 
 #### RNF-013: Testes
 
-- [ ] Código deve ter mínimo 70% de cobertura
-- [ ] Testes unitários devem cobrir lógica de negócio
+- [x] Código deve ter mínimo 70% de cobertura
+- [x] Testes unitários devem cobrir lógica de negócio
 - [ ] Testes de integração devem cobrir endpoints da API
-- [ ] Testes devem usar base de dados de teste isolada
+- [x] Testes devem usar base de dados de teste isolada
 - [ ] Testes devem ser executados em CI/CD
 
 #### RNF-014: Documentação de API
@@ -444,7 +443,7 @@
 
 ### UC-001: Registro de Utilizador
 
-```
+```txt
 DADO que um novo utilizador acede à aplicação
 QUANDO fornece email válido, senha forte e nome
 ENTÃO conta é criada, token JWT é gerado e retornado
@@ -452,7 +451,7 @@ ENTÃO conta é criada, token JWT é gerado e retornado
 
 ### UC-002: Login com Credenciais Válidas
 
-```
+```txt
 DADO que um utilizador registado acede ao login
 QUANDO fornece email e senha corretos
 ENTÃO recebe token JWT e pode aceder à aplicação
@@ -460,7 +459,7 @@ ENTÃO recebe token JWT e pode aceder à aplicação
 
 ### UC-003: Criar Todo
 
-```
+```txt
 DADO que um utilizador está autenticado
 QUANDO cria um novo todo com texto válido
 ENTÃO todo é salvo, associado ao utilizador e retornado com ID
@@ -468,15 +467,15 @@ ENTÃO todo é salvo, associado ao utilizador e retornado com ID
 
 ### UC-004: Marcar Todo como Completo
 
-```
+```txt
 DADO que um utilizador tem um todo ativo
 QUANDO marca como completo
-ENTÃO status é atualizado para true e updated_at é atualizado
+ENTÃO status é atualizado para true e `updatedAt` é atualizado
 ```
 
 ### UC-005: Reordenar Todos por Drag & Drop
 
-```
+```txt
 DADO que um utilizador tem múltiplos todos
 QUANDO arrasta e solta um todo para nova posição
 ENTÃO positions são atualizadas em transação atômica
@@ -489,7 +488,7 @@ Este checklist completo vai ajudá-lo a:
 1. ✅ Implementar feature por feature de forma organizada
 2. ✅ Criar testes unitários para cada requisito
 3. ✅ Validar que todas as regras de negócio estão implementadas
-4. ✅ Garantir qualidade e completude do projeto
+4. ✅ Garantir qualidade e completude do projecto
 5. ✅ Ter documentação clara para o README
 
 Boa sorte com a implementação! 🚀

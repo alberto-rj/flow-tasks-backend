@@ -18,42 +18,89 @@ type CreateTodoListParams = {
   userId: string;
   limit?: number;
   title?: string;
-  prefix?: string;
-  suffix?: string;
   canCompleteEven?: boolean;
   canCompleteOdd?: boolean;
 };
+
+type CreateDetailedTodoListParams = {
+  todoRepository: TodoRepository;
+  items: TodoCreateDto[];
+  canCompleteEven?: boolean;
+  canCompleteOdd?: boolean;
+};
+
+export async function createDetailedTodoList({
+  todoRepository,
+  items,
+  canCompleteEven = false,
+  canCompleteOdd = false,
+}: CreateDetailedTodoListParams): Promise<Todo[]> {
+  const newItems: Todo[] = [];
+
+  for (let i = 0; i < items.length; i++) {
+    const newItem: TodoCreateDto = items[i] as TodoCreateDto;
+    const createdItem = await todoRepository.create(newItem);
+
+    if (canCompleteEven && i % 2 === 0) {
+      await todoRepository.completeById({
+        id: createdItem.id,
+        userId: createdItem.userId,
+      });
+    }
+
+    if (canCompleteOdd && i % 2 !== 0) {
+      await todoRepository.completeById({
+        id: createdItem.id,
+        userId: createdItem.userId,
+      });
+    }
+
+    newItems.push(createdItem);
+    const delay = Math.floor(10 + Math.random() * (100 - 10));
+    await new Promise((resolve) => setTimeout(resolve, delay));
+  }
+
+  return newItems;
+}
 
 export async function createTodoList({
   todoRepository,
   userId,
   limit = 10,
+  title = 'Todo',
   canCompleteEven = false,
   canCompleteOdd = false,
-  title = 'Todo',
-  prefix = '',
-  suffix = '',
 }: CreateTodoListParams): Promise<Todo[]> {
-  const items: Todo[] = [];
+  const newItems: Todo[] = [];
 
   for (let i = 0; i < limit; i++) {
-    const item = await todoRepository.create({
-      title: `${prefix}${title} ${i + 1}${suffix}`,
+    const newItem: TodoCreateDto = {
+      title: `${title} ${i + 1}`,
       userId,
-    });
+    };
+    const createdItem = await todoRepository.create(newItem);
 
     if (canCompleteEven && i % 2 === 0) {
-      await todoRepository.completeById({ id: item.id, userId });
+      await todoRepository.completeById({
+        id: createdItem.id,
+        userId,
+      });
     }
 
     if (canCompleteOdd && i % 2 !== 0) {
-      await todoRepository.completeById({ id: item.id, userId });
+      await todoRepository.completeById({
+        id: createdItem.id,
+        userId,
+      });
     }
 
-    items.push(item);
+    newItems.push(createdItem);
   }
 
-  return items;
+  const delay = Math.floor(10 + Math.random() * (100 - 10));
+  await new Promise((resolve) => setTimeout(resolve, delay));
+
+  return newItems;
 }
 
 export function createRegisterDto(): RegisterDto {
