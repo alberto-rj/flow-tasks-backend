@@ -8,8 +8,53 @@ import {
   createUserRepository as factoryCreateUserRepository,
 } from './factory';
 import { isoDateSchema } from './schemas';
+import type { TodoRepository } from '@/repositories';
+import type { Todo } from '@/entities';
 
 export const env = load('test');
+
+type CreateTodoListParams = {
+  todoRepository: TodoRepository;
+  userId: string;
+  limit?: number;
+  title?: string;
+  prefix?: string;
+  suffix?: string;
+  canCompleteEven?: boolean;
+  canCompleteOdd?: boolean;
+};
+
+export async function createTodoList({
+  todoRepository,
+  userId,
+  limit = 10,
+  canCompleteEven = false,
+  canCompleteOdd = false,
+  title = 'Todo',
+  prefix = '',
+  suffix = '',
+}: CreateTodoListParams): Promise<Todo[]> {
+  const items: Todo[] = [];
+
+  for (let i = 0; i < limit; i++) {
+    const item = await todoRepository.create({
+      title: `${prefix}${title} ${i + 1}${suffix}`,
+      userId,
+    });
+
+    if (canCompleteEven && i % 2 === 0) {
+      await todoRepository.completeById({ id: item.id, userId });
+    }
+
+    if (canCompleteOdd && i % 2 !== 0) {
+      await todoRepository.completeById({ id: item.id, userId });
+    }
+
+    items.push(item);
+  }
+
+  return items;
+}
 
 export function createRegisterDto(): RegisterDto {
   return {

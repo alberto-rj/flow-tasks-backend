@@ -1,46 +1,8 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
 import { ListTodoUseCase } from '@/use-cases/todo';
-import { newTodoRepository } from '@/utils/test';
-
-type CreateTodoListParams = {
-  todoRepository: TodoRepository;
-  userId: string;
-  limit?: number;
-  canCompleteEven?: boolean;
-  canCompleteOdd?: boolean;
-};
-
-async function createTodoList({
-  todoRepository,
-  userId,
-  limit = 10,
-  canCompleteEven = false,
-  canCompleteOdd = false,
-}: CreateTodoListParams): Promise<Todo[]> {
-  const items: Todo[] = [];
-
-  for (let i = 0; i < limit; i++) {
-    const item = await todoRepository.create({
-      title: `Todo ${i + 1}`,
-      userId,
-    });
-
-    if (canCompleteEven && i % 2 === 0) {
-      await todoRepository.completeById({ id: item.id, userId });
-    }
-
-    if (canCompleteOdd && i % 2 !== 0) {
-      await todoRepository.completeById({ id: item.id, userId });
-    }
-
-    items.push(item);
-  }
-
-  return items;
-}
+import { newTodoRepository, createTodoList } from '@/utils/test';
 
 describe('[Use Case] Todo / List', () => {
   let sut: ListTodoUseCase;
@@ -78,14 +40,48 @@ describe('[Use Case] Todo / List', () => {
         });
       });
 
+      describe('[query]', () => {
+        it('should return all todos with title that contain the query "Mobile", not sensitive case', async () => {
+          await createTodoList({
+            todoRepository,
+            userId,
+            limit: 10,
+            prefix: 'Learning-',
+            title: 'Web',
+            suffix: '-2025',
+          });
+
+          await createTodoList({
+            todoRepository,
+            userId,
+            limit: 10,
+            prefix: 'Learning-',
+            title: 'Mobile',
+            suffix: '-2026',
+          });
+
+          const { items } = await sut.execute({
+            data: {
+              userId,
+              query: 'mOBilE',
+            },
+          });
+
+          expect(items).toHaveLength(10);
+          expect(
+            items.every(
+              (item) => item.userId === userId && item.title.includes('Mobile'),
+            ),
+          ).toBe(true);
+        });
+      });
+
       describe('[filter]', () => {
         it('should return all todos when the filter is all', async () => {
           await createTodoList({
             todoRepository,
             userId,
             limit: 5,
-            canCompleteEven: false,
-            canCompleteOdd: false,
           });
 
           await createTodoList({
@@ -114,7 +110,6 @@ describe('[Use Case] Todo / List', () => {
             todoRepository,
             userId,
             canCompleteEven: true,
-            canCompleteOdd: false,
             limit: 10,
           });
 
@@ -135,7 +130,6 @@ describe('[Use Case] Todo / List', () => {
           await createTodoList({
             todoRepository,
             userId,
-            canCompleteEven: false,
             canCompleteOdd: true,
             limit: 10,
           });
@@ -159,6 +153,71 @@ describe('[Use Case] Todo / List', () => {
           const { items } = await sut.execute({
             data: { userId: 'empty-user-id' },
           });
+          expect(items).toEqual([]);
+        });
+
+        it('should return an empty array when user has no completed todos', async () => {
+          await createTodoList({
+            todoRepository,
+            userId,
+            limit: 10,
+          });
+
+          const { items } = await sut.execute({
+            data: {
+              filter: 'completed',
+              userId,
+            },
+          });
+
+          expect(items).toEqual([]);
+        });
+
+        it('should return an empty array when user has no active todos', async () => {
+          await createTodoList({
+            todoRepository,
+            userId,
+            limit: 10,
+            canCompleteEven: true,
+            canCompleteOdd: true,
+          });
+
+          const { items } = await sut.execute({
+            data: {
+              filter: 'active',
+              userId,
+            },
+          });
+
+          expect(items).toEqual([]);
+        });
+
+        it('should return an empty array when user has no todo title that match to the query "Mobile"', async () => {
+          await createTodoList({
+            todoRepository,
+            userId,
+            limit: 10,
+            prefix: 'Learning-',
+            title: 'Web',
+            suffix: '-2025',
+          });
+
+          await createTodoList({
+            todoRepository,
+            userId,
+            limit: 10,
+            prefix: 'Learning-',
+            title: 'Desktop',
+            suffix: '-2026',
+          });
+
+          const { items } = await sut.execute({
+            data: {
+              userId,
+              query: 'mOBilE',
+            },
+          });
+
           expect(items).toEqual([]);
         });
       });
