@@ -26,10 +26,6 @@ export const ApiUpdateTodoOrdersSchema = z.object({
   ),
 });
 
-export const ApiUpdateTodoCompletedAtSchema = z.object({
-  completedAt: TodoCompletedAtSchema,
-});
-
 export const ApiTodoFilterSchema = z.enum(['all', 'active', 'completed']);
 
 export const ApiTodoSortBySchema = z

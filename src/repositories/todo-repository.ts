@@ -7,7 +7,7 @@ import type {
   TodoDeleteManyByUserIdDto,
   TodoDeleteByIdDto,
   TodoUpdateManyByUserIdDto,
-  TodoCompleteByIdDto,
+  TodoToggleByIdDto,
 } from '@/dtos/todo';
 
 export interface TodoRepository {
@@ -27,5 +27,5 @@ export interface TodoRepository {
     params: TodoUpdateManyByUserIdDto,
   ) => Promise<void | null>;
 
-  completeById: (params: TodoCompleteByIdDto) => Promise<Todo | null>;
+  toggleById: (params: TodoToggleByIdDto) => Promise<Todo | null>;
 }

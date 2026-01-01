@@ -1,7 +1,6 @@
 import { randomUUID } from 'node:crypto';
 
 import type {
-  TodoCompleteByIdDto,
   TodoCreateDto,
   TodoDeleteByIdDto,
   TodoDeleteManyByUserIdDto,
@@ -11,6 +10,7 @@ import type {
   TodoOrderDto,
   TodoQueryDto,
   TodoSortByDto,
+  TodoToggleByIdDto,
   TodoUpdateByIdDto,
   TodoUpdateManyByUserIdDto,
 } from '@/dtos/todo';
@@ -131,20 +131,31 @@ export class InMemoryTodoRepository implements TodoRepository {
     return newItem;
   }
 
-  async completeById({ id, userId }: TodoCompleteByIdDto) {
+  async toggleById({ id, userId }: TodoToggleByIdDto) {
     const item = this.items.get(id);
 
-    const hasItemExists = typeof item !== 'undefined' && item.userId === userId;
+    const isExistingItem =
+      typeof item !== 'undefined' && item.userId === userId;
 
-    if (!hasItemExists) {
+    if (!isExistingItem) {
       return null;
     }
 
-    const newItem: Todo = {
-      ...item,
-      completedAt: new Date(),
-      updatedAt: new Date(),
-    };
+    let newItem: Todo;
+    const { completedAt, ...itemProps } = item;
+
+    if (typeof completedAt === 'undefined') {
+      newItem = {
+        ...itemProps,
+        completedAt: new Date(),
+        updatedAt: new Date(),
+      };
+    } else {
+      newItem = {
+        ...itemProps,
+        updatedAt: new Date(),
+      };
+    }
 
     this.items.set(id, newItem);
 
