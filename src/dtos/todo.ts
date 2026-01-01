@@ -56,7 +56,7 @@ export type TodoUpdateManyByUserIdDto = z.infer<
   userId: string;
 };
 
-export type TodoCompleteByIdDto = {
+export type TodoToggleByIdDto = {
   id: string;
   userId: string;
 };

@@ -13,6 +13,11 @@ export {
   ListTodoUseCase,
 } from './list-todo-use-case';
 export {
+  type ToggleTodoUseCaseParams,
+  type ToggleTodoUseCaseResult,
+  ToggleTodoUseCase,
+} from './toggle-todo-use-case';
+export {
   type UpdateTodoUseCaseParams,
   type UpdateTodoUseCaseResult,
   UpdateTodoUseCase,

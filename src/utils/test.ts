@@ -42,14 +42,14 @@ export async function createDetailedTodoList({
     const createdItem = await todoRepository.create(newItem);
 
     if (canCompleteEven && i % 2 === 0) {
-      await todoRepository.completeById({
+      await todoRepository.toggleById({
         id: createdItem.id,
         userId: createdItem.userId,
       });
     }
 
     if (canCompleteOdd && i % 2 !== 0) {
-      await todoRepository.completeById({
+      await todoRepository.toggleById({
         id: createdItem.id,
         userId: createdItem.userId,
       });
@@ -81,14 +81,14 @@ export async function createTodoList({
     const createdItem = await todoRepository.create(newItem);
 
     if (canCompleteEven && i % 2 === 0) {
-      await todoRepository.completeById({
+      await todoRepository.toggleById({
         id: createdItem.id,
         userId,
       });
     }
 
     if (canCompleteOdd && i % 2 !== 0) {
-      await todoRepository.completeById({
+      await todoRepository.toggleById({
         id: createdItem.id,
         userId,
       });

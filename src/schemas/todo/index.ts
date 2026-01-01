@@ -1,7 +1,6 @@
 export {
   ApiCreateTodoBodySchema,
   ApiUpdateTodoBodySchema,
-  ApiUpdateTodoCompletedAtSchema,
   ApiUpdateTodoOrdersSchema,
   ApiTodoSchema,
   ApiTodoFilterSchema,

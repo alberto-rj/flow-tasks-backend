@@ -69,7 +69,7 @@
 
 - [x] O sistema deve permitir actualizar `title` do todo
 - [x] O sistema deve permitir actualizar `order` do todo
-- [ ] O sistema deve permitir alternar `completedAt`
+- [x] O sistema deve permitir alternar `completedAt`
 - [x] O sistema deve validar que todo pertence ao utilizador autenticado
 - [ ] O sistema deve validar que `title` (se fornecido) não está vazio e tem máx 500 caracteres
 - [x] O sistema deve actualizar timestamp `updatedAt` automaticamente
@@ -162,9 +162,9 @@
 #### RN-006: Edição de Todos
 
 - [x] Utilizador só pode editar seus próprios todos
-- [ ] `completedAt` pode ser alternado entre Date/Nulo
+- [x] `completedAt` pode ser alternado entre Date/Nulo
 - [ ] `title`, se atualizado, deve seguir mesmas regras de criação
-- [ ] `order` pode ser atualizada para reordenação
+- [ ] `order` pode ser actualizada para reordenação
 - [x] `updatedAt` deve ser atualizado automaticamente
 
 #### RN-007: Eliminação de Todos
@@ -189,8 +189,8 @@
 
 #### RN-010: Privacidade de Dados
 
-- [ ] Utilizador nunca pode ver todos de outros utilizadores
-- [ ] Todas as operações de leitura devem filtrar por `userId`
+- [x] Utilizador nunca pode ver todos de outros utilizadores
+- [x] Todas as operações de leitura devem filtrar por `userId`
 - [ ] Todas as operações de escrita devem validar propriedade
 
 ---
