@@ -65,16 +65,16 @@
 - [x] O sistema deve retornar todo criado com id gerado
 - [x] O sistema deve definir timestamps (`createdAt`, `updatedAt`)
 
-#### RF-008: Atualizar Todo
+#### RF-008: Actualizar Todo
 
-- [ ] O sistema deve permitir atualizar texto do todo
-- [ ] O sistema deve permitir alternar status completed
-- [ ] O sistema deve permitir atualizar posição do todo
-- [ ] O sistema deve validar que todo pertence ao utilizador autenticado
-- [ ] O sistema deve validar que texto (se fornecido) não está vazio e tem máx 500 caracteres
-- [ ] O sistema deve atualizar timestamp `updatedAt` automaticamente
-- [ ] O sistema deve retornar todo atualizado
-- [ ] O sistema deve retornar erro se todo não existir
+- [x] O sistema deve permitir actualizar `title` do todo
+- [x] O sistema deve permitir actualizar `order` do todo
+- [ ] O sistema deve permitir alternar `completedAt`
+- [x] O sistema deve validar que todo pertence ao utilizador autenticado
+- [ ] O sistema deve validar que `title` (se fornecido) não está vazio e tem máx 500 caracteres
+- [x] O sistema deve actualizar timestamp `updatedAt` automaticamente
+- [x] O sistema deve retornar todo actualizado
+- [x] O sistema deve retornar erro se todo não existir
 
 #### RF-009: Eliminar Todo
 
@@ -161,16 +161,16 @@
 
 #### RN-006: Edição de Todos
 
-- [ ] Utilizador só pode editar seus próprios todos
-- [ ] CompletedAt pode ser alternado entre Date/Nulo
+- [x] Utilizador só pode editar seus próprios todos
+- [ ] `completedAt` pode ser alternado entre Date/Nulo
 - [ ] `title`, se atualizado, deve seguir mesmas regras de criação
-- [ ] Order pode ser atualizada para reordenação
-- [ ] `updatedAt` deve ser atualizado automaticamente
+- [ ] `order` pode ser atualizada para reordenação
+- [x] `updatedAt` deve ser atualizado automaticamente
 
 #### RN-007: Eliminação de Todos
 
-- [ ] Utilizador só pode eliminar seus próprios todos
-- [ ] Eliminação é permanente (sem soft delete)
+- [x] Utilizador só pode eliminar seus próprios todos
+- [x] Eliminação é permanente (sem soft delete)
 - [ ] Eliminar utilizador deve eliminar todos seus todos (CASCADE)
 
 #### RN-008: Reordenação
@@ -182,15 +182,15 @@
 
 #### RN-009: Filtragem
 
-- [ ] Filtro `'all'` retorna todos os todos
-- [ ] Filtro `'active'` retorna apenas todos nao completados
-- [ ] Filtro `'completed'` retorna apenas todos completados
+- [x] Filtro `'all'` retorna todos os todos
+- [x] Filtro `'active'` retorna apenas todos nao completados
+- [x] Filtro `'completed'` retorna apenas todos completados
 - [ ] Filtro inválido deve retornar erro 400
 
 #### RN-010: Privacidade de Dados
 
 - [ ] Utilizador nunca pode ver todos de outros utilizadores
-- [ ] Todas as operações de leitura devem filtrar por user_id
+- [ ] Todas as operações de leitura devem filtrar por `userId`
 - [ ] Todas as operações de escrita devem validar propriedade
 
 ---

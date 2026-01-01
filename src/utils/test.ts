@@ -56,8 +56,8 @@ export async function createDetailedTodoList({
     }
 
     newItems.push(createdItem);
-    const delay = Math.floor(10 + Math.random() * (15 - 10));
-    await new Promise((resolve) => setTimeout(resolve, delay));
+
+    await sleep();
   }
 
   return newItems;
@@ -95,12 +95,18 @@ export async function createTodoList({
     }
 
     newItems.push(createdItem);
+
+    await sleep();
   }
 
-  const delay = Math.floor(10 + Math.random() * (15 - 10));
-  await new Promise((resolve) => setTimeout(resolve, delay));
-
   return newItems;
+}
+
+export async function sleep() {
+  const begin = 10;
+  const end = 15;
+  const delay = Math.floor(begin + Math.random() * (end - begin + 1));
+  await new Promise((resolve) => setTimeout(resolve, delay));
 }
 
 export function createRegisterDto(): RegisterDto {
