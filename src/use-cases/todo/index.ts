@@ -12,3 +12,8 @@ export {
   type ListTodoUseCaseResult,
   ListTodoUseCase,
 } from './list-todo-use-case';
+export {
+  type UpdateTodoUseCaseParams,
+  type UpdateTodoUseCaseResult,
+  UpdateTodoUseCase,
+} from './update-todo-use-case';
