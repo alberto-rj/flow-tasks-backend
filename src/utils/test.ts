@@ -56,7 +56,7 @@ export async function createDetailedTodoList({
     }
 
     newItems.push(createdItem);
-    const delay = Math.floor(10 + Math.random() * (100 - 10));
+    const delay = Math.floor(10 + Math.random() * (15 - 10));
     await new Promise((resolve) => setTimeout(resolve, delay));
   }
 
@@ -97,7 +97,7 @@ export async function createTodoList({
     newItems.push(createdItem);
   }
 
-  const delay = Math.floor(10 + Math.random() * (100 - 10));
+  const delay = Math.floor(10 + Math.random() * (15 - 10));
   await new Promise((resolve) => setTimeout(resolve, delay));
 
   return newItems;

@@ -74,15 +74,15 @@
 - [ ] O sistema deve validar que texto (se fornecido) não está vazio e tem máx 500 caracteres
 - [ ] O sistema deve atualizar timestamp `updatedAt` automaticamente
 - [ ] O sistema deve retornar todo atualizado
-- [ ] O sistema deve retornar erro 404 se todo não existir
+- [ ] O sistema deve retornar erro se todo não existir
 
 #### RF-009: Eliminar Todo
 
-- [ ] O sistema deve permitir eliminar todo por id
-- [ ] O sistema deve validar que todo pertence ao utilizador autenticado
-- [ ] O sistema deve remover todo permanentemente da base de dados
-- [ ] O sistema deve retornar confirmação de eliminação
-- [ ] O sistema deve retornar erro 404 se todo não existir
+- [x] O sistema deve permitir eliminar todo por id
+- [x] O sistema deve validar que todo pertence ao utilizador autenticado
+- [x] O sistema deve remover todo permanentemente da base de dados
+- [x] O sistema deve retornar confirmação de eliminação
+- [x] O sistema deve retornar erro se todo não existir
 
 #### RF-010: Reordenar Múltiplos Todos
 
