@@ -7,3 +7,9 @@ export interface Todo {
   updatedAt: Date;
   userId: string;
 }
+
+export interface TodoStats {
+  total: number;
+  active: number;
+  completed: number;
+}

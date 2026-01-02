@@ -1,2 +1,2 @@
 export type { User } from './user';
-export type { Todo } from './todo';
+export type { Todo, TodoStats } from './todo';

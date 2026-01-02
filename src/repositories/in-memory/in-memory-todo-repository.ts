@@ -14,6 +14,7 @@ import type {
   TodoToggleByIdDto,
   TodoUpdateByIdDto,
   TodoReorderByIdDto,
+  TodoGetStatsByUserIdDto,
 } from '@/dtos/todo';
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
@@ -190,6 +191,22 @@ export class InMemoryTodoRepository implements TodoRepository {
     this.items.set(id, newItem);
 
     return newItem;
+  }
+
+  async getStats({ userId }: TodoGetStatsByUserIdDto) {
+    const userItems = this.getItemsByUserId(userId);
+
+    const active = userItems.filter(
+      (item) => typeof item.completedAt === 'undefined',
+    ).length;
+    const total = userItems.length;
+    const completed = total - active;
+
+    return {
+      total,
+      active,
+      completed,
+    };
   }
 
   private getItemsByUserId(userId: string) {

@@ -1,4 +1,4 @@
-import type { Todo } from '@/entities';
+import type { Todo, TodoStats } from '@/entities';
 import type {
   TodoCreateDto,
   TodoFindByIdDto,
@@ -9,6 +9,7 @@ import type {
   TodoDeleteByIdDto,
   TodoToggleByIdDto,
   TodoReorderByIdDto,
+  TodoGetStatsByUserIdDto,
 } from '@/dtos/todo';
 
 export interface TodoRepository {
@@ -31,4 +32,6 @@ export interface TodoRepository {
   reorderById: (params: TodoReorderByIdDto) => Promise<Todo | null>;
 
   toggleById: (params: TodoToggleByIdDto) => Promise<Todo | null>;
+
+  getStats: (params: TodoGetStatsByUserIdDto) => Promise<TodoStats>;
 }

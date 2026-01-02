@@ -72,4 +72,8 @@ export type TodoToggleByIdDto = {
   userId: string;
 };
 
+export type TodoGetStatsByUserIdDto = {
+  userId: string;
+};
+
 export type TodoDto = z.infer<typeof ApiTodoSchema>;
