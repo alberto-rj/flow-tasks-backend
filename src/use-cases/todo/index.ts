@@ -8,6 +8,10 @@ export {
   DeleteTodoUseCase,
 } from './delete-todo-use-case';
 export {
+  type DeleteTodoListUseCaseParams,
+  DeleteTodoListUseCase,
+} from './delete-todo-list-use-case';
+export {
   type ListTodoUseCaseParams,
   type ListTodoUseCaseResult,
   ListTodoUseCase,

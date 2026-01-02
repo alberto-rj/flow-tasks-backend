@@ -57,9 +57,9 @@
 #### RF-007: Criar Novo Todo
 
 - [x] O sistema deve permitir criar novo todo
-- [ ] O sistema deve associar todo ao utilizador autenticado
-- [ ] O sistema deve definir `completedAt` como nulo por padrão
-- [ ] O sistema deve calcular próxima posição automaticamente (`maxOrder + 1`)
+- [x] O sistema deve associar todo ao utilizador autenticado
+- [x] O sistema deve definir `completedAt` como nulo por padrão
+- [x] O sistema deve calcular próxima posição automaticamente (`maxOrder + 1`)
 - [ ] O sistema deve validar que `title` não está vazio
 - [ ] O sistema deve validar que `title` tem máximo 500 caracteres
 - [x] O sistema deve retornar todo criado com id gerado
@@ -86,18 +86,17 @@
 
 #### RF-010: Reordenar Múltiplos Todos
 
-- [ ] O sistema deve permitir reordenar múltiplos todos numa única operação
-- [ ] O sistema deve receber array de objectos com `{id, order}`
-- [ ] O sistema deve validar que todos os ids pertencem ao utilizador autenticado
+- [x] O sistema deve permitir reordenar múltiplos todos numa única operação
+- [x] O sistema deve receber array de objectos com `{id, order}`
+- [x] O sistema deve validar que todos os ids pertencem ao utilizador autenticado
 - [ ] O sistema deve actualizar `order` em transação (tudo ou nada)
 - [ ] O sistema deve retornar confirmação de sucesso
 - [ ] O sistema deve reverter mudanças se houver erro
 
 #### RF-011: Limpar Todos Completos
 
-- [ ] O sistema deve permitir eliminar todos os todos com `completedAt` definidos
-- [ ] O sistema deve eliminar apenas todos do utilizador autenticado
-- [ ] O sistema deve retornar número de todos eliminados
+- [x] O sistema deve permitir eliminar todos os todos com `completedAt` definidos
+- [x] O sistema deve eliminar apenas todos do utilizador autenticado
 - [ ] O sistema deve executar em transação
 - [ ] O sistema deve reajustar `order` dos todos restantes
 
@@ -348,7 +347,7 @@
 - [ ] Variáveis de ambiente devem ser usadas para configuração
 - [ ] Secrets nunca devem estar no código
 - [ ] Deve haver ambientes separados: dev, staging, production
-- [ ] .env.example deve estar documentado
+- [ ] `.env.example` deve estar documentado
 
 #### RNF-018: CI/CD
 
