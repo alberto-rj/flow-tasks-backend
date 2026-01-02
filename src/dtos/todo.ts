@@ -1,7 +1,7 @@
 import {
   ApiCreateTodoBodySchema,
   ApiUpdateTodoBodySchema,
-  ApiUpdateTodoOrdersSchema,
+  ApiReorderTodoListSchema,
   ApiTodoSchema,
   ApiTodoFilterSchema,
   ApiTodoSortBySchema,
@@ -37,6 +37,11 @@ export type TodoFindByIdDto = {
   userId: string;
 };
 
+export type TodoFindByUserIdWithOrderDto = {
+  userId: string;
+  order: number;
+};
+
 export type TodoFindManyByUserIdDto = {
   filter?: TodoFilterDto;
   sortBy?: TodoSortByDto;
@@ -50,8 +55,14 @@ export type TodoUpdateByIdDto = z.infer<typeof ApiUpdateTodoBodySchema> & {
   userId: string;
 };
 
-export type TodoUpdateManyByUserIdDto = z.infer<
-  typeof ApiUpdateTodoOrdersSchema
+export type TodoReorderByIdDto = {
+  id: string;
+  order: number;
+  userId: string;
+};
+
+export type TodoReorderManyByUserIdDto = z.infer<
+  typeof ApiReorderTodoListSchema
 > & {
   userId: string;
 };
