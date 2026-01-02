@@ -17,7 +17,7 @@ export const ApiUpdateTodoBodySchema = ApiCreateTodoBodySchema.extend({
   order: z.number().int().positive().optional(),
 });
 
-export const ApiUpdateTodoOrdersSchema = z.object({
+export const ApiReorderTodoListSchema = z.object({
   todos: z.array(
     z.object({
       id: TodoIdSchema,

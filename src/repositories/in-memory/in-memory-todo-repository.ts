@@ -6,13 +6,14 @@ import type {
   TodoDeleteManyByUserIdDto,
   TodoFilterDto,
   TodoFindByIdDto,
+  TodoFindByUserIdWithOrderDto,
   TodoFindManyByUserIdDto,
   TodoOrderDto,
   TodoQueryDto,
   TodoSortByDto,
   TodoToggleByIdDto,
   TodoUpdateByIdDto,
-  TodoUpdateManyByUserIdDto,
+  TodoReorderByIdDto,
 } from '@/dtos/todo';
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
@@ -47,6 +48,16 @@ export class InMemoryTodoRepository implements TodoRepository {
     }
 
     return foundItem;
+  }
+
+  async findByUserIdWithOrder({ userId, order }: TodoFindByUserIdWithOrderDto) {
+    for (const [, item] of this.items) {
+      if (item.userId === userId && item.order === order) {
+        return item;
+      }
+    }
+
+    return null;
   }
 
   async findManyByUserId({
@@ -162,24 +173,23 @@ export class InMemoryTodoRepository implements TodoRepository {
     return newItem;
   }
 
-  async updateManyByUserId({ todos, userId }: TodoUpdateManyByUserIdDto) {
-    const itemsToUpdate: Map<string, Todo> = new Map();
+  async reorderById({ id, order, userId }: TodoReorderByIdDto) {
+    const item = this.items.get(id);
+    const isExistingItem = item && item.userId === userId;
 
-    for (const todo of todos) {
-      const foundItem = this.items.get(todo.id);
-      if (!foundItem || foundItem.userId !== userId) {
-        return null;
-      }
-      itemsToUpdate.set(todo.id, {
-        ...foundItem,
-        order: todo.order,
-        updatedAt: new Date(),
-      });
+    if (!isExistingItem) {
+      return null;
     }
 
-    for (const [id, item] of itemsToUpdate) {
-      this.items.set(id, item);
-    }
+    const newItem: Todo = {
+      ...item,
+      order,
+      updatedAt: new Date(),
+    };
+
+    this.items.set(id, newItem);
+
+    return newItem;
   }
 
   private getItemsByUserId(userId: string) {

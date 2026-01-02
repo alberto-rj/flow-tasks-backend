@@ -155,16 +155,16 @@
 - [ ] `title` é obrigatório e não pode ser vazio
 - [ ] `title` deve ter máximo 500 caracteres
 - [ ] `title` deve ter espaços em branco removidos (trim)
-- [ ] `completedAt` é nulo por padrão
-- [ ] `order` é calculada automaticamente (`max(order) + 1`)
-- [ ] Timestamps são gerados automaticamente
+- [x] `completedAt` é nulo por padrão
+- [x] `order` é calculada automaticamente (`max(order) + 1`)
+- [x] Timestamps são gerados automaticamente
 
 #### RN-006: Edição de Todos
 
 - [x] Utilizador só pode editar seus próprios todos
 - [x] `completedAt` pode ser alternado entre Date/Nulo
 - [ ] `title`, se atualizado, deve seguir mesmas regras de criação
-- [ ] `order` pode ser actualizada para reordenação
+- [x] `order` pode ser actualizada para reordenação
 - [x] `updatedAt` deve ser atualizado automaticamente
 
 #### RN-007: Eliminação de Todos
@@ -175,8 +175,8 @@
 
 #### RN-008: Reordenação
 
-- [ ] Positions devem ser números inteiros não-negativos
-- [ ] Não pode haver dois todos com mesma `order` para mesmo utilizador
+- [] `order` deve ser número inteiro não-negativo
+- [x] Não pode haver dois todos com mesma `order` para mesmo utilizador
 - [ ] Reordenação deve ser atômica (transação)
 - [ ] Se reordenação falhar, nenhuma mudança deve persistir
 

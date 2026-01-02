@@ -2,18 +2,23 @@ import type { Todo } from '@/entities';
 import type {
   TodoCreateDto,
   TodoFindByIdDto,
+  TodoFindByUserIdWithOrderDto,
   TodoFindManyByUserIdDto,
   TodoUpdateByIdDto,
   TodoDeleteManyByUserIdDto,
   TodoDeleteByIdDto,
-  TodoUpdateManyByUserIdDto,
   TodoToggleByIdDto,
+  TodoReorderByIdDto,
 } from '@/dtos/todo';
 
 export interface TodoRepository {
   create: (params: TodoCreateDto) => Promise<Todo>;
 
   findById: (params: TodoFindByIdDto) => Promise<Todo | null>;
+
+  findByUserIdWithOrder: (
+    params: TodoFindByUserIdWithOrderDto,
+  ) => Promise<Todo | null>;
 
   findManyByUserId: (params: TodoFindManyByUserIdDto) => Promise<Todo[]>;
 
@@ -23,9 +28,7 @@ export interface TodoRepository {
 
   updateById(params: TodoUpdateByIdDto): Promise<Todo | null>;
 
-  updateManyByUserId: (
-    params: TodoUpdateManyByUserIdDto,
-  ) => Promise<void | null>;
+  reorderById: (params: TodoReorderByIdDto) => Promise<Todo | null>;
 
   toggleById: (params: TodoToggleByIdDto) => Promise<Todo | null>;
 }
