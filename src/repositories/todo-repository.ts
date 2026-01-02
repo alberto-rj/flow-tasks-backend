@@ -26,7 +26,7 @@ export interface TodoRepository {
 
   deleteManyByUserId: (params: TodoDeleteManyByUserIdDto) => Promise<void>;
 
-  updateById(params: TodoUpdateByIdDto): Promise<Todo | null>;
+  updateById: (params: TodoUpdateByIdDto) => Promise<Todo | null>;
 
   reorderById: (params: TodoReorderByIdDto) => Promise<Todo | null>;
 
