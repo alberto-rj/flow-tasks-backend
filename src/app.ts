@@ -3,7 +3,7 @@ import express from 'express';
 
 import { load } from '@/config/env';
 import { handleError } from '@/middlewares';
-import { healthRoute } from '@/routes';
+import { authRoute, healthRoute } from '@/routes';
 
 const { PORT, NODE_ENV } = load();
 
@@ -14,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // API routes
+app.use('/api/auth', authRoute);
 app.use('/api/health', healthRoute);
 
 if (NODE_ENV !== 'test') {

@@ -17,8 +17,8 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(['development', 'test', 'production'])
     .default('development'),
-  JWT_SECRET: z.string().default('secret'),
-  JWT_EXPIRES_IN_DAYS: z.coerce.number().default(7),
+  JWT_ACCESS_SECRET: z.string().default('secret'),
+  JWT_ACCESS_EXPIRES_IN_DAYS: z.coerce.number().default(7),
 });
 
 export function load(type: LoadFileType = 'default') {
