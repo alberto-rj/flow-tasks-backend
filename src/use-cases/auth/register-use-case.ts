@@ -3,7 +3,6 @@ import type { UserDto } from '@/dtos/user';
 import type { User } from '@/entities';
 import type { UserRepository } from '@/repositories';
 import { ExistingEmailError } from '@/utils/errors';
-import { getAccessToken } from '@/utils/jwt';
 import { getHash } from '@/utils/password';
 
 export interface RegisterUseCaseParams {
@@ -12,12 +11,10 @@ export interface RegisterUseCaseParams {
 
 export interface RegisterUseCaseResult {
   user: User;
-  accessToken: string;
 }
 
 export interface RegisterUseCaseParseResult {
   user: UserDto;
-  accessToken: string;
 }
 
 export class RegisterUseCase {
@@ -43,18 +40,10 @@ export class RegisterUseCase {
       password: passwordHash,
     });
 
-    const accessToken = getAccessToken({
-      userId: createdUser.id,
-      userEmail: email,
-    });
-
-    return { user: createdUser, accessToken };
+    return { user: createdUser };
   }
 
-  parse({
-    user,
-    accessToken,
-  }: RegisterUseCaseResult): RegisterUseCaseParseResult {
+  parse({ user }: RegisterUseCaseResult): RegisterUseCaseParseResult {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
     const userDto: UserDto = {
@@ -65,7 +54,6 @@ export class RegisterUseCase {
 
     return {
       user: userDto,
-      accessToken,
     };
   }
 }

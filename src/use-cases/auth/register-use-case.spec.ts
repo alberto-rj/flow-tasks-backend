@@ -9,7 +9,7 @@ import {
 } from '@/use-cases/auth';
 import { ExistingEmailError } from '@/utils/errors';
 import { hasCorrectHash } from '@/utils/password';
-import { createRegisterDto, createUserRepository, isJWT } from '@/utils/test';
+import { createRegisterDto, createUserRepository } from '@/utils/test';
 
 describe('[Use Case] Auth / Register', () => {
   let sut: RegisterUseCase;
@@ -25,7 +25,7 @@ describe('[Use Case] Auth / Register', () => {
   });
 
   describe('[function] execute', () => {
-    describe('Success cases', () => {
+    describe('[success cases]', () => {
       it('should register a user successfully', async () => {
         expect(result).toHaveProperty('user');
         expect(result.user).toEqual(
@@ -47,11 +47,6 @@ describe('[Use Case] Auth / Register', () => {
         expect(isValidHash).toBe(true);
         expect(passwordHash).not.toBe(data.password);
       });
-
-      it('should return an access token', async () => {
-        expect(result).toHaveProperty('accessToken');
-        expect(isJWT(result.accessToken)).toBe(true);
-      });
     });
 
     describe('Business rules validations', () => {
@@ -70,10 +65,8 @@ describe('[Use Case] Auth / Register', () => {
       parsedResult = sut.parse(result);
     });
 
-    it('should return an object with the user data and access token', () => {
+    it('should return an object with the user data', () => {
       expect(parsedResult).toEqual(expect.any(Object));
-
-      expect(isJWT(parsedResult.accessToken)).toBe(true);
 
       expect(parsedResult.user).toEqual(
         expect.objectContaining({
