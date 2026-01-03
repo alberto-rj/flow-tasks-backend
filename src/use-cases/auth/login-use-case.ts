@@ -52,6 +52,7 @@ export class LoginUseCase {
   }
 
   parse({ user, accessToken }: LoginUseCaseResult): LoginUseCaseParseResult {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
     const userDto: UserDto = {
       ...userWithoutPassword,

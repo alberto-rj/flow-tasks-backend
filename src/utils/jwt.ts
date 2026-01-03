@@ -25,7 +25,7 @@ export function getAccessTokenPayload(token: string): AuthPayload | null {
   try {
     const payload = jwt.verify(token, JWT_SECRET);
     return payload as AuthPayload;
-  } catch (error) {
+  } catch {
     return null;
   }
 }
