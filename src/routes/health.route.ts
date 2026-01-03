@@ -5,9 +5,9 @@ import { load } from '@/config/env';
 
 const { NODE_ENV } = load();
 
-export const healthRoutes = Router();
+export const healthRoute = Router();
 
-healthRoutes.get('/', (_, res) => {
+healthRoute.get('/', (_, res) => {
   res.status(StatusCodes.OK).json({
     success: true,
     mode: NODE_ENV,

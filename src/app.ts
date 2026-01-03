@@ -1,8 +1,9 @@
-import express from 'express';
 import cookieParser from 'cookie-parser';
+import express from 'express';
 
 import { load } from '@/config/env';
-import { healthRoutes } from '@/routes';
+import { handleError } from '@/middlewares';
+import { healthRoute } from '@/routes';
 
 const { PORT, NODE_ENV } = load();
 
@@ -13,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // API routes
-app.use('/api/health', healthRoutes);
+app.use('/api/health', healthRoute);
 
 if (NODE_ENV !== 'test') {
   app.listen(PORT, () => {
@@ -22,3 +23,6 @@ if (NODE_ENV !== 'test') {
     );
   });
 }
+
+// global error handler
+app.use(handleError);
