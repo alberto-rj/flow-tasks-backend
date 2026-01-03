@@ -2,13 +2,14 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 
 import { load } from '@/config/env';
-import { handleError } from '@/middlewares';
+import { handleError, notFound } from '@/middlewares';
 import { authRoute, healthRoute } from '@/routes';
 
 const { PORT, NODE_ENV } = load();
 
 export const app = express();
 
+// global middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -17,6 +18,12 @@ app.use(cookieParser());
 app.use('/api/auth', authRoute);
 app.use('/api/health', healthRoute);
 
+// middleware for not found routes
+//app.use('*', notFound);
+
+// middleware for global error handling
+app.use(handleError);
+
 if (NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(
@@ -24,6 +31,3 @@ if (NODE_ENV !== 'test') {
     );
   });
 }
-
-// global error handler
-app.use(handleError);

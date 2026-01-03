@@ -1,29 +1,24 @@
 import type { Response, NextFunction } from 'express';
-import { StatusCodes } from 'http-status-codes';
 
 import { getAccessTokenPayload, type AuthRequest } from '@/utils/jwt';
-import { error } from '@/utils/res-body';
+import { UnauthorizedError } from '@/utils/errors';
 
 export async function authenticate(
   req: AuthRequest,
-  res: Response,
+  _res: Response,
   next: NextFunction,
 ) {
   try {
     const accessToken = req.cookies.accessToken;
 
     if (!accessToken) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json(error('No token provided.'));
+      throw new UnauthorizedError('No token provided.');
     }
 
     const payload = getAccessTokenPayload(accessToken);
 
     if (!payload) {
-      return res
-        .status(StatusCodes.UNAUTHORIZED)
-        .json(error('Invalid or expired token.'));
+      return new UnauthorizedError('Invalid or expired token.');
     }
 
     req.payload = payload;

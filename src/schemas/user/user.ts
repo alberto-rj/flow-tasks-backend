@@ -18,6 +18,7 @@ export const UserNameSchema = z
   .string({
     error: 'name must be string.',
   })
+  .trim()
   .min(1, {
     error: 'name cannot be empty.',
   })
@@ -29,41 +30,32 @@ export const UserNameSchema = z
     title: 'name',
     description: 'Full name.',
     example: 'John Doe',
-    minimum: 1,
-    maximum: 125,
   });
 
 export const UserEmailSchema = z
   .email({
     error: 'Invalid email address.',
   })
-  .min(1, {
-    error: 'email cannot be empty.',
-  })
-  .max(220, {
-    error: 'email cannot exceed 220 characters.',
-  })
-  .transform((email) => email.toLowerCase())
+  .trim()
+  .toLowerCase()
   .openapi({
     type: 'string',
     title: 'email',
     description: 'E-email address.',
     example: 'johndoe@example.com',
-    minimum: 1,
-    maximum: 220,
   });
 
 export const UserPasswordSchema = z
   .string({
     error: 'password must be string.',
   })
-  .min(1, {
-    error: 'password cannot be empty.',
+  .trim()
+  .min(6, {
+    error: 'password must have at least 6 characters.',
   })
-  .max(220, {
-    error: 'password cannot exceed 220 characters.',
+  .max(20, {
+    error: 'password cannot exceed 20 characters.',
   })
-  .transform((email) => email.toLowerCase())
   .openapi({
     title: 'password',
     description: 'Strong password',

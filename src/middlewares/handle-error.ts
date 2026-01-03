@@ -1,13 +1,28 @@
-import type { Request, Response } from 'express';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+import type { NextFunction, Request, Response } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-export function handleError(error: Error, _req: Request, res: Response) {
-  const message = error.message || 'Something went wrong.';
+import { load } from '@/config/env';
+import { AppError } from '@/utils/errors';
+import { error } from '@/utils/res-body';
 
-  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
-    success: false,
-    error: {
-      message,
-    },
-  });
+const { NODE_ENV } = load();
+
+export function handleError(
+  err: Error,
+  _req: Request,
+  res: Response,
+  _next: NextFunction,
+) {
+  if (NODE_ENV === 'development') {
+    console.error(err);
+  }
+
+  if (err instanceof AppError) {
+    return res.status(err.statusCode).json(err.format());
+  }
+
+  const message = 'Something went wrong.';
+
+  res.status(StatusCodes.INTERNAL_SERVER_ERROR).json(error(message));
 }

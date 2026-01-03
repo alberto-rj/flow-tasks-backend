@@ -1,4 +1,6 @@
 import {
+  GlobalTodoRepository,
+  GlobalUserRepository,
   InMemoryTodoRepository,
   InMemoryUserRepository,
   type TodoRepository,
@@ -10,24 +12,33 @@ import {
   RegisterUseCase,
 } from '@/use-cases/auth';
 
-type RepositoryType = 'pg' | 'in-memory';
+type RepositoryType = 'pg' | 'in-memory' | 'global';
+
+const defaultUserRepository: RepositoryType = 'global';
+const defaultTodoRepository: RepositoryType = 'global';
 
 export function createUserRepository(
-  type: RepositoryType = 'pg',
+  type: RepositoryType = defaultUserRepository,
 ): UserRepository {
   if (type === 'in-memory') {
     return new InMemoryUserRepository();
   }
-  return new InMemoryUserRepository();
+  if (type === 'global') {
+    return new GlobalUserRepository();
+  }
+  return new GlobalUserRepository();
 }
 
 export function createTodoRepository(
-  type: RepositoryType = 'pg',
+  type: RepositoryType = defaultTodoRepository,
 ): TodoRepository {
   if (type === 'in-memory') {
     return new InMemoryTodoRepository();
   }
-  return new InMemoryTodoRepository();
+  if (type === 'global') {
+    return new GlobalTodoRepository();
+  }
+  return new GlobalTodoRepository();
 }
 
 export function createRegisterUseCase(

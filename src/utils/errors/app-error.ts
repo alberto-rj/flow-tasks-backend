@@ -1,14 +1,9 @@
 import { StatusCodes } from 'http-status-codes';
 
-import {
-  type ResBodyDetailedError,
-  type ResBodyError,
-  detailedError,
-  error,
-} from '../res-body';
+import { type ResBodyError, error } from '../res-body';
 
 export abstract class AppError<T> extends Error {
-  protected statusCode: number;
+  public statusCode: number;
 
   constructor(message: string, statusCode: number) {
     super(message);
@@ -28,6 +23,16 @@ export class UnauthorizedError extends AppError<ResBodyError> {
   }
 }
 
+export class BadRequestError extends AppError<ResBodyError> {
+  constructor(message: string) {
+    super(message, StatusCodes.BAD_REQUEST);
+  }
+
+  format(): ResBodyError {
+    return error(this.message);
+  }
+}
+
 export class ConflictError extends AppError<ResBodyError> {
   constructor(message: string) {
     super(message, StatusCodes.CONFLICT);
@@ -38,21 +43,12 @@ export class ConflictError extends AppError<ResBodyError> {
   }
 }
 
-export class ValidationError extends AppError<ResBodyDetailedError> {
-  protected details: { path: string; message: string }[];
-
-  constructor(
-    message: string,
-    details: {
-      path: string;
-      message: string;
-    }[],
-  ) {
-    super(message, StatusCodes.UNPROCESSABLE_ENTITY);
-    this.details = details;
+export class ResourceNotFoundError extends AppError<ResBodyError> {
+  constructor(message: string = 'Resource not found.') {
+    super(message, StatusCodes.NOT_FOUND);
   }
 
-  format(): ResBodyDetailedError {
-    return detailedError(this.details);
+  format(): ResBodyError {
+    return error(this.message);
   }
 }

@@ -21,11 +21,15 @@ export async function register(
     const data = req.body as RegisterDto;
     const useCase = createRegisterUseCase();
     const result = await useCase.execute({ data });
-    const { accessToken, user } = useCase.parse(result);
+    const { user } = useCase.parse(result);
 
+    const accessToken = getAccessToken({
+      userId: user.id,
+      userEmail: user.email,
+    });
     setAccessTokenCookie(res, accessToken);
 
-    res.status(StatusCodes.OK).json(item('user', user));
+    res.status(StatusCodes.CREATED).json(item('user', user));
   } catch (error) {
     next(error);
   }
@@ -36,8 +40,12 @@ export async function login(req: Request, res: Response, next: NextFunction) {
     const data = req.body as LoginDto;
     const useCase = createLoginUseCase();
     const result = await useCase.execute({ data });
-    const { accessToken, user } = useCase.parse(result);
+    const { user } = useCase.parse(result);
 
+    const accessToken = getAccessToken({
+      userId: user.id,
+      userEmail: user.email,
+    });
     setAccessTokenCookie(res, accessToken);
 
     res.status(StatusCodes.OK).json(item('user', user));

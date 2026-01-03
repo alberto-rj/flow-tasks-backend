@@ -7,14 +7,19 @@ export type ResBodyError = {
   };
 };
 
-export type ResBodyDetailedError = {
+export type ResBodyValidationError = {
   success: boolean;
   data: {
     error: {
-      details: {
-        path: string;
-        message: string;
-      }[];
+      properties:
+        | {
+            [x: string]:
+              | {
+                  errors: string[];
+                }
+              | undefined;
+          }
+        | undefined;
     };
   };
 };
@@ -51,17 +56,22 @@ export function error(message: string): ResBodyError {
   };
 }
 
-export function detailedError(
-  details: {
-    path: string;
-    message: string;
-  }[],
-): ResBodyDetailedError {
+export function validationError(
+  properties:
+    | {
+        [x: string]:
+          | {
+              errors: string[];
+            }
+          | undefined;
+      }
+    | undefined,
+): ResBodyValidationError {
   return {
     success: false,
     data: {
       error: {
-        details,
+        properties,
       },
     },
   };
