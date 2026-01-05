@@ -8,7 +8,7 @@ import { error } from '@/utils/res-body';
 
 const { NODE_ENV } = load();
 
-export function handleError(
+export function errorHandler(
   err: Error,
   _req: Request,
   res: Response,

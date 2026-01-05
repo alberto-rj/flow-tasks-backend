@@ -2,9 +2,8 @@ import cookieParser from 'cookie-parser';
 import express from 'express';
 
 import { load } from '@/config/env';
-import { handleError, notFound } from '@/middlewares';
-import { authRoute, healthRoute } from '@/routes';
-import { todosRoute } from './routes/todos.route';
+import { errorHandler, notFoundHandler } from '@/middlewares';
+import { authRoute, healthRoute, todosRoute } from '@/routes';
 
 const { PORT, NODE_ENV } = load();
 
@@ -21,10 +20,10 @@ app.use('/api/todos', todosRoute);
 app.use('/api/health', healthRoute);
 
 // middleware for not found routes
-//app.use('*', notFound);
+app.use(notFoundHandler);
 
 // middleware for global error handling
-app.use(handleError);
+app.use(errorHandler);
 
 if (NODE_ENV !== 'test') {
   app.listen(PORT, () => {
