@@ -1,4 +1,4 @@
 export { authenticate } from './authenticate';
-export { handleError } from './handle-error';
-export { notFound } from './not-found';
+export { errorHandler } from './error-handler';
+export { notFoundHandler } from './not-found-handler';
 export { validateRequest } from './validate-request';
