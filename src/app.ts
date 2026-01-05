@@ -4,18 +4,20 @@ import express from 'express';
 import { load } from '@/config/env';
 import { handleError, notFound } from '@/middlewares';
 import { authRoute, healthRoute } from '@/routes';
+import { todosRoute } from './routes/todos.route';
 
 const { PORT, NODE_ENV } = load();
 
 export const app = express();
 
 // global middlewares
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
 
 // API routes
 app.use('/api/auth', authRoute);
+app.use('/api/todos', todosRoute);
 app.use('/api/health', healthRoute);
 
 // middleware for not found routes

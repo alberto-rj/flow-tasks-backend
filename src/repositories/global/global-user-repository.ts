@@ -2,14 +2,18 @@ import { randomUUID } from 'node:crypto';
 
 import type { User } from '@/entities';
 import type { UserRepository } from '@/repositories';
-import type { UserCreateParams } from '@/schemas/user/user';
+import type {
+  UserCreateDto,
+  UserFindByEmailDto,
+  UserFindByIdDto,
+} from '@/dtos/user';
 
 const items: Map<string, User> = new Map();
 
 export class GlobalUserRepository implements UserRepository {
   constructor() {}
 
-  async create(params: UserCreateParams) {
+  async create(params: UserCreateDto) {
     const newItem: User = {
       ...params,
       id: randomUUID(),
@@ -22,7 +26,7 @@ export class GlobalUserRepository implements UserRepository {
     return newItem;
   }
 
-  async findById({ id }: { id: string }) {
+  async findById({ id }: UserFindByIdDto) {
     const foundItem = items.get(id);
 
     if (typeof foundItem === 'undefined') {
@@ -32,7 +36,7 @@ export class GlobalUserRepository implements UserRepository {
     return foundItem;
   }
 
-  async findByEmail({ email }: { email: string }) {
+  async findByEmail({ email }: UserFindByEmailDto) {
     for (const [, item] of items) {
       if (item.email === email) {
         return item;

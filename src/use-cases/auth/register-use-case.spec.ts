@@ -9,7 +9,7 @@ import {
 } from '@/use-cases/auth';
 import { ExistingEmailError } from '@/utils/errors';
 import { hasCorrectHash } from '@/utils/password';
-import { createRegisterDto, createUserRepository } from '@/utils/test';
+import { newRegisterDto, newUserRepository } from '@/utils/test';
 
 describe('[Use Case] Auth / Register', () => {
   let sut: RegisterUseCase;
@@ -18,9 +18,9 @@ describe('[Use Case] Auth / Register', () => {
   let data: RegisterDto;
 
   beforeEach(async () => {
-    userRepository = createUserRepository();
+    userRepository = newUserRepository();
     sut = new RegisterUseCase(userRepository);
-    data = createRegisterDto();
+    data = newRegisterDto();
     result = await sut.execute({ data });
   });
 

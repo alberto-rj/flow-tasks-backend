@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 
 import { ProfileUseCase } from '@/use-cases/auth';
 import { ResourceNotFoundError } from '@/utils/errors';
-import { createRegisterDto, createUserRepository } from '@/utils/test';
+import { newRegisterDto, newUserRepository } from '@/utils/test';
 import { getHash } from '@/utils/password';
 import type { User } from '@/entities';
 
@@ -10,9 +10,9 @@ let sut: ProfileUseCase;
 let createdUser: User;
 
 beforeEach(async () => {
-  const userRepository = createUserRepository();
+  const userRepository = newUserRepository();
   sut = new ProfileUseCase(userRepository);
-  const data = createRegisterDto();
+  const data = newRegisterDto();
   const passwordHash = await getHash(data.password);
   createdUser = await userRepository.create({
     ...data,

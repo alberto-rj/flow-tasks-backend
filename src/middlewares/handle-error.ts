@@ -15,7 +15,7 @@ export function handleError(
   _next: NextFunction,
 ) {
   if (NODE_ENV === 'development') {
-    console.error(err);
+    console.log(err);
   }
 
   if (err instanceof AppError) {

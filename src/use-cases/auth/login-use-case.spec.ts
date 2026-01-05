@@ -7,7 +7,7 @@ import {
 } from '@/use-cases/auth';
 import type { UserRepository } from '@/repositories';
 import { InvalidCredentialsError } from '@/utils/errors';
-import { createRegisterDto, createUserRepository } from '@/utils/test';
+import { newRegisterDto, newUserRepository } from '@/utils/test';
 import type { RegisterDto } from '@/dtos/auth';
 import { getHash } from '@/utils/password';
 
@@ -16,9 +16,9 @@ let userRepository: UserRepository;
 let data: RegisterDto;
 
 beforeEach(async () => {
-  userRepository = createUserRepository();
+  userRepository = newUserRepository();
   sut = new LoginUseCase(userRepository);
-  data = createRegisterDto();
+  data = newRegisterDto();
   const passwordHash = await getHash(data.password);
   await userRepository.create({ ...data, password: passwordHash });
 });
