@@ -8,8 +8,10 @@ import type {
   UserFindByIdDto,
 } from '@/dtos/user';
 
-export class InMemoryUserRepository implements UserRepository {
-  private items: Map<string, User> = new Map();
+const items: Map<string, User> = new Map();
+
+export class GlobalUserRepository implements UserRepository {
+  constructor() {}
 
   async create(params: UserCreateDto) {
     const newItem: User = {
@@ -19,13 +21,13 @@ export class InMemoryUserRepository implements UserRepository {
       updatedAt: new Date(),
     };
 
-    this.items.set(newItem.id, newItem);
+    items.set(newItem.id, newItem);
 
     return newItem;
   }
 
   async findById({ id }: UserFindByIdDto) {
-    const foundItem = this.items.get(id);
+    const foundItem = items.get(id);
 
     if (typeof foundItem === 'undefined') {
       return null;
@@ -35,7 +37,7 @@ export class InMemoryUserRepository implements UserRepository {
   }
 
   async findByEmail({ email }: UserFindByEmailDto) {
-    for (const [, item] of this.items) {
+    for (const [, item] of items) {
       if (item.email === email) {
         return item;
       }

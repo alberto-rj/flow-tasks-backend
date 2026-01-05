@@ -1,4 +1,6 @@
-export class ExistingOrderError extends Error {
+import { ConflictError } from './app-error';
+
+export class ExistingOrderError extends ConflictError {
   constructor(message: string = 'Existing order.') {
     super(message);
   }

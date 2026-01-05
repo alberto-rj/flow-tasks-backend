@@ -22,6 +22,7 @@ export class ProfileUseCase {
       throw new ResourceNotFoundError();
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = foundUser;
     const userDto: UserDto = {
       ...userWithoutPassword,

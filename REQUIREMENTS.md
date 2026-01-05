@@ -102,10 +102,10 @@
 
 #### RF-012: Contar Todos
 
-- [ ] O sistema deve retornar contagem total de todos
-- [ ] O sistema deve retornar contagem de todos ativos
-- [ ] O sistema deve retornar contagem de todos completos
-- [ ] O sistema deve calcular contagens apenas para utilizador autenticado
+- [x] O sistema deve retornar contagem total de todos
+- [x] O sistema deve retornar contagem de todos ativos
+- [x] O sistema deve retornar contagem de todos completos
+- [x] O sistema deve calcular contagens apenas para utilizador autenticado
 
 ---
 

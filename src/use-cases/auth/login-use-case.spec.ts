@@ -7,7 +7,7 @@ import {
 } from '@/use-cases/auth';
 import type { UserRepository } from '@/repositories';
 import { InvalidCredentialsError } from '@/utils/errors';
-import { createRegisterDto, createUserRepository, isJWT } from '@/utils/test';
+import { newRegisterDto, newUserRepository } from '@/utils/test';
 import type { RegisterDto } from '@/dtos/auth';
 import { getHash } from '@/utils/password';
 
@@ -16,16 +16,16 @@ let userRepository: UserRepository;
 let data: RegisterDto;
 
 beforeEach(async () => {
-  userRepository = createUserRepository();
+  userRepository = newUserRepository();
   sut = new LoginUseCase(userRepository);
-  data = createRegisterDto();
+  data = newRegisterDto();
   const passwordHash = await getHash(data.password);
   await userRepository.create({ ...data, password: passwordHash });
 });
 
 describe('[Use Case] Auth / Login', () => {
   describe('[function] execute', () => {
-    describe('Success cases', () => {
+    describe('[success cases]', () => {
       it('should login a user successfully', async () => {
         const result = await sut.execute({ data });
 
@@ -37,15 +37,9 @@ describe('[Use Case] Auth / Login', () => {
           }),
         );
       });
-
-      it('should return a valid JWT access token', async () => {
-        const { accessToken } = await sut.execute({ data });
-        const isValid = isJWT(accessToken);
-        expect(isValid).toBe(true);
-      });
     });
 
-    describe('Failure cases', () => {
+    describe('[failure cases]', () => {
       it('should throw InvalidCredentialsError when the user email is incorrect', async () => {
         await expect(() =>
           sut.execute({
@@ -79,10 +73,8 @@ describe('[Use Case] Auth / Login', () => {
       parsedResult = sut.parse(result);
     });
 
-    it('should return an object with the user data and access token', () => {
+    it('should return an object with the user data', () => {
       expect(parsedResult).toEqual(expect.any(Object));
-
-      expect(isJWT(parsedResult.accessToken)).toBe(true);
 
       expect(parsedResult.user).toEqual(
         expect.objectContaining({

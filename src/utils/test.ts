@@ -3,10 +3,7 @@ import { randomUUID } from 'node:crypto';
 import { load } from '@/config/env';
 import type { RegisterDto } from '@/dtos/auth';
 import type { TodoCreateDto } from '@/dtos/todo';
-import {
-  createTodoRepository,
-  createUserRepository as factoryCreateUserRepository,
-} from './factory';
+import { makeTodoRepository, makeUserRepository } from './factory';
 import { isoDateSchema } from './schemas';
 import type { TodoRepository } from '@/repositories';
 import type { Todo } from '@/entities';
@@ -109,7 +106,7 @@ export async function sleep() {
   await new Promise((resolve) => setTimeout(resolve, delay));
 }
 
-export function createRegisterDto(): RegisterDto {
+export function newRegisterDto(): RegisterDto {
   return {
     name: 'John Doe',
     email: 'johndoe@example.com',
@@ -124,12 +121,12 @@ export function newTodoCreateDto(): TodoCreateDto {
   };
 }
 
-export function createUserRepository() {
-  return factoryCreateUserRepository('in-memory');
+export function newUserRepository() {
+  return makeUserRepository('in-memory');
 }
 
 export function newTodoRepository() {
-  return createTodoRepository('in-memory');
+  return makeTodoRepository('in-memory');
 }
 
 export function isJWT(value: string) {

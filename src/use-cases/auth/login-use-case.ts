@@ -3,7 +3,6 @@ import type { UserDto } from '@/dtos/user';
 import type { User } from '@/entities';
 import type { UserRepository } from '@/repositories';
 import { InvalidCredentialsError } from '@/utils/errors';
-import { getAccessToken } from '@/utils/jwt';
 import { hasCorrectHash } from '@/utils/password';
 
 export interface LoginUseCaseParams {
@@ -12,12 +11,10 @@ export interface LoginUseCaseParams {
 
 export interface LoginUseCaseResult {
   user: User;
-  accessToken: string;
 }
 
 export interface LoginUseCaseParseResult {
   user: UserDto;
-  accessToken: string;
 }
 
 export class LoginUseCase {
@@ -43,15 +40,11 @@ export class LoginUseCase {
       throw new InvalidCredentialsError();
     }
 
-    const accessToken = getAccessToken({
-      userId: foundUser.id,
-      userEmail: foundUser.email,
-    });
-
-    return { user: foundUser, accessToken };
+    return { user: foundUser };
   }
 
-  parse({ user, accessToken }: LoginUseCaseResult): LoginUseCaseParseResult {
+  parse({ user }: LoginUseCaseResult): LoginUseCaseParseResult {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { password, ...userWithoutPassword } = user;
     const userDto: UserDto = {
       ...userWithoutPassword,
@@ -61,7 +54,6 @@ export class LoginUseCase {
 
     return {
       user: userDto,
-      accessToken,
     };
   }
 }

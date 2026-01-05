@@ -1,12 +1,14 @@
 import {
   ApiCreateTodoBodySchema,
   ApiUpdateTodoBodySchema,
-  ApiReorderTodoListSchema,
+  ApiReorderTodoListBodySchema,
   ApiTodoSchema,
   ApiTodoFilterSchema,
   ApiTodoSortBySchema,
   ApiTodoOrderSchema,
   ApiTodoQuerySchema,
+  ApiListTodoQuerySchema,
+  ApiDeleteTodoListQuerySchema,
 } from '@/schemas/todo';
 import z from '@/config/zod';
 
@@ -27,8 +29,9 @@ export type TodoDeleteByIdDto = {
   userId: string;
 };
 
-export type TodoDeleteManyByUserIdDto = {
-  filter?: TodoFilterDto;
+export type TodoDeleteManyByUserIdDto = z.infer<
+  typeof ApiDeleteTodoListQuerySchema
+> & {
   userId: string;
 };
 
@@ -42,11 +45,7 @@ export type TodoFindByUserIdWithOrderDto = {
   order: number;
 };
 
-export type TodoFindManyByUserIdDto = {
-  filter?: TodoFilterDto;
-  sortBy?: TodoSortByDto;
-  order?: TodoOrderDto;
-  query?: TodoQueryDto;
+export type TodoFindManyByUserIdDto = z.infer<typeof ApiListTodoQuerySchema> & {
   userId: string;
 };
 
@@ -62,7 +61,7 @@ export type TodoReorderByIdDto = {
 };
 
 export type TodoReorderManyByUserIdDto = z.infer<
-  typeof ApiReorderTodoListSchema
+  typeof ApiReorderTodoListBodySchema
 > & {
   userId: string;
 };
