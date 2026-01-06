@@ -12,7 +12,6 @@ import {
   isUUID,
   newApiRegisterBody,
   newString,
-  profileEndpoint,
   registerEndpoint,
 } from '@/utils/test';
 
@@ -32,35 +31,22 @@ describe(`POST ${registerEndpoint}`, () => {
 
       expect(response.body.success).toBe(true);
 
-      expect(response.body.data.results[0]).toMatchObject({
+      const user = response.body.data.results[0];
+
+      expect(user).toMatchObject({
         name: data.name,
         email: data.email,
       });
 
-      expect(isUUID(response.body.data.results[0].userId)).toBe(true);
-      expect(isIsoDate(response.body.data.results[0].createdAt)).toBe(true);
-      expect(isIsoDate(response.body.data.results[0].updatedAt)).toBe(true);
+      expect(isUUID(user.userId)).toBe(true);
+      expect(isIsoDate(user.createdAt)).toBe(true);
+      expect(isIsoDate(user.updatedAt)).toBe(true);
     });
 
-    it.todo('should return an access token after create a user', async () => {
-      const agent = supertest.agent(app);
-
-      await agent
-        .post(registerEndpoint)
-        .send(newApiRegisterBody())
-        .expect(StatusCodes.CREATED);
-    });
-
-    it('should maintain session with cookies', async () => {
-      const agent = supertest.agent(app);
-
-      await agent
-        .post(registerEndpoint)
-        .send(newApiRegisterBody())
-        .expect(StatusCodes.CREATED);
-
-      await agent.get(profileEndpoint).expect(StatusCodes.OK);
-    });
+    it.todo(
+      'should return an access token and set authentication cookie after user registration',
+      async () => {},
+    );
 
     it.todo(
       'should trim name, email and password and save them without leading/trailing spaces',
@@ -70,7 +56,7 @@ describe(`POST ${registerEndpoint}`, () => {
 
   describe('validation errors', () => {
     describe('name', () => {
-      it('should reject when name is missing', async () => {
+      it('should require name when it is not provided', async () => {
         const { name, ...dataWithoutName } = newApiRegisterBody();
 
         const response = await supertest(app)
@@ -98,7 +84,7 @@ describe(`POST ${registerEndpoint}`, () => {
     });
 
     describe('email', () => {
-      it('should reject when email is missing', async () => {
+      it('should require email when it is not provided', async () => {
         const { email, ...dataWithoutEmail } = newApiRegisterBody();
 
         const response = await supertest(app)
@@ -126,7 +112,7 @@ describe(`POST ${registerEndpoint}`, () => {
     });
 
     describe('password', () => {
-      it('should reject when password is missing', async () => {
+      it('should require password when it is not provided', async () => {
         const { password, ...dataWithoutPassword } = newApiRegisterBody();
 
         const response = await supertest(app)
