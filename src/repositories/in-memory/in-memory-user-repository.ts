@@ -42,4 +42,8 @@ export class InMemoryUserRepository implements UserRepository {
 
     return null;
   }
+
+  async clear() {
+    this.items.clear();
+  }
 }

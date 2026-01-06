@@ -208,6 +208,10 @@ export class InMemoryTodoRepository implements TodoRepository {
     };
   }
 
+  async clear() {
+    this.items.clear();
+  }
+
   private getItemsByUserId(userId: string) {
     const userItems: Todo[] = [];
 

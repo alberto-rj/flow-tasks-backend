@@ -42,4 +42,8 @@ export class GlobalUserRepository implements UserRepository {
 
     return null;
   }
+
+  async clear() {
+    items.clear();
+  }
 }

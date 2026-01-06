@@ -208,6 +208,10 @@ export class GlobalTodoRepository implements TodoRepository {
     };
   }
 
+  async clear() {
+    items.clear();
+  }
+
   private getItemsByUserId(userId: string) {
     const userItems: Todo[] = [];
 

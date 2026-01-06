@@ -34,4 +34,6 @@ export interface TodoRepository {
   toggleById: (params: TodoToggleByIdDto) => Promise<Todo | null>;
 
   getStats: (params: TodoGetStatsByUserIdDto) => Promise<TodoStats>;
+
+  clear: () => Promise<void>;
 }
