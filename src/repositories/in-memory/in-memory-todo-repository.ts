@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import type {
   TodoCreateDto,
   TodoDeleteByIdDto,
@@ -18,6 +16,7 @@ import type {
 } from '@/dtos/todo';
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
+import { uuid } from '@/utils/uuid';
 
 export class InMemoryTodoRepository implements TodoRepository {
   private items: Map<string, Todo> = new Map();
@@ -26,19 +25,19 @@ export class InMemoryTodoRepository implements TodoRepository {
     const newItem: Todo = {
       title,
       userId,
-      id: randomUUID(),
+      todoId: uuid(),
       order: this.getNexOrder(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    this.items.set(newItem.id, newItem);
+    this.items.set(newItem.todoId, newItem);
 
     return newItem;
   }
 
-  async findById({ id, userId }: TodoFindByIdDto) {
-    const foundItem = this.items.get(id);
+  async findById({ todoId, userId }: TodoFindByIdDto) {
+    const foundItem = this.items.get(todoId);
 
     if (typeof foundItem === 'undefined') {
       return null;
@@ -86,8 +85,8 @@ export class InMemoryTodoRepository implements TodoRepository {
     return sortedItems;
   }
 
-  async deleteById({ id, userId }: TodoDeleteByIdDto) {
-    const item = this.items.get(id);
+  async deleteById({ todoId, userId }: TodoDeleteByIdDto) {
+    const item = this.items.get(todoId);
 
     if (typeof item === 'undefined') {
       return null;
@@ -97,7 +96,7 @@ export class InMemoryTodoRepository implements TodoRepository {
       return null;
     }
 
-    this.items.delete(id);
+    this.items.delete(todoId);
 
     return item;
   }
@@ -111,11 +110,11 @@ export class InMemoryTodoRepository implements TodoRepository {
     this.filterItems({
       items: userItems,
       filter,
-    }).forEach((item) => this.items.delete(item.id));
+    }).forEach((item) => this.items.delete(item.todoId));
   }
 
-  async updateById({ id, title, order, userId }: TodoUpdateByIdDto) {
-    const item = this.items.get(id);
+  async updateById({ todoId, title, order, userId }: TodoUpdateByIdDto) {
+    const item = this.items.get(todoId);
 
     if (typeof item === 'undefined') {
       return null;
@@ -138,13 +137,13 @@ export class InMemoryTodoRepository implements TodoRepository {
       newItem = { ...item, title, updatedAt: new Date() };
     }
 
-    this.items.set(id, newItem);
+    this.items.set(todoId, newItem);
 
     return newItem;
   }
 
-  async toggleById({ id, userId }: TodoToggleByIdDto) {
-    const item = this.items.get(id);
+  async toggleById({ todoId, userId }: TodoToggleByIdDto) {
+    const item = this.items.get(todoId);
 
     const isExistingItem =
       typeof item !== 'undefined' && item.userId === userId;
@@ -169,13 +168,13 @@ export class InMemoryTodoRepository implements TodoRepository {
       };
     }
 
-    this.items.set(id, newItem);
+    this.items.set(todoId, newItem);
 
     return newItem;
   }
 
-  async reorderById({ id, order, userId }: TodoReorderByIdDto) {
-    const item = this.items.get(id);
+  async reorderById({ todoId, order, userId }: TodoReorderByIdDto) {
+    const item = this.items.get(todoId);
     const isExistingItem = item && item.userId === userId;
 
     if (!isExistingItem) {
@@ -188,7 +187,7 @@ export class InMemoryTodoRepository implements TodoRepository {
       updatedAt: new Date(),
     };
 
-    this.items.set(id, newItem);
+    this.items.set(todoId, newItem);
 
     return newItem;
   }

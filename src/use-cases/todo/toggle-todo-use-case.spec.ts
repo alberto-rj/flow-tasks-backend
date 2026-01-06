@@ -26,14 +26,14 @@ describe('[Use Case] Todo / Toggle', () => {
 
         const { item } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
 
         expect(item).toEqual(
           expect.objectContaining({
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId: createdTodo.userId,
             title: createdTodo.title,
           }),
@@ -49,21 +49,21 @@ describe('[Use Case] Todo / Toggle', () => {
 
         await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
 
         const { item } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
 
         expect(item).toEqual(
           expect.objectContaining({
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId: createdTodo.userId,
             title: createdTodo.title,
           }),
@@ -79,14 +79,14 @@ describe('[Use Case] Todo / Toggle', () => {
 
         const { item } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
 
         expect(item).toEqual(
           expect.objectContaining({
-            id: expect.any(String),
+            todoId: expect.any(String),
             userId: expect.any(String),
             title: expect.any(String),
             order: expect.any(Number),
@@ -105,7 +105,7 @@ describe('[Use Case] Todo / Toggle', () => {
 
         const { item } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
@@ -130,7 +130,7 @@ describe('[Use Case] Todo / Toggle', () => {
 
         const { item } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
@@ -147,14 +147,14 @@ describe('[Use Case] Todo / Toggle', () => {
 
         const { item } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
 
         expect(item).toEqual(
           expect.objectContaining({
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId: createdTodo.userId,
             title: createdTodo.title,
             order: createdTodo.order,
@@ -172,7 +172,7 @@ describe('[Use Case] Todo / Toggle', () => {
         // Toggle 1: active -> completed
         const { item: firstToggle } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
@@ -181,7 +181,7 @@ describe('[Use Case] Todo / Toggle', () => {
         // Toggle 2: completed -> active
         const { item: secondToggle } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
@@ -190,7 +190,7 @@ describe('[Use Case] Todo / Toggle', () => {
         // Toggle 3: active -> completed
         const { item: thirdToggle } = await sut.execute({
           data: {
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           },
         });
@@ -203,7 +203,7 @@ describe('[Use Case] Todo / Toggle', () => {
         await expect(
           sut.execute({
             data: {
-              id: 'non-existing-todo-id',
+              todoId: 'non-existing-todo-id',
               userId,
             },
           }),
@@ -219,7 +219,7 @@ describe('[Use Case] Todo / Toggle', () => {
         await expect(
           sut.execute({
             data: {
-              id: anotherTodo.id,
+              todoId: anotherTodo.todoId,
               userId,
             },
           }),

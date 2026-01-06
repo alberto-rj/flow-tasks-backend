@@ -4,7 +4,7 @@ import { ApiUserCreateBodySchema, ApiUserSchema } from '@/schemas/user';
 export type UserCreateDto = z.infer<typeof ApiUserCreateBodySchema>;
 
 export type UserFindByIdDto = {
-  id: string;
+  userId: string;
 };
 
 export type UserFindByEmailDto = {

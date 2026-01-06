@@ -11,19 +11,19 @@ import { newRegisterDto, newUserRepository } from '@/utils/test';
 import type { RegisterDto } from '@/dtos/auth';
 import { getHash } from '@/utils/password';
 
-let sut: LoginUseCase;
-let userRepository: UserRepository;
-let data: RegisterDto;
-
-beforeEach(async () => {
-  userRepository = newUserRepository();
-  sut = new LoginUseCase(userRepository);
-  data = newRegisterDto();
-  const passwordHash = await getHash(data.password);
-  await userRepository.create({ ...data, password: passwordHash });
-});
-
 describe('[Use Case] Auth / Login', () => {
+  let sut: LoginUseCase;
+  let userRepository: UserRepository;
+  let data: RegisterDto;
+
+  beforeEach(async () => {
+    userRepository = newUserRepository();
+    sut = new LoginUseCase(userRepository);
+    data = newRegisterDto();
+    const passwordHash = await getHash(data.password);
+    await userRepository.create({ ...data, password: passwordHash });
+  });
+
   describe('[function] execute', () => {
     describe('[success cases]', () => {
       it('should login a user successfully', async () => {
@@ -31,7 +31,7 @@ describe('[Use Case] Auth / Login', () => {
 
         expect(result.user).toEqual(
           expect.objectContaining({
-            id: expect.any(String),
+            userId: expect.any(String),
             name: data.name,
             email: data.email,
           }),
@@ -78,7 +78,7 @@ describe('[Use Case] Auth / Login', () => {
 
       expect(parsedResult.user).toEqual(
         expect.objectContaining({
-          id: result.user.id,
+          userId: result.user.userId,
           name: result.user.name,
           email: result.user.email,
         }),

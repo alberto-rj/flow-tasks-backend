@@ -1,6 +1,7 @@
 import type { UserDto } from '@/dtos/user';
 import type { UserRepository } from '@/repositories';
 import { ResourceNotFoundError } from '@/utils/errors';
+import { toUserDto } from './to-user-dto';
 
 interface ProfileUseCaseParams {
   userId: string;
@@ -16,19 +17,13 @@ export class ProfileUseCase {
   async execute({
     userId,
   }: ProfileUseCaseParams): Promise<ProfileUseCaseResult> {
-    const foundUser = await this.userRepository.findById({ id: userId });
+    const foundUser = await this.userRepository.findById({ userId });
 
     if (!foundUser) {
       throw new ResourceNotFoundError();
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = foundUser;
-    const userDto: UserDto = {
-      ...userWithoutPassword,
-      createdAt: foundUser.createdAt.toISOString(),
-      updatedAt: foundUser.updatedAt.toISOString(),
-    };
+    const userDto = toUserDto(foundUser);
 
     return {
       user: userDto,

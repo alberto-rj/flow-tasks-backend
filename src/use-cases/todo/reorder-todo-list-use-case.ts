@@ -12,7 +12,7 @@ export class ReorderTodoListUseCase {
   async execute({
     data: { userId, todos },
   }: ReorderTodoListUseCaseParams): Promise<void> {
-    for (const { id, order } of todos) {
+    for (const { todoId, order } of todos) {
       const foundTodoWithOrder =
         await this.todoRepository.findByUserIdWithOrder({
           userId,
@@ -20,14 +20,14 @@ export class ReorderTodoListUseCase {
         });
 
       const isExistingTodoOrder =
-        foundTodoWithOrder !== null && foundTodoWithOrder.id !== id;
+        foundTodoWithOrder !== null && foundTodoWithOrder.todoId !== todoId;
 
       if (isExistingTodoOrder) {
         throw new ExistingOrderError();
       }
 
       const updatedTodo = await this.todoRepository.reorderById({
-        id,
+        todoId,
         order,
         userId,
       });

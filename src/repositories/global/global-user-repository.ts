@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import type { User } from '@/entities';
 import type { UserRepository } from '@/repositories';
 import type {
@@ -7,6 +5,7 @@ import type {
   UserFindByEmailDto,
   UserFindByIdDto,
 } from '@/dtos/user';
+import { uuid } from '@/utils/uuid';
 
 const items: Map<string, User> = new Map();
 
@@ -16,7 +15,7 @@ export class GlobalUserRepository implements UserRepository {
   async create(params: UserCreateDto) {
     const newItem: User = {
       ...params,
-      id: randomUUID(),
+      id: uuid(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };

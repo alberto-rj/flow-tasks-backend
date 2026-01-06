@@ -23,12 +23,14 @@ beforeEach(async () => {
 describe('[Use Case] Profile', () => {
   describe('Success cases', () => {
     it('should return the profile of for an existing user', async () => {
-      const result = await sut.execute({ userId: createdUser.id });
+      const result = await sut.execute({
+        userId: createdUser.userId,
+      });
 
       expect(result).toHaveProperty('user');
       expect(result.user).toEqual(
         expect.objectContaining({
-          id: createdUser.id,
+          userId: createdUser.userId,
           name: createdUser.name,
           email: createdUser.email,
         }),
@@ -36,7 +38,9 @@ describe('[Use Case] Profile', () => {
     });
 
     it('should not expose the password', async () => {
-      const result = await sut.execute({ userId: createdUser.id });
+      const result = await sut.execute({
+        userId: createdUser.userId,
+      });
 
       expect(result.user).not.toHaveProperty('password');
     });
@@ -45,7 +49,9 @@ describe('[Use Case] Profile', () => {
   describe('Failure cases', () => {
     it('should not allow retrieving a profile for a non-existing user', async () => {
       await expect(() =>
-        sut.execute({ userId: 'non-existing-user-id' }),
+        sut.execute({
+          userId: 'non-existing-user-id',
+        }),
       ).rejects.toBeInstanceOf(ResourceNotFoundError);
     });
   });

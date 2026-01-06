@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import type { User } from '@/entities';
 import type { UserRepository } from '@/repositories';
 import type {
@@ -7,6 +5,7 @@ import type {
   UserFindByEmailDto,
   UserFindByIdDto,
 } from '@/dtos/user';
+import { uuid } from '@/utils/uuid';
 
 export class InMemoryUserRepository implements UserRepository {
   private items: Map<string, User> = new Map();
@@ -14,18 +13,18 @@ export class InMemoryUserRepository implements UserRepository {
   async create(params: UserCreateDto) {
     const newItem: User = {
       ...params,
-      id: randomUUID(),
+      userId: uuid(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    this.items.set(newItem.id, newItem);
+    this.items.set(newItem.userId, newItem);
 
     return newItem;
   }
 
-  async findById({ id }: UserFindByIdDto) {
-    const foundItem = this.items.get(id);
+  async findById({ userId }: UserFindByIdDto) {
+    const foundItem = this.items.get(userId);
 
     if (typeof foundItem === 'undefined') {
       return null;

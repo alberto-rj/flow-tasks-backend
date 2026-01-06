@@ -184,7 +184,7 @@
 - [x] Filtro `'all'` retorna todos os todos
 - [x] Filtro `'active'` retorna apenas todos nao completados
 - [x] Filtro `'completed'` retorna apenas todos completados
-- [ ] Filtro inválido deve retornar erro 400
+- [x] Filtro inválido deve retornar erro 422
 
 #### RN-010: Privacidade de Dados
 
@@ -373,9 +373,10 @@
 {
   "success": true,
   "data": {
-    /* payload */
-  },
-  "message": "Optional success message"
+    "results": [
+      /* payload (s) */
+    ]
+  }
 }
 ```
 
@@ -384,22 +385,36 @@
 ```json
 {
   "success": false,
-  "message": "Validation failed",
-  "errors": [
-    {
-      "field": "email",
-      "message": "Invalid email format"
+  "data": {
+    "error": {
+      "properties": {
+        "email": {
+          "errors": ["email must include @", "email must be valid."]
+        },
+        "password": {
+          "errors": [
+            "password must have at least 8 characters.",
+            "password must have at least 1 uppercase.",
+            "password must have at least 1 lowercase."
+            "password must have at least 1 digit."
+          ]
+        }
+      }
     }
-  ]
+  }
 }
 ```
 
-### Erro Genérico
+### Erro normal
 
 ```json
 {
   "success": false,
-  "message": "Error message here"
+  "data": {
+    "error": {
+      "message": "Existing email."
+    }
+  }
 }
 ```
 

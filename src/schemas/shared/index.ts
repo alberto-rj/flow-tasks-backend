@@ -1,7 +1,6 @@
 import z from '@/config/zod';
 
 export const CreatedAtSchema = z.string().openapi({
-  type: 'string',
   format: 'datetime',
   title: 'createdAt',
   description: 'Creation date.',
@@ -9,7 +8,6 @@ export const CreatedAtSchema = z.string().openapi({
 });
 
 export const UpdatedAtSchema = z.string().openapi({
-  type: 'string',
   format: 'datetime',
   title: 'updatedAt',
   description: 'Last modified date.',
