@@ -117,8 +117,6 @@
 
 - [ ] Email deve ter formato válido (conter @ e domínio)
 - [ ] Email deve ser único no sistema
-- [ ] Email deve ser convertido para lowercase antes de salvar
-- [ ] Email não pode conter espaços
 
 #### RN-002: Validação de Senha
 
@@ -322,14 +320,14 @@
 - [ ] Respostas devem ser consistentes (sempre JSON)
 - [ ] Erros devem ter formato padronizado: {success, message, errors}
 - [ ] Status codes HTTP devem ser apropriados:
-  - [ ] 200: Sucesso
-  - [ ] 201: Criado
-  - [ ] 400: Bad Request
-  - [ ] 401: Não autenticado
+  - [x] 200: Sucesso
+  - [x] 201: Criado
+  - [x] 400: Bad Request
+  - [x] 401: Não autenticado
   - [ ] 403: Não autorizado
-  - [ ] 404: Não encontrado
+  - [x] 404: Não encontrado
   - [ ] 429: Too Many Requests
-  - [ ] 500: Erro interno
+  - [x] 500: Erro interno
 
 #### RNF-016: Mensagens de Erro
 
