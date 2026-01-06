@@ -7,20 +7,10 @@ export type ResBodyError = {
   };
 };
 
-export type ResBodyValidationError = {
+export type ResBodyValidationError<T> = {
   success: boolean;
   data: {
-    error: {
-      properties:
-        | {
-            [x: string]:
-              | {
-                  errors: string[];
-                }
-              | undefined;
-          }
-        | undefined;
-    };
+    error: T;
   };
 };
 
@@ -56,22 +46,12 @@ export function error(message: string): ResBodyError {
   };
 }
 
-export function validationError(
-  properties:
-    | {
-        [x: string]:
-          | {
-              errors: string[];
-            }
-          | undefined;
-      }
-    | undefined,
-): ResBodyValidationError {
+export function validationError<T>(details: T): ResBodyValidationError<T> {
   return {
     success: false,
     data: {
       error: {
-        properties,
+        ...details,
       },
     },
   };

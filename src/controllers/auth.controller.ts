@@ -24,7 +24,7 @@ async function register(req: Request, res: Response, next: NextFunction) {
     const { user } = useCase.parse(useCaseResult);
 
     const accessToken = getAccessToken({
-      userId: user.id,
+      userId: user.userId,
       userEmail: user.email,
     });
     setAccessTokenCookie(res, accessToken);
@@ -43,7 +43,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
     const { user } = useCase.parse(useCaseResult);
 
     const accessToken = getAccessToken({
-      userId: user.id,
+      userId: user.userId,
       userEmail: user.email,
     });
     setAccessTokenCookie(res, accessToken);

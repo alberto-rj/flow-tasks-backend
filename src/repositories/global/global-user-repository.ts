@@ -10,23 +10,21 @@ import { uuid } from '@/utils/uuid';
 const items: Map<string, User> = new Map();
 
 export class GlobalUserRepository implements UserRepository {
-  constructor() {}
-
   async create(params: UserCreateDto) {
     const newItem: User = {
       ...params,
-      id: uuid(),
+      userId: uuid(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    items.set(newItem.id, newItem);
+    items.set(newItem.userId, newItem);
 
     return newItem;
   }
 
-  async findById({ id }: UserFindByIdDto) {
-    const foundItem = items.get(id);
+  async findById({ userId }: UserFindByIdDto) {
+    const foundItem = items.get(userId);
 
     if (typeof foundItem === 'undefined') {
       return null;

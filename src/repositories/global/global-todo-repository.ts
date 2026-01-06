@@ -25,19 +25,19 @@ export class GlobalTodoRepository implements TodoRepository {
     const newItem: Todo = {
       title,
       userId,
-      id: uuid(),
+      todoId: uuid(),
       order: this.getNexOrder(),
       createdAt: new Date(),
       updatedAt: new Date(),
     };
 
-    items.set(newItem.id, newItem);
+    items.set(newItem.todoId, newItem);
 
     return newItem;
   }
 
-  async findById({ id, userId }: TodoFindByIdDto) {
-    const foundItem = items.get(id);
+  async findById({ todoId, userId }: TodoFindByIdDto) {
+    const foundItem = items.get(todoId);
 
     if (typeof foundItem === 'undefined') {
       return null;
@@ -85,8 +85,8 @@ export class GlobalTodoRepository implements TodoRepository {
     return sortedItems;
   }
 
-  async deleteById({ id, userId }: TodoDeleteByIdDto) {
-    const item = items.get(id);
+  async deleteById({ todoId, userId }: TodoDeleteByIdDto) {
+    const item = items.get(todoId);
 
     if (typeof item === 'undefined') {
       return null;
@@ -96,7 +96,7 @@ export class GlobalTodoRepository implements TodoRepository {
       return null;
     }
 
-    items.delete(id);
+    items.delete(todoId);
 
     return item;
   }
@@ -110,11 +110,11 @@ export class GlobalTodoRepository implements TodoRepository {
     this.filterItems({
       items: userItems,
       filter,
-    }).forEach((item) => items.delete(item.id));
+    }).forEach((item) => items.delete(item.todoId));
   }
 
-  async updateById({ id, title, order, userId }: TodoUpdateByIdDto) {
-    const item = items.get(id);
+  async updateById({ todoId, title, order, userId }: TodoUpdateByIdDto) {
+    const item = items.get(todoId);
 
     if (typeof item === 'undefined') {
       return null;
@@ -137,13 +137,13 @@ export class GlobalTodoRepository implements TodoRepository {
       newItem = { ...item, title, updatedAt: new Date() };
     }
 
-    items.set(id, newItem);
+    items.set(todoId, newItem);
 
     return newItem;
   }
 
-  async toggleById({ id, userId }: TodoToggleByIdDto) {
-    const item = items.get(id);
+  async toggleById({ todoId, userId }: TodoToggleByIdDto) {
+    const item = items.get(todoId);
 
     const isExistingItem =
       typeof item !== 'undefined' && item.userId === userId;
@@ -168,13 +168,13 @@ export class GlobalTodoRepository implements TodoRepository {
       };
     }
 
-    items.set(id, newItem);
+    items.set(todoId, newItem);
 
     return newItem;
   }
 
-  async reorderById({ id, order, userId }: TodoReorderByIdDto) {
-    const item = items.get(id);
+  async reorderById({ todoId, order, userId }: TodoReorderByIdDto) {
+    const item = items.get(todoId);
     const isExistingItem = item && item.userId === userId;
 
     if (!isExistingItem) {
@@ -187,7 +187,7 @@ export class GlobalTodoRepository implements TodoRepository {
       updatedAt: new Date(),
     };
 
-    items.set(id, newItem);
+    items.set(todoId, newItem);
 
     return newItem;
   }
