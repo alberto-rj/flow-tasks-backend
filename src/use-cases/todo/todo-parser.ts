@@ -4,7 +4,7 @@ import type { Todo } from '@/entities';
 export function toTodoDto(todo: Todo): TodoDto {
   if (!todo.completedAt) {
     return {
-      id: todo.id,
+      todoId: todo.todoId,
       title: todo.title,
       order: todo.order,
       userId: todo.userId,
@@ -14,7 +14,7 @@ export function toTodoDto(todo: Todo): TodoDto {
   }
 
   return {
-    id: todo.id,
+    todoId: todo.todoId,
     title: todo.title,
     order: todo.order,
     userId: todo.userId,

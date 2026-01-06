@@ -30,7 +30,7 @@ describe('[Use Case] Auth / Register', () => {
         expect(result).toHaveProperty('user');
         expect(result.user).toEqual(
           expect.objectContaining({
-            id: expect.any(String),
+            userId: expect.any(String),
             name: data.name,
             email: data.email,
           }),
@@ -70,7 +70,7 @@ describe('[Use Case] Auth / Register', () => {
 
       expect(parsedResult.user).toEqual(
         expect.objectContaining({
-          id: result.user.id,
+          userId: result.user.userId,
           name: result.user.name,
           email: result.user.email,
         }),

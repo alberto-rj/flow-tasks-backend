@@ -60,7 +60,7 @@ describe('[Use Case] Todo / List', () => {
       items.forEach((item) => {
         expect(item).toEqual(
           expect.objectContaining({
-            id: expect.any(String),
+            todoId: expect.any(String),
             userId: expect.any(String),
             title: expect.any(String),
             order: expect.any(Number),

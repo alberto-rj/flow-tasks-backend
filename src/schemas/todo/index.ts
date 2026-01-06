@@ -1,68 +1,55 @@
 import z from '@/config/zod';
 import { CreatedAtSchema, UpdatedAtSchema } from '@/schemas/shared';
+import { UserIdSchema } from '@/schemas/user';
 
 export const TodoIdSchema = z
-  .string({
-    error: 'invalid ID.',
+  .uuid({
+    version: 'v4',
+    error: 'todoId must be a valid UUID v4.',
   })
   .openapi({
-    title: 'TodoId',
-    description: 'Todo ID.',
-    example: 'UUID.v4',
+    title: 'todoId',
+    description: 'Unique identifier of the todo.',
+    format: 'uuid',
+    example: '550e8400-e29b-41d4-a716-446655440000',
   });
 
 export const TodoTitleSchema = z
   .string({
-    error: 'title must be string.',
+    error: 'title must be a string.',
   })
+  .trim()
   .min(1, {
-    error: 'title must cannot be empty.',
+    error: 'title is required.',
   })
-  .max(255, {
-    error: 'title must cannot exceed 255 characters.',
+  .max(225, {
+    error: 'title cannot exceed 225 characters.',
   })
   .openapi({
-    type: 'string',
-    minimum: 1,
-    maximum: 255,
     title: 'title',
-    description: 'Title for todo.',
-    example: 'Todo title',
+    description: 'Title of the todo item.',
+    example: 'Buy groceries',
   });
 
-export const TodoCompletedAtSchema = z
-  .string({
-    error: 'completedAt must be ISO date',
-  })
-  .openapi({
-    type: 'string',
-    format: 'datetime',
-    title: 'completedAt',
-    description: 'Completion date',
-    example: '2025-12-11T20:10:34Z',
-  });
+export const TodoCompletedAtSchema = z.string().openapi({
+  title: 'completedAt',
+  description: 'Date and time when the todo was completed.',
+  format: 'date-time',
+  example: '2025-12-11T20:10:34Z',
+});
 
 export const TodoOrderSchema = z
-  .int({ error: 'order must be integer.' })
-  .min(0, { error: 'order must be at least 0.' })
-  .default(0)
-  .openapi({
-    type: 'number',
-    title: 'order',
-    description: 'Todo order.',
-    example: 0,
-    minimum: 0,
-    default: 0,
-  });
-
-export const TodoUserIdSchema = z
-  .string({
-    error: 'invalid ID.',
+  .int({
+    error: 'order must be an integer.',
+  })
+  .min(0, {
+    error: 'order must be at least 0.',
   })
   .openapi({
-    title: 'userId',
-    description: 'User ID.',
-    example: 'UUID.v4',
+    title: 'order',
+    description: 'The position of the todo item in the list.',
+    example: 0,
+    minimum: 0,
   });
 
 export const ApiTodoFilterSchema = z.enum(['all', 'active', 'completed']);
@@ -89,14 +76,14 @@ export const ApiUpdateTodoBodySchema = ApiCreateTodoBodySchema.extend({
 export const ApiReorderTodoListBodySchema = z.object({
   todos: z.array(
     z.object({
-      id: TodoIdSchema,
+      todoId: TodoIdSchema,
       order: TodoOrderSchema,
     }),
   ),
 });
 
 export const ApiTodoIdParamsSchema = z.object({
-  id: TodoIdSchema,
+  todoId: TodoIdSchema,
 });
 
 export const ApiListTodoQuerySchema = z.object({
@@ -111,11 +98,11 @@ export const ApiDeleteTodoListQuerySchema = z.object({
 });
 
 export const ApiTodoSchema = z.object({
-  id: TodoIdSchema,
+  todoId: TodoIdSchema,
   title: TodoTitleSchema,
   completedAt: TodoCompletedAtSchema.optional(),
   order: TodoOrderSchema,
-  userId: TodoUserIdSchema,
+  userId: UserIdSchema,
   createdAt: CreatedAtSchema,
   updatedAt: UpdatedAtSchema,
 });

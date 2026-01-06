@@ -26,7 +26,7 @@ describe('[Use Case] Todo / Reorder List', () => {
         });
 
         const newTodos = createdTodos.map((item) => ({
-          id: item.id,
+          todoId: item.todoId,
           order: item.order + 100,
         }));
 
@@ -39,7 +39,7 @@ describe('[Use Case] Todo / Reorder List', () => {
 
         for (const newTodo of newTodos) {
           const updatedTodo = await todoRepository.findById({
-            id: newTodo.id,
+            todoId: newTodo.todoId,
             userId,
           });
           expect(updatedTodo?.order).toBe(newTodo.order);
@@ -54,7 +54,7 @@ describe('[Use Case] Todo / Reorder List', () => {
         });
 
         const newTodos = createdTodos.map((item) => ({
-          id: item.id,
+          todoId: item.todoId,
           order: item.order + 100,
         }));
 
@@ -69,7 +69,7 @@ describe('[Use Case] Todo / Reorder List', () => {
 
         for (const createdTodo of createdTodos) {
           const newTodo = await todoRepository.findById({
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           });
 
@@ -87,7 +87,7 @@ describe('[Use Case] Todo / Reorder List', () => {
         });
 
         const newTodos = createdTodos.map((item) => ({
-          id: item.id,
+          todoId: item.todoId,
           order: item.order + 100,
         }));
 
@@ -100,7 +100,7 @@ describe('[Use Case] Todo / Reorder List', () => {
 
         for (const createdTodo of createdTodos) {
           const updatedTodo = await todoRepository.findById({
-            id: createdTodo.id,
+            todoId: createdTodo.todoId,
             userId,
           });
 
@@ -121,7 +121,7 @@ describe('[Use Case] Todo / Reorder List', () => {
 
         const duplicatedOrder = 1000;
         const newTodos = createdTodos.map((item) => ({
-          id: item.id,
+          todoId: item.todoId,
           order: duplicatedOrder,
         }));
 
@@ -143,7 +143,7 @@ describe('[Use Case] Todo / Reorder List', () => {
         });
 
         const newTodos = createdTodos.map((item) => ({
-          id: 'non-existing-todo-id',
+          todoId: 'non-existing-todo-id',
           order: item.order + 100,
         }));
 
@@ -168,7 +168,7 @@ describe('[Use Case] Todo / Reorder List', () => {
             data: {
               todos: [
                 {
-                  id: anotherTodo.id,
+                  todoId: anotherTodo.todoId,
                   order: anotherTodo.order + 100,
                 },
               ],
@@ -202,7 +202,7 @@ describe('[Use Case] Todo / Reorder List', () => {
             userId,
             todos: [
               {
-                id: createdTodo.id,
+                todoId: createdTodo.todoId,
                 order: 100,
               },
             ],
@@ -210,7 +210,7 @@ describe('[Use Case] Todo / Reorder List', () => {
         });
 
         const updatedTodo = await todoRepository.findById({
-          id: createdTodo.id,
+          todoId: createdTodo.todoId,
           userId,
         });
 

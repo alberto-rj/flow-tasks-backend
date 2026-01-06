@@ -25,7 +25,7 @@ describe('[Use Case] Todo / Update', () => {
 
       const { item } = await sut.execute({
         data: {
-          id: createdTodo.id,
+          todoId: createdTodo.todoId,
           userId,
           title: 'New title',
           order: 10,
@@ -34,7 +34,7 @@ describe('[Use Case] Todo / Update', () => {
 
       expect(item).toEqual(
         expect.objectContaining({
-          id: createdTodo.id,
+          todoId: createdTodo.todoId,
           userId: createdTodo.userId,
           title: 'New title',
           order: 10,
@@ -50,7 +50,7 @@ describe('[Use Case] Todo / Update', () => {
 
       const { item } = await sut.execute({
         data: {
-          id: createdTodo.id,
+          todoId: createdTodo.todoId,
           userId,
           title: 'My new title',
         },
@@ -58,7 +58,7 @@ describe('[Use Case] Todo / Update', () => {
 
       expect(item).toEqual(
         expect.objectContaining({
-          id: createdTodo.id,
+          todoId: createdTodo.todoId,
           userId: createdTodo.userId,
           title: 'My new title',
           order: createdTodo.order,
@@ -74,7 +74,7 @@ describe('[Use Case] Todo / Update', () => {
 
       const { item } = await sut.execute({
         data: {
-          id: createdTodo.id,
+          todoId: createdTodo.todoId,
           userId,
           title: 'Updated',
           order: 10,
@@ -96,7 +96,7 @@ describe('[Use Case] Todo / Update', () => {
       await expect(
         sut.execute({
           data: {
-            id: 'non-existing-todo-id',
+            todoId: 'non-existing-todo-id',
             userId,
             title: 'My new title',
           },
@@ -113,7 +113,7 @@ describe('[Use Case] Todo / Update', () => {
       await expect(
         sut.execute({
           data: {
-            id: anotherTodo.id,
+            todoId: anotherTodo.todoId,
             userId,
             title: 'Hacked title',
             order: 10,

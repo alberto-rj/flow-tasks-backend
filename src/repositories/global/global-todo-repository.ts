@@ -1,5 +1,3 @@
-import { randomUUID } from 'node:crypto';
-
 import type {
   TodoCreateDto,
   TodoDeleteByIdDto,
@@ -18,6 +16,7 @@ import type {
 } from '@/dtos/todo';
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
+import { uuid } from '@/utils/uuid';
 
 const items: Map<string, Todo> = new Map();
 
@@ -26,7 +25,7 @@ export class GlobalTodoRepository implements TodoRepository {
     const newItem: Todo = {
       title,
       userId,
-      id: randomUUID(),
+      id: uuid(),
       order: this.getNexOrder(),
       createdAt: new Date(),
       updatedAt: new Date(),

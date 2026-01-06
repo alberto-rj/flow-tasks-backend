@@ -27,12 +27,12 @@ describe('[Use Case] Todo / Delete', () => {
       const todoToDelete = createdTodos[0] as Todo;
 
       await sut.execute({
-        data: { id: todoToDelete.id, userId },
+        data: { todoId: todoToDelete.todoId, userId },
       });
 
       await expect(
         todoRepository.findById({
-          id: todoToDelete.id,
+          todoId: todoToDelete.todoId,
           userId,
         }),
       ).resolves.toBeNull();
@@ -64,7 +64,7 @@ describe('[Use Case] Todo / Delete', () => {
       await expect(
         sut.execute({
           data: {
-            id: todoToDelete.id,
+            todoId: todoToDelete.todoId,
             userId,
           },
         }),
@@ -72,12 +72,12 @@ describe('[Use Case] Todo / Delete', () => {
 
       await expect(
         todoRepository.findById({
-          id: todoToDelete.id,
+          todoId: todoToDelete.todoId,
           userId: 'another-existing-user-id',
         }),
       ).resolves.toEqual(
         expect.objectContaining({
-          id: todoToDelete.id,
+          todoId: todoToDelete.todoId,
         }),
       );
     });
@@ -91,7 +91,7 @@ describe('[Use Case] Todo / Delete', () => {
 
       await expect(
         sut.execute({
-          data: { id: 'non-existing-todo-id', userId },
+          data: { todoId: 'non-existing-todo-id', userId },
         }),
       ).rejects.toThrow(ResourceNotFoundError);
 

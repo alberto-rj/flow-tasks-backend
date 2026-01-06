@@ -25,7 +25,7 @@ export type TodoCreateDto = z.infer<typeof ApiCreateTodoBodySchema> & {
 };
 
 export type TodoDeleteByIdDto = {
-  id: string;
+  todoId: string;
   userId: string;
 };
 
@@ -36,7 +36,7 @@ export type TodoDeleteManyByUserIdDto = z.infer<
 };
 
 export type TodoFindByIdDto = {
-  id: string;
+  todoId: string;
   userId: string;
 };
 
@@ -50,12 +50,12 @@ export type TodoFindManyByUserIdDto = z.infer<typeof ApiListTodoQuerySchema> & {
 };
 
 export type TodoUpdateByIdDto = z.infer<typeof ApiUpdateTodoBodySchema> & {
-  id: string;
+  todoId: string;
   userId: string;
 };
 
 export type TodoReorderByIdDto = {
-  id: string;
+  todoId: string;
   order: number;
   userId: string;
 };
@@ -67,7 +67,7 @@ export type TodoReorderManyByUserIdDto = z.infer<
 };
 
 export type TodoToggleByIdDto = {
-  id: string;
+  todoId: string;
   userId: string;
 };
 

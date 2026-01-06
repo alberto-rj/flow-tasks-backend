@@ -4,6 +4,7 @@ import type { User } from '@/entities';
 import type { UserRepository } from '@/repositories';
 import { ExistingEmailError } from '@/utils/errors';
 import { getHash } from '@/utils/password';
+import { toUserDto } from './to-user-dto';
 
 export interface RegisterUseCaseParams {
   data: RegisterDto;
@@ -44,13 +45,7 @@ export class RegisterUseCase {
   }
 
   parse({ user }: RegisterUseCaseResult): RegisterUseCaseParseResult {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = user;
-    const userDto: UserDto = {
-      ...userWithoutPassword,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    };
+    const userDto = toUserDto(user);
 
     return {
       user: userDto,

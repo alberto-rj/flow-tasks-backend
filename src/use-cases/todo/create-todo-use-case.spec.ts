@@ -24,18 +24,18 @@ describe('[Use Case] Todo / Create', () => {
         expect(result.todo).toMatchObject({
           title: data.title,
           userId: data.userId,
-          id: expect.any(String),
+          todoId: expect.any(String),
           order: expect.any(Number),
         });
 
         await expect(
           todoRepository.findById({
-            id: result.todo.id,
+            todoId: result.todo.todoId,
             userId: data.userId,
           }),
         ).resolves.toEqual(
           expect.objectContaining({
-            id: result.todo.id,
+            todoId: result.todo.todoId,
             userId: data.userId,
           }),
         );
@@ -46,7 +46,7 @@ describe('[Use Case] Todo / Create', () => {
 
         await expect(
           todoRepository.findById({
-            id: todo.id,
+            todoId: todo.todoId,
             userId: 'another-user-id',
           }),
         ).resolves.toBeNull();

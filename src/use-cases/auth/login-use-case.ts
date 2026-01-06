@@ -4,6 +4,7 @@ import type { User } from '@/entities';
 import type { UserRepository } from '@/repositories';
 import { InvalidCredentialsError } from '@/utils/errors';
 import { hasCorrectHash } from '@/utils/password';
+import { toUserDto } from './to-user-dto';
 
 export interface LoginUseCaseParams {
   data: LoginDto;
@@ -44,13 +45,7 @@ export class LoginUseCase {
   }
 
   parse({ user }: LoginUseCaseResult): LoginUseCaseParseResult {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...userWithoutPassword } = user;
-    const userDto: UserDto = {
-      ...userWithoutPassword,
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    };
+    const userDto = toUserDto(user);
 
     return {
       user: userDto,

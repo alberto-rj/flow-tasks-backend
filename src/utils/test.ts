@@ -1,12 +1,12 @@
-import { randomUUID } from 'node:crypto';
-
 import { load } from '@/config/env';
 import type { RegisterDto } from '@/dtos/auth';
 import type { TodoCreateDto } from '@/dtos/todo';
+import type { Todo } from '@/entities';
+import type { TodoRepository } from '@/repositories';
+import type { ApiLoginBody, ApiRegisterBody } from '@/schemas/auth';
 import { makeTodoRepository, makeUserRepository } from './factory';
 import { isoDateSchema } from './schemas';
-import type { TodoRepository } from '@/repositories';
-import type { Todo } from '@/entities';
+import { uuid } from './uuid';
 
 export const env = load('test');
 
@@ -40,14 +40,14 @@ export async function createDetailedTodoList({
 
     if (canCompleteEven && i % 2 === 0) {
       await todoRepository.toggleById({
-        id: createdItem.id,
+        todoId: createdItem.todoId,
         userId: createdItem.userId,
       });
     }
 
     if (canCompleteOdd && i % 2 !== 0) {
       await todoRepository.toggleById({
-        id: createdItem.id,
+        todoId: createdItem.todoId,
         userId: createdItem.userId,
       });
     }
@@ -79,14 +79,14 @@ export async function createTodoList({
 
     if (canCompleteEven && i % 2 === 0) {
       await todoRepository.toggleById({
-        id: createdItem.id,
+        todoId: createdItem.todoId,
         userId,
       });
     }
 
     if (canCompleteOdd && i % 2 !== 0) {
       await todoRepository.toggleById({
-        id: createdItem.id,
+        todoId: createdItem.todoId,
         userId,
       });
     }
@@ -106,18 +106,33 @@ export async function sleep() {
   await new Promise((resolve) => setTimeout(resolve, delay));
 }
 
+export function newApiRegisterBody(): ApiRegisterBody {
+  return {
+    name: 'John Doe',
+    email: 'johndoe@example.com',
+    password: 'johnDoe1234',
+  };
+}
+
+export function newApiLoginBody(): ApiLoginBody {
+  return {
+    email: 'johndoe@example.com',
+    password: 'johnDoe1234',
+  };
+}
+
 export function newRegisterDto(): RegisterDto {
   return {
     name: 'John Doe',
     email: 'johndoe@example.com',
-    password: 'johnDoe#$@1234',
+    password: 'johnDoe1234',
   };
 }
 
 export function newTodoCreateDto(): TodoCreateDto {
   return {
     title: 'Learn TypeScript',
-    userId: randomUUID(),
+    userId: uuid(),
   };
 }
 
