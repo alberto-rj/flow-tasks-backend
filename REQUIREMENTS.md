@@ -387,18 +387,19 @@
   "success": false,
   "data": {
     "error": {
-      "properties": {
-        "email": {
-          "errors": ["email must include @", "email must be valid."]
-        },
-        "password": {
-          "errors": [
-            "password must have at least 8 characters.",
-            "password must have at least 1 uppercase.",
-            "password must have at least 1 lowercase."
-            "password must have at least 1 digit."
-          ]
-        }
+      "email": {
+        "errors": [
+          "email must include @",
+          "email must be a valid email address."
+        ]
+      },
+      "password": {
+        "errors": [
+          "password must have at least 8 characters.",
+          "password must have at least 1 uppercase.",
+          "password must have at least 1 lowercase."
+          "password must have at least 1 digit."
+        ]
       }
     }
   }

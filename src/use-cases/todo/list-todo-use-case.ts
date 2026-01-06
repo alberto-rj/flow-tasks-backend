@@ -1,6 +1,6 @@
 import type { TodoDto, TodoFindManyByUserIdDto } from '@/dtos/todo';
 import type { TodoRepository } from '@/repositories';
-import { toTodoDto } from './todo-parser';
+import { toTodoDto } from './to-todo-dto';
 
 export interface ListTodoUseCaseParams {
   data: TodoFindManyByUserIdDto;

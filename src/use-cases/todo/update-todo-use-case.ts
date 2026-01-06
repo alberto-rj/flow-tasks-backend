@@ -1,7 +1,7 @@
 import type { TodoDto, TodoUpdateByIdDto } from '@/dtos/todo';
 import type { TodoRepository } from '@/repositories';
 import { ResourceNotFoundError } from '@/utils/errors';
-import { toTodoDto } from './todo-parser';
+import { toTodoDto } from './to-todo-dto';
 
 export interface UpdateTodoUseCaseParams {
   data: TodoUpdateByIdDto;

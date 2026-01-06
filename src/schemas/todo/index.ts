@@ -3,9 +3,8 @@ import { CreatedAtSchema, UpdatedAtSchema } from '@/schemas/shared';
 import { UserIdSchema } from '@/schemas/user';
 
 export const TodoIdSchema = z
-  .uuid({
-    version: 'v4',
-    error: 'todoId must be a valid UUID v4.',
+  .guid({
+    error: 'todoId must be a valid UUID.',
   })
   .openapi({
     title: 'todoId',

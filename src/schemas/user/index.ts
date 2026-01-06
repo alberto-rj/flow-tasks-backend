@@ -2,9 +2,8 @@ import z from '@/config/zod';
 import { CreatedAtSchema, UpdatedAtSchema } from '@/schemas/shared';
 
 export const UserIdSchema = z
-  .uuid({
-    version: 'v4',
-    error: 'userId must be a valid UUID v4.',
+  .guid({
+    error: 'userId must be a valid UUID.',
   })
   .trim()
   .openapi({

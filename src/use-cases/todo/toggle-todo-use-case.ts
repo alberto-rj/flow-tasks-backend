@@ -1,7 +1,7 @@
 import type { TodoDto, TodoToggleByIdDto } from '@/dtos/todo';
 import type { TodoRepository } from '@/repositories';
 import { ResourceNotFoundError } from '@/utils/errors';
-import { toTodoDto } from './todo-parser';
+import { toTodoDto } from './to-todo-dto';
 
 export interface ToggleTodoUseCaseParams {
   data: TodoToggleByIdDto;

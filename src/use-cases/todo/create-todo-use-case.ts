@@ -1,6 +1,6 @@
 import type { TodoCreateDto, TodoDto } from '@/dtos/todo';
 import type { TodoRepository } from '@/repositories';
-import { toTodoDto } from './todo-parser';
+import { toTodoDto } from './to-todo-dto';
 
 export interface CreateTodoUseCaseParams {
   data: TodoCreateDto;

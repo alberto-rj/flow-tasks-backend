@@ -15,7 +15,7 @@ function body(schema: ZodObject) {
 
       const properties = z.treeifyError(zodError).properties;
 
-      return res
+      res
         .status(StatusCodes.UNPROCESSABLE_ENTITY)
         .json(validationError(properties));
     } catch (err) {

@@ -21,7 +21,7 @@ todosRoute.post(
 );
 
 todosRoute.patch(
-  '/:id',
+  '/:todoId',
   authenticate,
   validateRequest.params(ApiTodoIdParamsSchema),
   validateRequest.body(ApiUpdateTodoBodySchema),
@@ -29,7 +29,7 @@ todosRoute.patch(
 );
 
 todosRoute.patch(
-  '/:id/completed',
+  '/:todoId/completed',
   authenticate,
   validateRequest.params(ApiTodoIdParamsSchema),
   todoController.toggle,
@@ -43,7 +43,7 @@ todosRoute.patch(
 );
 
 todosRoute.delete(
-  '/:id',
+  '/:todoId',
   authenticate,
   validateRequest.params(ApiTodoIdParamsSchema),
   todoController.remove,

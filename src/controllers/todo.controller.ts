@@ -44,12 +44,12 @@ async function create(req: AuthRequest, res: Response, next: NextFunction) {
 async function toggle(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { id } = req.params as ApiTodoIdParams;
+    const { todoId } = req.params as ApiTodoIdParams;
 
     const useCase = makeToggleTodoUseCase();
     const { item } = await useCase.execute({
       data: {
-        id,
+        todoId,
         userId,
       },
     });
@@ -86,13 +86,13 @@ async function reorderList(
 async function update(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { id } = req.params as ApiTodoIdParams;
+    const { todoId } = req.params as ApiTodoIdParams;
     const { title, order } = req.body as ApiUpdateTodoBody;
 
     const useCase = makeUpdateTodoUseCase();
     const { item } = await useCase.execute({
       data: {
-        id,
+        todoId,
         title,
         order,
         userId,
@@ -108,12 +108,12 @@ async function update(req: AuthRequest, res: Response, next: NextFunction) {
 async function remove(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { id } = req.params as ApiTodoIdParams;
+    const { todoId } = req.params as ApiTodoIdParams;
 
     const useCase = makeDeleteTodoUseCase();
     await useCase.execute({
       data: {
-        id,
+        todoId,
         userId,
       },
     });
