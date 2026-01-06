@@ -1,3 +1,6 @@
+import supertest from 'supertest';
+import { expect } from 'vitest';
+
 import { load } from '@/config/env';
 import type { RegisterDto } from '@/dtos/auth';
 import type { TodoCreateDto } from '@/dtos/todo';
@@ -5,10 +8,17 @@ import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
 import type { ApiLoginBody, ApiRegisterBody } from '@/schemas/auth';
 import { makeTodoRepository, makeUserRepository } from './factory';
-import { isoDateSchema } from './schemas';
+import { isoDateSchema, uuidSchema } from './schemas';
 import { uuid } from './uuid';
+import { app } from '@/app';
 
 export const env = load('test');
+
+export const registerEndpoint = '/api/auth/register';
+export const loginEndpoint = '/api/auth/login';
+export const logoutEndpoint = '/api/auth/logout';
+export const refreshEndpoint = '/api/auth/refresh';
+export const profileEndpoint = '/api/auth/me';
 
 type CreateTodoListParams = {
   todoRepository: TodoRepository;
@@ -99,6 +109,67 @@ export async function createTodoList({
   return newItems;
 }
 
+export function newString({
+  length,
+  includeLowercase = true,
+  includeUppercase = true,
+  includeSymbols = false,
+  includeDigits = false,
+}: {
+  length: number;
+  includeUppercase?: boolean;
+  includeLowercase?: boolean;
+  includeDigits?: boolean;
+  includeSymbols?: boolean;
+}) {
+  const letters = 'abcdefghijklmnopqrstuvwxyz';
+  const digits = '0123456789';
+  const symbols = '#@-<>()[],.?!^';
+  const baseStr = `${letters}${digits}${symbols}`;
+
+  if (
+    !includeLowercase &&
+    !includeUppercase &&
+    !includeDigits &&
+    !includeSymbols
+  ) {
+    throw new Error(
+      'randomString must include at least 1 character type: uppercase, lowercase, digit or symbols',
+    );
+  }
+
+  let newStr = '';
+
+  const uppercaseRegex = /[A-Z]/;
+  const lowercaseRegex = /[a-z]/;
+  const digitRegex = /[0-9]/;
+  const symbolsRegex = /[#@\-<>()[\],\.\?!\^]/;
+
+  for (let i = 0; i < length; ) {
+    const charIndex = Math.floor(Math.random() * baseStr.length);
+    let char = baseStr[charIndex] as string;
+
+    if (lowercaseRegex.test(char) && !includeLowercase) {
+      continue;
+    } else if (uppercaseRegex.test(char) && !includeUppercase) {
+      continue;
+    } else if (digitRegex.test(char) && !includeDigits) {
+      continue;
+    } else if (symbolsRegex.test(char) && !includeSymbols) {
+      continue;
+    }
+
+    if (lowercaseRegex.test(char)) {
+      char = char.toLocaleUpperCase();
+    }
+
+    newStr += char;
+    i++;
+  }
+
+  return newStr;
+}
+
 export async function sleep() {
   const begin = 10;
   const end = 15;
@@ -152,4 +223,37 @@ export function isJWT(value: string) {
 export function isIsoDate(value: unknown) {
   const result = isoDateSchema.safeParse(value);
   return result.success;
+}
+
+export function isUUID(value: unknown) {
+  const result = uuidSchema.safeParse(value);
+  return result.success;
+}
+
+export function expectValidationError(
+  response: supertest.Response,
+  field: string,
+) {
+  expect(response.body.success).toBe(false);
+  expect(response.body.data.error[field].errors).toBeInstanceOf(Array);
+}
+
+export function expectError(response: supertest.Response) {
+  expect(response.body.success).toBe(false);
+  expect(typeof response.body.data.error.message).toBe('string');
+}
+
+export async function cleanup() {
+  await makeTodoRepository('global').clear();
+  await makeUserRepository('global').clear();
+}
+
+export async function getAuthenticatedAgent() {
+  const agent = supertest.agent(app);
+
+  await agent.post(registerEndpoint).send(newApiRegisterBody());
+
+  await agent.post(loginEndpoint).send(newApiLoginBody());
+
+  return agent;
 }
