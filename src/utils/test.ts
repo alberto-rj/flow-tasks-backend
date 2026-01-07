@@ -305,7 +305,6 @@ export async function registerAndLogin(
   options: {
     registerData?: ApiRegisterBody;
     registerStatus?: number;
-
     loginStatus?: number;
   } = {},
 ) {
