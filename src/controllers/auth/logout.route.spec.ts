@@ -1,13 +1,18 @@
 import { StatusCodes } from 'http-status-codes';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 
 import {
+  cleanup,
   getAuthenticatedAgent,
   logoutEndpoint,
   profileEndpoint,
 } from '@/utils/test';
 
 describe(`POST ${logoutEndpoint}`, () => {
+  afterEach(async () => {
+    await cleanup();
+  });
+
   describe('success cases', () => {
     it('should clear cookie on logout', async () => {
       const agent = await getAuthenticatedAgent();

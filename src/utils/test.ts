@@ -272,14 +272,13 @@ export function expectResultsWithLength(
 export function expectAuthCookie(response: supertest.Response) {
   const cookies = response.headers['set-cookie'] as unknown as string[];
 
-  expect(cookies).toBeDefined();
   expect(cookies.length).toBeGreaterThan(0);
 
   const authCookie = cookies.find((cookie) =>
     cookie.startsWith('accessToken='),
   );
 
-  expect(authCookie).toBeDefined();
+  expect(typeof authCookie).toBe('string');
   expect(authCookie).toContain('HttpOnly');
   expect(authCookie).toContain('Path=/');
 }
@@ -306,7 +305,6 @@ export async function registerAndLogin(
   options: {
     registerData?: ApiRegisterBody;
     registerStatus?: number;
-
     loginStatus?: number;
   } = {},
 ) {
@@ -340,9 +338,15 @@ export async function getAuthenticatedAgent() {
   const registerData = newApiRegisterBody();
   const { email, password } = registerData;
 
-  await agent.post(registerEndpoint).send(registerData);
+  await agent
+    .post(registerEndpoint)
+    .send(registerData)
+    .expect(StatusCodes.CREATED);
 
-  await agent.post(loginEndpoint).send({ email, password });
+  await agent
+    .post(loginEndpoint)
+    .send({ email, password })
+    .expect(StatusCodes.OK);
 
   return agent;
 }
