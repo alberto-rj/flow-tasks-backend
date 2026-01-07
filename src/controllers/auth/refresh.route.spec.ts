@@ -1,14 +1,19 @@
 import { StatusCodes } from 'http-status-codes';
-import { describe, it } from 'vitest';
+import { afterEach, describe, it } from 'vitest';
 
 import {
   getAuthenticatedAgent,
   refreshEndpoint,
   profileEndpoint,
   expectAuthCookie,
+  cleanup,
 } from '@/utils/test';
 
 describe(`POST ${refreshEndpoint}`, () => {
+  afterEach(async () => {
+    await cleanup();
+  });
+
   describe('success cases', () => {
     it('should update authentication cookie on refresh', async () => {
       const agent = await getAuthenticatedAgent();
