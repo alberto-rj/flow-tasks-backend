@@ -1,23 +1,13 @@
 import type { Request, Response, NextFunction } from 'express';
-import { StatusCodes } from 'http-status-codes';
-import { z, ZodObject } from 'zod';
+import { ZodObject, z } from 'zod';
 
-import { validationError } from '@/utils/res-body';
+import { parse } from '@/utils/schemas';
 
 function body(schema: ZodObject) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
-      const { success, error: zodError } = schema.safeParse(req.body);
-
-      if (success) {
-        return next();
-      }
-
-      const properties = z.treeifyError(zodError).properties;
-
-      res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .json(validationError(properties));
+      parse(schema, req.body);
+      next();
     } catch (err) {
       next(err);
     }
@@ -25,19 +15,10 @@ function body(schema: ZodObject) {
 }
 
 function params(schema: ZodObject) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
-      const result = schema.safeParse(req.params);
-
-      if (result.success) {
-        return next();
-      }
-
-      const properties = z.treeifyError(result.error).properties;
-
-      res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .json(validationError(properties));
+      parse(schema, req.params);
+      next();
     } catch (error) {
       next(error);
     }
@@ -45,39 +26,35 @@ function params(schema: ZodObject) {
 }
 
 function query(schema: ZodObject) {
-  return (req: Request, res: Response, next: NextFunction) => {
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
-      const result = schema.safeParse(req.query);
-
-      if (result.success) {
-        return next();
-      }
-
-      const properties = z.treeifyError(result.error).properties;
-
-      res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .json(validationError(properties));
+      parse(schema, req.query);
+      next();
     } catch (error) {
       next(error);
     }
   };
 }
 
-function all(schema: ZodObject) {
-  return (req: Request, res: Response, next: NextFunction) => {
+function all({
+  params,
+  query,
+  body,
+}: {
+  params: ZodObject;
+  query: ZodObject;
+  body: ZodObject;
+}) {
+  const schema = z.object({
+    params,
+    query,
+    body,
+  });
+
+  return (req: Request, _res: Response, next: NextFunction) => {
     try {
-      const result = schema.safeParse(req);
-
-      if (result.success) {
-        return next();
-      }
-
-      const properties = z.treeifyError(result.error).properties;
-
-      res
-        .status(StatusCodes.UNPROCESSABLE_ENTITY)
-        .json(validationError(properties));
+      parse(schema, req);
+      next();
     } catch (error) {
       next(error);
     }

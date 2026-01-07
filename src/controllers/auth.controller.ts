@@ -14,11 +14,18 @@ import {
   type AuthRequest,
 } from '@/utils/jwt';
 import { result } from '@/utils/res-body';
-import type { ApiLoginBody, ApiRegisterBody } from '@/schemas/auth';
+import {
+  ApiLoginBodySchema,
+  ApiRegisterBodySchema,
+  type ApiLoginBody,
+  type ApiRegisterBody,
+} from '@/schemas/auth';
+import { parse } from '@/utils/schemas';
 
 async function register(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = req.body as ApiRegisterBody;
+    const data = parse<ApiRegisterBody>(ApiRegisterBodySchema, req.body);
+
     const useCase = makeRegisterUseCase();
     const useCaseResult = await useCase.execute({ data });
     const { user } = useCase.parse(useCaseResult);
@@ -37,7 +44,8 @@ async function register(req: Request, res: Response, next: NextFunction) {
 
 async function login(req: Request, res: Response, next: NextFunction) {
   try {
-    const data = req.body as ApiLoginBody;
+    const data = parse<ApiLoginBody>(ApiLoginBodySchema, req.body);
+
     const useCase = makeLoginUseCase();
     const useCaseResult = await useCase.execute({ data });
     const { user } = useCase.parse(useCaseResult);
@@ -57,6 +65,7 @@ async function login(req: Request, res: Response, next: NextFunction) {
 async function profile(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
+
     const useCase = makeProfileUseCase();
     const { user } = await useCase.execute({ userId });
 
@@ -69,6 +78,7 @@ async function profile(req: AuthRequest, res: Response, next: NextFunction) {
 function refresh(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const payload = req.payload as AuthPayload;
+
     const accessToken = getAccessToken(payload);
     setAccessTokenCookie(res, accessToken);
 

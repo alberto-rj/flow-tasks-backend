@@ -109,6 +109,13 @@ export async function createTodoList({
   return newItems;
 }
 
+export async function sleep() {
+  const begin = 10;
+  const end = 15;
+  const delay = Math.floor(begin + Math.random() * (end - begin + 1));
+  await new Promise((resolve) => setTimeout(resolve, delay));
+}
+
 export function newString({
   length,
   includeLowercase = true,
@@ -170,18 +177,38 @@ export function newString({
   return newStr;
 }
 
-export async function sleep() {
-  const begin = 10;
-  const end = 15;
-  const delay = Math.floor(begin + Math.random() * (end - begin + 1));
-  await new Promise((resolve) => setTimeout(resolve, delay));
-}
+export function newApiRegisterBody(
+  options: {
+    includeLeadingWhiteSpace: boolean;
+    includeTrailingWhiteSpace: boolean;
+  } = {
+    includeLeadingWhiteSpace: false,
+    includeTrailingWhiteSpace: false,
+  },
+): ApiRegisterBody {
+  let name = 'John Doe';
+  let email = 'johndoe@example.com';
+  let password = 'johnDoe1234';
+  const emptySpace = '    ';
 
-export function newApiRegisterBody(): ApiRegisterBody {
+  const { includeLeadingWhiteSpace, includeTrailingWhiteSpace } = options;
+
+  if (includeLeadingWhiteSpace) {
+    name = `${emptySpace}${name}`;
+    email = `${emptySpace}${email}`;
+    password = `${emptySpace}${password}`;
+  }
+
+  if (includeTrailingWhiteSpace) {
+    name = `${name}${emptySpace}`;
+    email = `${email}${emptySpace}`;
+    password = `${password}${emptySpace}`;
+  }
+
   return {
-    name: 'John Doe',
-    email: 'johndoe@example.com',
-    password: 'johnDoe1234',
+    name,
+    email,
+    password,
   };
 }
 
@@ -230,6 +257,17 @@ export function isUUID(value: unknown) {
   return result.success;
 }
 
+export function expectSuccess(response: supertest.Response) {
+  expect(response.body.success).toBe(true);
+}
+
+export function expectResultsWithLength(
+  response: supertest.Response,
+  length: number,
+) {
+  expect(response.body.data.results).toHaveLength(length);
+}
+
 export function expectValidationError(
   response: supertest.Response,
   field: string,
@@ -244,8 +282,8 @@ export function expectError(response: supertest.Response) {
 }
 
 export async function cleanup() {
-  await makeTodoRepository('global').clear();
-  await makeUserRepository('global').clear();
+  await makeTodoRepository().clear();
+  await makeUserRepository().clear();
 }
 
 export async function getAuthenticatedAgent() {
