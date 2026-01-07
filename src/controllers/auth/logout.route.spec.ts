@@ -1,5 +1,5 @@
 import { StatusCodes } from 'http-status-codes';
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
   getAuthenticatedAgent,
@@ -12,7 +12,18 @@ describe(`POST ${logoutEndpoint}`, () => {
     it('should clear cookie on logout', async () => {
       const agent = await getAuthenticatedAgent();
 
-      await agent.post(logoutEndpoint).expect(StatusCodes.NO_CONTENT);
+      const response = await agent
+        .post(logoutEndpoint)
+        .expect(StatusCodes.NO_CONTENT);
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+
+      const authCookie = cookies.find((cookie) =>
+        cookie.startsWith('accessToken='),
+      );
+
+      expect(typeof authCookie).toBe('string');
+      expect(authCookie).toContain('accessToken=;');
 
       await agent.get(profileEndpoint).expect(StatusCodes.UNAUTHORIZED);
     });

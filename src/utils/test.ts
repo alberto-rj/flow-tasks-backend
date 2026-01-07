@@ -1,16 +1,17 @@
+import { StatusCodes } from 'http-status-codes';
 import supertest from 'supertest';
 import { expect } from 'vitest';
 
+import { app } from '@/app';
 import { load } from '@/config/env';
 import type { RegisterDto } from '@/dtos/auth';
 import type { TodoCreateDto } from '@/dtos/todo';
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
 import type { ApiLoginBody, ApiRegisterBody } from '@/schemas/auth';
-import { makeTodoRepository, makeUserRepository } from './factory';
-import { isoDateSchema, uuidSchema } from './schemas';
-import { uuid } from './uuid';
-import { app } from '@/app';
+import { makeTodoRepository, makeUserRepository } from '@/utils/factory';
+import { isoDateSchema, uuidSchema } from '@/utils/schemas';
+import { uuid } from '@/utils/uuid';
 
 export const env = load('test');
 
@@ -268,6 +269,21 @@ export function expectResultsWithLength(
   expect(response.body.data.results).toHaveLength(length);
 }
 
+export function expectAuthCookie(response: supertest.Response) {
+  const cookies = response.headers['set-cookie'] as unknown as string[];
+
+  expect(cookies).toBeDefined();
+  expect(cookies.length).toBeGreaterThan(0);
+
+  const authCookie = cookies.find((cookie) =>
+    cookie.startsWith('accessToken='),
+  );
+
+  expect(authCookie).toBeDefined();
+  expect(authCookie).toContain('HttpOnly');
+  expect(authCookie).toContain('Path=/');
+}
+
 export function expectValidationError(
   response: supertest.Response,
   field: string,
@@ -286,12 +302,47 @@ export async function cleanup() {
   await makeUserRepository().clear();
 }
 
+export async function registerAndLogin(
+  options: {
+    registerData?: ApiRegisterBody;
+    registerStatus?: number;
+
+    loginStatus?: number;
+  } = {},
+) {
+  const {
+    registerData = newApiRegisterBody(),
+    registerStatus = StatusCodes.CREATED,
+    loginStatus = StatusCodes.OK,
+  } = options;
+
+  const loginData = {
+    email: registerData.email,
+    password: registerData.password,
+  };
+
+  await supertest(app)
+    .post(registerEndpoint)
+    .send(registerData)
+    .expect(registerStatus);
+
+  const response = await supertest(app)
+    .post(loginEndpoint)
+    .send(loginData)
+    .expect(loginStatus);
+
+  return { registerData, loginData, response };
+}
+
 export async function getAuthenticatedAgent() {
   const agent = supertest.agent(app);
 
-  await agent.post(registerEndpoint).send(newApiRegisterBody());
+  const registerData = newApiRegisterBody();
+  const { email, password } = registerData;
 
-  await agent.post(loginEndpoint).send(newApiLoginBody());
+  await agent.post(registerEndpoint).send(registerData);
+
+  await agent.post(loginEndpoint).send({ email, password });
 
   return agent;
 }
