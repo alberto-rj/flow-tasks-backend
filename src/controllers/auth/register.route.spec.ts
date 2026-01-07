@@ -7,6 +7,8 @@ import { app } from '@/app';
 import {
   cleanup,
   expectError,
+  expectResultsWithLength,
+  expectSuccess,
   expectValidationError,
   isIsoDate,
   isUUID,
@@ -14,6 +16,8 @@ import {
   newString,
   registerEndpoint,
 } from '@/utils/test';
+import { makeUserRepository } from '@/utils/factory';
+import { hasCorrectHash } from '@/utils/password';
 
 describe(`POST ${registerEndpoint}`, () => {
   afterEach(async () => {
@@ -29,34 +33,87 @@ describe(`POST ${registerEndpoint}`, () => {
         .send(data)
         .expect(StatusCodes.CREATED);
 
-      expect(response.body.success).toBe(true);
+      expectSuccess(response);
+      expectResultsWithLength(response, 1);
 
-      const user = response.body.data.results[0];
-
-      expect(user).toMatchObject({
+      const createdUser = response.body.data.results[0];
+      expect(createdUser).toMatchObject({
         name: data.name,
         email: data.email,
       });
-
-      expect(isUUID(user.userId)).toBe(true);
-      expect(isIsoDate(user.createdAt)).toBe(true);
-      expect(isIsoDate(user.updatedAt)).toBe(true);
+      expect(isUUID(createdUser.userId)).toBe(true);
+      expect(isIsoDate(createdUser.createdAt)).toBe(true);
+      expect(isIsoDate(createdUser.updatedAt)).toBe(true);
     });
 
-    it.todo(
-      'should return an access token and set authentication cookie after user registration',
-      async () => {},
-    );
+    it('should not expose password after registration', async () => {
+      const response = await supertest(app)
+        .post(registerEndpoint)
+        .send(newApiRegisterBody())
+        .expect(StatusCodes.CREATED);
 
-    it.todo(
-      'should trim name, email and password and save them without leading/trailing spaces',
-      async () => {},
-    );
+      expectSuccess(response);
+      expectResultsWithLength(response, 1);
+
+      const createdUser = response.body.data.results[0];
+      expect(createdUser).not.toHaveProperty('password');
+    });
+
+    it('should return access token and set authentication cookie after registration', async () => {
+      const response = await supertest(app)
+        .post(registerEndpoint)
+        .send(newApiRegisterBody())
+        .expect(StatusCodes.CREATED);
+
+      const cookies = response.headers['set-cookie'] as unknown as string[];
+
+      expect(cookies).toBeDefined();
+      expect(cookies.length).toBeGreaterThan(0);
+
+      const authCookie = cookies.find((cookie) =>
+        cookie.startsWith('accessToken='),
+      );
+
+      expect(authCookie).toBeDefined();
+      expect(authCookie).toContain('HttpOnly');
+      expect(authCookie).toContain('Path=/');
+    });
+
+    it('should trim name, email and password and save them without leading/trailing spaces after registration', async () => {
+      const dataWithWhiteSpace = newApiRegisterBody({
+        includeLeadingWhiteSpace: true,
+        includeTrailingWhiteSpace: true,
+      });
+
+      // API response
+      const response = await supertest(app)
+        .post(registerEndpoint)
+        .send(dataWithWhiteSpace)
+        .expect(StatusCodes.CREATED);
+
+      expectSuccess(response);
+      expectResultsWithLength(response, 1);
+
+      const createdUser = response.body.data.results[0];
+      expect(createdUser.name).toBe(dataWithWhiteSpace.name.trim());
+      expect(createdUser.email).toBe(dataWithWhiteSpace.email.trim());
+
+      // persistence
+      const savedUser = await makeUserRepository().findById({
+        userId: createdUser.userId,
+      });
+      await expect(
+        hasCorrectHash(
+          dataWithWhiteSpace.password.trim(),
+          savedUser?.password as string,
+        ),
+      ).resolves.toBe(true);
+    });
   });
 
   describe('validation errors', () => {
     describe('name', () => {
-      it('should require name when it is not provided', async () => {
+      it('should reject registration when name is missing', async () => {
         const { name, ...dataWithoutName } = newApiRegisterBody();
 
         const response = await supertest(app)
@@ -67,16 +124,30 @@ describe(`POST ${registerEndpoint}`, () => {
         expectValidationError(response, 'name');
       });
 
-      it('should reject when name exceed 125 characters', async () => {
-        const longName = newString({
-          length: 126,
-          includeDigits: true,
-        });
-        const dataWithLongName = { ...newApiRegisterBody(), name: longName };
+      it('should reject registration when name is not a string', async () => {
+        const unexpectedNameType = 19975;
 
         const response = await supertest(app)
           .post(registerEndpoint)
-          .send(dataWithLongName)
+          .send({ ...newApiRegisterBody(), name: unexpectedNameType })
+          .expect(StatusCodes.UNPROCESSABLE_ENTITY);
+
+        expectValidationError(response, 'name');
+      });
+
+      it('should reject registration when name exceed 125 characters', async () => {
+        const exceededName = newString({
+          length: 126,
+          includeDigits: true,
+        });
+        const dataWithExceededName = {
+          ...newApiRegisterBody(),
+          name: exceededName,
+        };
+
+        const response = await supertest(app)
+          .post(registerEndpoint)
+          .send(dataWithExceededName)
           .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
         expectValidationError(response, 'name');
@@ -84,7 +155,7 @@ describe(`POST ${registerEndpoint}`, () => {
     });
 
     describe('email', () => {
-      it('should require email when it is not provided', async () => {
+      it('should reject registration when email is missing', async () => {
         const { email, ...dataWithoutEmail } = newApiRegisterBody();
 
         const response = await supertest(app)
@@ -95,7 +166,18 @@ describe(`POST ${registerEndpoint}`, () => {
         expectValidationError(response, 'email');
       });
 
-      it('should reject invalid email address', async () => {
+      it('should reject registration when email is not a string', async () => {
+        const unexpectedEmailType = false;
+
+        const response = await supertest(app)
+          .post(registerEndpoint)
+          .send({ ...newApiRegisterBody(), email: unexpectedEmailType })
+          .expect(StatusCodes.UNPROCESSABLE_ENTITY);
+
+        expectValidationError(response, 'email');
+      });
+
+      it('should reject registration when email is invalid', async () => {
         const invalidEmail = 'john doe#example,com';
         const data = {
           ...newApiRegisterBody(),
@@ -112,7 +194,7 @@ describe(`POST ${registerEndpoint}`, () => {
     });
 
     describe('password', () => {
-      it('should require password when it is not provided', async () => {
+      it('should reject registration when password is missing', async () => {
         const { password, ...dataWithoutPassword } = newApiRegisterBody();
 
         const response = await supertest(app)
@@ -123,7 +205,18 @@ describe(`POST ${registerEndpoint}`, () => {
         expectValidationError(response, 'password');
       });
 
-      it('should reject weak password', async () => {
+      it('should reject registration when password is not a string', async () => {
+        const unexpectedPasswordType = true;
+
+        const response = await supertest(app)
+          .post(registerEndpoint)
+          .send({ ...newApiRegisterBody(), password: unexpectedPasswordType })
+          .expect(StatusCodes.UNPROCESSABLE_ENTITY);
+
+        expectValidationError(response, 'password');
+      });
+
+      it('should reject registration when password is weak', async () => {
         const weakPassword = '1234';
         const dataWithWeakPassword = {
           ...newApiRegisterBody(),
@@ -141,7 +234,7 @@ describe(`POST ${registerEndpoint}`, () => {
   });
 
   describe('business logic errors', () => {
-    it('should reject duplicated email', async () => {
+    it('should reject registration when email already exists', async () => {
       const data = newApiRegisterBody();
 
       await supertest(app).post(registerEndpoint).send(data);
@@ -156,18 +249,47 @@ describe(`POST ${registerEndpoint}`, () => {
   });
 
   describe('edge cases', () => {
-    it('should ignore unexpected fields', async () => {
-      const data = {
-        ...newApiRegisterBody(),
-        role: 'admin',
-      };
-
+    it('should ignore unexpected fields upon registration', async () => {
       const response = await supertest(app)
         .post(registerEndpoint)
-        .send(data)
+        .send({
+          ...newApiRegisterBody(),
+          role: 'admin',
+        })
         .expect(StatusCodes.CREATED);
 
-      expect(response.body.data.results[0].role).toBeUndefined();
+      expectSuccess(response);
+      expectResultsWithLength(response, 1);
+
+      const createdUser = response.body.data.results[0];
+      expect(createdUser).not.toHaveProperty('role');
+    });
+
+    describe.todo('name boundaries', () => {
+      it.todo(
+        'should allow registration when name length is exactly 1 character',
+      );
+      it.todo(
+        'should allow registration when name length is exactly 125 characters',
+      );
+    });
+
+    describe.todo('email boundaries', () => {
+      it.todo(
+        'should allow registration when email length is at minimum allowed value',
+      );
+      it.todo(
+        'should allow registration when email length is at maximum allowed value',
+      );
+    });
+
+    describe.todo('password boundaries', () => {
+      it.todo(
+        'should allow registration when password length is exactly 8 characters',
+      );
+      it.todo(
+        'should allow registration when password length is exactly 64 characters',
+      );
     });
   });
 });

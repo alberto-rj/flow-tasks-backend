@@ -4,6 +4,7 @@ export {
   ConflictError,
   ResourceNotFoundError,
   UnauthorizedError,
+  ValidationError,
 } from './app-error';
 
 export { ExistingEmailError } from './existing-email-error';

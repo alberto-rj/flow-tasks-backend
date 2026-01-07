@@ -2,10 +2,13 @@ import z from '@/config/zod';
 import { CreatedAtSchema, UpdatedAtSchema } from '@/schemas/shared';
 
 export const UserIdSchema = z
-  .guid({
-    error: 'userId must be a valid UUID.',
+  .string({
+    error: 'userId must be a string.',
   })
   .trim()
+  .regex(z.regexes.guid, {
+    error: 'userId must be a valid UUID.',
+  })
   .openapi({
     title: 'userId',
     description: 'Unique identifier of the user.',
@@ -31,10 +34,13 @@ export const UserNameSchema = z
   });
 
 export const UserEmailSchema = z
-  .email({
-    error: 'email must be a valid email address.',
+  .string({
+    error: 'email must be a string.',
   })
   .trim()
+  .regex(z.regexes.email, {
+    error: 'email must be a valid email address.',
+  })
   .openapi({
     title: 'email',
     description: 'E-email address.',
@@ -49,6 +55,9 @@ export const UserPasswordSchema = z
   .trim()
   .min(8, {
     error: 'password must have at least 8 characters.',
+  })
+  .max(64, {
+    error: 'password cannot exceed 64 characters.',
   })
   .regex(/(?=.*[a-z])/, {
     error: 'password must include at least 1 lowercase letter.',
