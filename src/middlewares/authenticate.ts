@@ -18,7 +18,7 @@ export async function authenticate(
     const payload = getAccessTokenPayload(accessToken);
 
     if (!payload) {
-      return new UnauthorizedError('Invalid or expired token.');
+      throw new UnauthorizedError('Invalid or expired token.');
     }
 
     req.payload = payload;
