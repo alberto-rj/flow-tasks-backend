@@ -264,32 +264,5 @@ describe(`POST ${registerEndpoint}`, () => {
       const createdUser = response.body.data.results[0];
       expect(createdUser).not.toHaveProperty('role');
     });
-
-    describe.todo('name boundaries', () => {
-      it.todo(
-        'should allow registration when name length is exactly 1 character',
-      );
-      it.todo(
-        'should allow registration when name length is exactly 125 characters',
-      );
-    });
-
-    describe.todo('email boundaries', () => {
-      it.todo(
-        'should allow registration when email length is at minimum allowed value',
-      );
-      it.todo(
-        'should allow registration when email length is at maximum allowed value',
-      );
-    });
-
-    describe.todo('password boundaries', () => {
-      it.todo(
-        'should allow registration when password length is exactly 8 characters',
-      );
-      it.todo(
-        'should allow registration when password length is exactly 64 characters',
-      );
-    });
   });
 });
