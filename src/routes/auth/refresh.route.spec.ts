@@ -1,12 +1,15 @@
 import { StatusCodes } from 'http-status-codes';
+import supertest from 'supertest';
 import { afterEach, describe, it } from 'vitest';
 
+import { app } from '@/app';
 import {
   getAuthenticatedAgent,
   refreshEndpoint,
   profileEndpoint,
   expectAuthCookie,
   cleanup,
+  expectError,
 } from '@/utils/test';
 
 describe(`POST ${refreshEndpoint}`, () => {
@@ -25,6 +28,14 @@ describe(`POST ${refreshEndpoint}`, () => {
       expectAuthCookie(response);
 
       await agent.get(profileEndpoint).expect(StatusCodes.OK);
+    });
+
+    it('should reject updating for an unauthenticated user', async () => {
+      const response = await supertest(app)
+        .get(refreshEndpoint)
+        .expect(StatusCodes.UNAUTHORIZED);
+
+      expectError(response);
     });
   });
 });
