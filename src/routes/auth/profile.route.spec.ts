@@ -9,8 +9,6 @@ import {
   expectResultsWithLength,
   isUUID,
   isIsoDate,
-  newApiRegisterBody,
-  registerEndpoint,
   expectError,
 } from '@/utils/test';
 import supertest from 'supertest';
@@ -52,14 +50,7 @@ describe(`POST ${profileEndpoint}`, () => {
       expect(userProfile).not.toHaveProperty('password');
     });
 
-    it('should reject returning profile data for a non-logged user', async () => {
-      const registerData = newApiRegisterBody();
-
-      await supertest(app)
-        .post(registerEndpoint)
-        .send(registerData)
-        .expect(StatusCodes.CREATED);
-
+    it('should reject returning profile data for an unauthenticated user', async () => {
       const response = await supertest(app)
         .get(profileEndpoint)
         .expect(StatusCodes.UNAUTHORIZED);
