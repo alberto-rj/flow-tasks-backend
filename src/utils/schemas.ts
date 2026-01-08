@@ -17,24 +17,3 @@ export function parse<T>(schema: ZodObject, data: unknown) {
   const properties = z.treeifyError(result.error).properties;
   throw new ValidationError(properties);
 }
-
-export function parseAll<T>(
-  {
-    params,
-    query,
-    body,
-  }: {
-    params: ZodObject;
-    query: ZodObject;
-    body: ZodObject;
-  },
-  data: unknown,
-) {
-  const schema = z.object({
-    params,
-    query,
-    body,
-  });
-
-  parse<T>(schema, data);
-}

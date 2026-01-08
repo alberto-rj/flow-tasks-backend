@@ -1,13 +1,21 @@
 import type { Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
 
-import type {
-  ApiCreateTodoBody,
-  ApiDeleteTodoListQuery,
-  ApiListTodoQuery,
-  ApiReorderTodoListBody,
-  ApiTodoIdParams,
-  ApiUpdateTodoBody,
+import {
+  ApiCreateTodoSchema,
+  ApiDeleteTodoListSchema,
+  ApiDeleteTodoSchema,
+  ApiListTodoSchema,
+  ApiReorderTodoListSchema,
+  ApiToggleTodoSchema,
+  ApiUpdateTodoSchema,
+  type ApiCreateTodo,
+  type ApiDeleteTodo,
+  type ApiDeleteTodoList,
+  type ApiListTodo,
+  type ApiReorderTodoList,
+  type ApiToggleTodo,
+  type ApiUpdateTodo,
 } from '@/schemas/todo';
 import {
   makeCreateTodoUseCase,
@@ -21,11 +29,15 @@ import {
 } from '@/utils/factory';
 import type { AuthPayload, AuthRequest } from '@/utils/jwt';
 import { result, resultList } from '@/utils/res-body';
+import { parse } from '@/utils/schemas';
 
 async function create(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { title } = req.body as ApiCreateTodoBody;
+
+    const {
+      body: { title },
+    } = parse<ApiCreateTodo>(ApiCreateTodoSchema, req);
 
     const useCase = makeCreateTodoUseCase();
     const { todo: item } = await useCase.execute({
@@ -44,7 +56,10 @@ async function create(req: AuthRequest, res: Response, next: NextFunction) {
 async function toggle(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { todoId } = req.params as ApiTodoIdParams;
+
+    const {
+      params: { todoId },
+    } = parse<ApiToggleTodo>(ApiToggleTodoSchema, req);
 
     const useCase = makeToggleTodoUseCase();
     const { item } = await useCase.execute({
@@ -67,7 +82,10 @@ async function reorderList(
 ) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { todos } = req.body as ApiReorderTodoListBody;
+
+    const {
+      body: { todos },
+    } = parse<ApiReorderTodoList>(ApiReorderTodoListSchema, req);
 
     const useCase = makeReorderTodoListUseCase();
     await useCase.execute({
@@ -86,8 +104,11 @@ async function reorderList(
 async function update(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { todoId } = req.params as ApiTodoIdParams;
-    const { title, order } = req.body as ApiUpdateTodoBody;
+
+    const {
+      params: { todoId },
+      body: { title, order },
+    } = parse<ApiUpdateTodo>(ApiUpdateTodoSchema, req);
 
     const useCase = makeUpdateTodoUseCase();
     const { item } = await useCase.execute({
@@ -108,7 +129,10 @@ async function update(req: AuthRequest, res: Response, next: NextFunction) {
 async function remove(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { todoId } = req.params as ApiTodoIdParams;
+
+    const {
+      params: { todoId },
+    } = parse<ApiDeleteTodo>(ApiDeleteTodoSchema, req);
 
     const useCase = makeDeleteTodoUseCase();
     await useCase.execute({
@@ -127,7 +151,10 @@ async function remove(req: AuthRequest, res: Response, next: NextFunction) {
 async function removeList(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { filter } = req.query as ApiDeleteTodoListQuery;
+
+    const {
+      query: { filter },
+    } = parse<ApiDeleteTodoList>(ApiDeleteTodoListSchema, req);
 
     const useCase = makeDeleteTodoListUseCase();
     await useCase.execute({
@@ -146,7 +173,10 @@ async function removeList(req: AuthRequest, res: Response, next: NextFunction) {
 async function list(req: AuthRequest, res: Response, next: NextFunction) {
   try {
     const { userId } = req.payload as AuthPayload;
-    const { filter, sortBy, order, query } = req.query as ApiListTodoQuery;
+
+    const {
+      query: { filter, sortBy, order, query },
+    } = parse<ApiListTodo>(ApiListTodoSchema, req);
 
     const useCase = makeListTodoUseCase();
     const { items } = await useCase.execute({
