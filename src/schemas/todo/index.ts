@@ -2,8 +2,13 @@ import z from '@/config/zod';
 import { CreatedAtSchema, UpdatedAtSchema } from '@/schemas/shared';
 import { UserIdSchema } from '@/schemas/user';
 
+/* Base schemas (start) */
 export const TodoIdSchema = z
-  .guid({
+  .string({
+    error: 'todoId must be a string.',
+  })
+  .trim()
+  .regex(z.regexes.guid, {
     error: 'todoId must be a valid UUID.',
   })
   .openapi({
@@ -63,39 +68,9 @@ export const ApiTodoSortBySchema = z.enum([
 export const ApiTodoOrderSchema = z.enum(['asc', 'desc']);
 
 export const ApiTodoQuerySchema = z.string().optional();
+/* Base schemas (end) */
 
-export const ApiCreateTodoBodySchema = z.object({
-  title: TodoTitleSchema,
-});
-
-export const ApiUpdateTodoBodySchema = ApiCreateTodoBodySchema.extend({
-  order: z.number().int().min(0).optional(),
-});
-
-export const ApiReorderTodoListBodySchema = z.object({
-  todos: z.array(
-    z.object({
-      todoId: TodoIdSchema,
-      order: TodoOrderSchema,
-    }),
-  ),
-});
-
-export const ApiTodoIdParamsSchema = z.object({
-  todoId: TodoIdSchema,
-});
-
-export const ApiListTodoQuerySchema = z.object({
-  query: ApiTodoQuerySchema.optional(),
-  filter: ApiTodoFilterSchema.optional(),
-  sortBy: ApiTodoSortBySchema.optional(),
-  order: ApiTodoOrderSchema.optional(),
-});
-
-export const ApiDeleteTodoListQuerySchema = z.object({
-  filter: ApiTodoFilterSchema.optional(),
-});
-
+/* Common schemas (start) */
 export const ApiTodoSchema = z.object({
   todoId: TodoIdSchema,
   title: TodoTitleSchema,
@@ -106,18 +81,98 @@ export const ApiTodoSchema = z.object({
   updatedAt: UpdatedAtSchema,
 });
 
-export type ApiCreateTodoBody = z.infer<typeof ApiCreateTodoBodySchema>;
-
-export type ApiUpdateTodoBody = z.infer<typeof ApiUpdateTodoBodySchema>;
-
-export type ApiReorderTodoListBody = z.infer<
-  typeof ApiReorderTodoListBodySchema
->;
+export const ApiTodoIdParamsSchema = z.object({
+  todoId: TodoIdSchema,
+});
+/* Common schemas (end) */
 
 export type ApiTodoIdParams = z.infer<typeof ApiTodoIdParamsSchema>;
 
-export type ApiListTodoQuery = z.infer<typeof ApiListTodoQuerySchema>;
+/* Creation schemas (start) */
+export const ApiCreateTodoBodySchema = z.object({
+  title: TodoTitleSchema,
+});
+export const ApiCreateTodoSchema = z.object({
+  body: ApiCreateTodoBodySchema,
+});
+export type ApiCreateTodo = z.infer<typeof ApiCreateTodoSchema>;
+export type ApiCreateTodoBody = ApiCreateTodo['body'];
+/* Creation schemas (end) */
 
+/* Updating schemas (start)*/
+export const ApiUpdateTodoParamsSchema = ApiTodoIdParamsSchema;
+export const ApiUpdateTodoBodySchema = z.object({
+  title: TodoTitleSchema,
+  order: TodoOrderSchema,
+});
+export const ApiUpdateTodoSchema = z.object({
+  params: ApiUpdateTodoParamsSchema,
+  body: ApiUpdateTodoBodySchema,
+});
+export type ApiUpdateTodo = z.infer<typeof ApiUpdateTodoSchema>;
+export type ApiUpdateTodoParams = z.infer<typeof ApiUpdateTodoParamsSchema>;
+export type ApiUpdateTodoBody = z.infer<typeof ApiUpdateTodoBodySchema>;
+/* Updating schemas (end) */
+
+/* Toggling schemas (start) */
+export const ApiToggleTodoParamsSchema = ApiTodoIdParamsSchema;
+export const ApiToggleTodoSchema = z.object({
+  params: ApiToggleTodoParamsSchema,
+});
+export type ApiToggleTodo = z.infer<typeof ApiToggleTodoSchema>;
+export type ApiToggleTodoParams = z.infer<typeof ApiToggleTodoParamsSchema>;
+/* Toggling schemas (end) */
+
+/*  Reordering schemas (start) */
+export const ApiReorderTodoListBodySchema = z.object({
+  todos: z.array(
+    z.object({
+      todoId: TodoIdSchema,
+      order: TodoOrderSchema,
+    }),
+  ),
+});
+export const ApiReorderTodoListSchema = z.object({
+  body: ApiReorderTodoListBodySchema,
+});
+export type ApiReorderTodoList = z.infer<typeof ApiReorderTodoListSchema>;
+export type ApiReorderTodoListBody = z.infer<
+  typeof ApiReorderTodoListBodySchema
+>;
+/*  Reordering schemas (end) */
+
+/* Listing schemas (start) */
+export const ApiListTodoQuerySchema = z.object({
+  query: ApiTodoQuerySchema.optional(),
+  filter: ApiTodoFilterSchema.optional(),
+  sortBy: ApiTodoSortBySchema.optional(),
+  order: ApiTodoOrderSchema.optional(),
+});
+export const ApiListTodoSchema = z.object({
+  query: ApiListTodoQuerySchema,
+});
+export type ApiListTodo = z.infer<typeof ApiListTodoSchema>;
+export type ApiListTodoQuery = z.infer<typeof ApiListTodoQuerySchema>;
+/* Listing schemas (end) */
+
+/* Deletion list schemas (start) */
+export const ApiDeleteTodoListQuerySchema = z.object({
+  filter: ApiTodoFilterSchema.optional(),
+});
+export const ApiDeleteTodoListSchema = z.object({
+  query: ApiDeleteTodoListQuerySchema,
+});
+export type ApiDeleteTodoList = z.infer<typeof ApiDeleteTodoListSchema>;
 export type ApiDeleteTodoListQuery = z.infer<
   typeof ApiDeleteTodoListQuerySchema
 >;
+/* Deletion list schemas (end) */
+
+/* Deletion schemas (start) */
+export const ApiDeleteTodoParamsSchemas = ApiTodoIdParamsSchema;
+export const ApiDeleteTodoSchema = z.object({
+  params: ApiDeleteTodoParamsSchemas,
+});
+export type ApiDeleteTodo = z.infer<typeof ApiDeleteTodoSchema>;
+export type ApiDeleteTodoParams = z.infer<typeof ApiDeleteTodoParamsSchemas>;
+/* Deletion schemas (end) */
