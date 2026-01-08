@@ -32,7 +32,7 @@ describe(`POST ${refreshEndpoint}`, () => {
 
     it('should reject updating for an unauthenticated user', async () => {
       const response = await supertest(app)
-        .get(refreshEndpoint)
+        .post(refreshEndpoint)
         .expect(StatusCodes.UNAUTHORIZED);
 
       expectError(response);
