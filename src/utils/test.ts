@@ -15,6 +15,7 @@ import { uuid } from '@/utils/uuid';
 
 export const env = load('test');
 
+/* Auth endpoints */
 export const registerEndpoint = '/api/auth/register';
 export const loginEndpoint = '/api/auth/login';
 export const logoutEndpoint = '/api/auth/logout';
