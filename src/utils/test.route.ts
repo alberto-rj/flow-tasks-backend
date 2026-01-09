@@ -5,13 +5,17 @@ import { expect } from 'vitest';
 import { app } from '@/app';
 import { load } from '@/config/env';
 import type { ApiLoginBody, ApiRegisterBody } from '@/schemas/auth';
-import type { ApiCreateTodoBody } from '@/schemas/todo';
+import type { ApiCreateTodoBody, ApiUpdateTodoBody } from '@/schemas/todo';
 import { makeTodoRepository, makeUserRepository } from '@/utils/factory';
 import { isIsoDate, isUUID } from '@/utils/test';
+import type { TodoDto } from '@/dtos/todo';
 
 export const env = load('test');
 
+export type SuperTestAgent = Awaited<ReturnType<typeof getAuthenticatedAgent>>;
+
 /* Auth endpoints */
+export const AUTH_BASE_ROUTE = '/api/auth';
 export const registerEndpoint = '/api/auth/register';
 export const loginEndpoint = '/api/auth/login';
 export const logoutEndpoint = '/api/auth/logout';
@@ -19,10 +23,7 @@ export const refreshEndpoint = '/api/auth/refresh';
 export const profileEndpoint = '/api/auth/me';
 
 /* Todo endpoints */
-export const TODOS_CREATE_ROUTE = '/api/todos';
-export const TODOS_LIST_ROUTE = '/api/todos';
-export const TODOS_DELETE_LIST_ROUTE = '/api/todos';
-export const TODOS_DELETE_ROUTE = '/api/todos';
+export const TODOS_BASE_ROUTE = '/api/todos';
 
 export function newApiRegisterBody(
   options: {
@@ -68,7 +69,7 @@ export function newApiCreateTodoBody(
     includeTrailingWhiteSpace: false,
   },
 ): ApiCreateTodoBody {
-  let title = 'John Doe';
+  let title = 'My todo';
   const emptySpace = '    ';
 
   const { includeLeadingWhiteSpace, includeTrailingWhiteSpace } = options;
@@ -83,6 +84,36 @@ export function newApiCreateTodoBody(
 
   return {
     title,
+  };
+}
+
+export function newApiUpdateTodoBody(
+  options: {
+    includeLeadingWhiteSpace: boolean;
+    includeTrailingWhiteSpace: boolean;
+  } = {
+    includeLeadingWhiteSpace: false,
+    includeTrailingWhiteSpace: false,
+  },
+): ApiUpdateTodoBody {
+  let title = 'My new todo';
+  const order = 100;
+
+  const emptySpace = '    ';
+
+  const { includeLeadingWhiteSpace, includeTrailingWhiteSpace } = options;
+
+  if (includeLeadingWhiteSpace) {
+    title = `${emptySpace}${title}`;
+  }
+
+  if (includeTrailingWhiteSpace) {
+    title = `${title}${emptySpace}`;
+  }
+
+  return {
+    title,
+    order,
   };
 }
 
@@ -134,6 +165,25 @@ export function expectCreatedTodo(
   expect(createdTodo.order).toBeGreaterThanOrEqual(0);
   expect(isIsoDate(createdTodo.createdAt)).toBe(true);
   expect(isIsoDate(createdTodo.updatedAt)).toBe(true);
+}
+
+export function expectUpdatedTodo(
+  response: supertest.Response,
+  data: ApiUpdateTodoBody,
+) {
+  const updatedTodo = response.body.data.results[0];
+
+  expect(updatedTodo.title).toBe(data.title);
+  expect(isUUID(updatedTodo.todoId)).toBe(true);
+  expect(updatedTodo.order).toBeGreaterThanOrEqual(0);
+  expect(isIsoDate(updatedTodo.createdAt)).toBe(true);
+  expect(isIsoDate(updatedTodo.updatedAt)).toBe(true);
+
+  if (typeof data.order === 'number') {
+    expect(updatedTodo.order).toBe(data.order);
+  } else {
+    expect(updatedTodo.order).toBeGreaterThanOrEqual(0);
+  }
 }
 
 export function expectValidationError(
@@ -197,4 +247,18 @@ export async function getAuthenticatedAgent() {
     .expect(StatusCodes.OK);
 
   return agent;
+}
+
+export async function getCreatedTodo(
+  agent: SuperTestAgent,
+  data = newApiCreateTodoBody(),
+) {
+  const response = await agent
+    .post(TODOS_BASE_ROUTE)
+    .send(data)
+    .expect(StatusCodes.CREATED);
+
+  const createdTodo = response.body.data.results[0];
+
+  return createdTodo as TodoDto;
 }

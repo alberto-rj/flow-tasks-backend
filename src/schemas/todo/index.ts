@@ -103,7 +103,7 @@ export type ApiCreateTodoBody = ApiCreateTodo['body'];
 export const ApiUpdateTodoParamsSchema = ApiTodoIdParamsSchema;
 export const ApiUpdateTodoBodySchema = z.object({
   title: TodoTitleSchema,
-  order: TodoOrderSchema,
+  order: TodoOrderSchema.optional(),
 });
 export const ApiUpdateTodoSchema = z.object({
   params: ApiUpdateTodoParamsSchema,
