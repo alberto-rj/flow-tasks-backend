@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { StatusCodes } from 'http-status-codes';
 import supertest from 'supertest';
 import { describe, it, afterEach, beforeEach } from 'vitest';
@@ -14,11 +13,12 @@ import {
   expectValidationError,
   getAuthenticatedAgent,
   newApiCreateTodoBody,
-  TODOS_CREATE_ROUTE,
+  TODOS_BASE_ROUTE,
+  type SuperTestAgent,
 } from '@/utils/test.route';
 
-describe(`POST ${TODOS_CREATE_ROUTE}`, () => {
-  let agent: Awaited<ReturnType<typeof getAuthenticatedAgent>>;
+describe(`POST ${TODOS_BASE_ROUTE}`, () => {
+  let agent: SuperTestAgent;
 
   beforeEach(async () => {
     agent = await getAuthenticatedAgent();
@@ -29,11 +29,11 @@ describe(`POST ${TODOS_CREATE_ROUTE}`, () => {
   });
 
   describe('success cases', () => {
-    it('should return created todo with correct structure', async () => {
+    it('should return 201 and the created todo with correct structure', async () => {
       const creationData = newApiCreateTodoBody();
 
       const response = await agent
-        .post(TODOS_CREATE_ROUTE)
+        .post(TODOS_BASE_ROUTE)
         .send(creationData)
         .expect(StatusCodes.CREATED);
 
@@ -43,14 +43,14 @@ describe(`POST ${TODOS_CREATE_ROUTE}`, () => {
       expectCreatedTodo(response, creationData);
     });
 
-    it('should allow todo creation when title includes leading/trailing spaces', async () => {
+    it('should return 201 and the created todo when title includes leading/trailing spaces', async () => {
       const creationDataWithWhiteSpace = newApiCreateTodoBody({
         includeLeadingWhiteSpace: true,
         includeTrailingWhiteSpace: true,
       });
 
       const response = await agent
-        .post(TODOS_CREATE_ROUTE)
+        .post(TODOS_BASE_ROUTE)
         .send(creationDataWithWhiteSpace)
         .expect(StatusCodes.CREATED);
 
@@ -65,46 +65,49 @@ describe(`POST ${TODOS_CREATE_ROUTE}`, () => {
   });
 
   describe('validation errors', () => {
-    describe('title', () => {
-      it('should reject todo creation when title is missing', async () => {
-        const { title, ...dataWithoutTitle } = newApiCreateTodoBody();
+    describe('body validation', () => {
+      describe('title', () => {
+        it('should return 422 when title is missing', async () => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          const { title, ...dataWithoutTitle } = newApiCreateTodoBody();
 
-        const response = await agent
-          .post(TODOS_CREATE_ROUTE)
-          .send(dataWithoutTitle)
-          .expect(StatusCodes.UNPROCESSABLE_ENTITY);
+          const response = await agent
+            .post(TODOS_BASE_ROUTE)
+            .send(dataWithoutTitle)
+            .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
-        expectValidationError(response, 'title');
-      });
+          expectValidationError(response, 'title');
+        });
 
-      it('should reject todo creation when title is not a string', async () => {
-        const unexpectedTitleType = true;
+        it('should return 422 when title is not a string', async () => {
+          const unexpectedTitleType = true;
 
-        const response = await agent
-          .post(TODOS_CREATE_ROUTE)
-          .send({ ...newApiCreateTodoBody(), title: unexpectedTitleType })
-          .expect(StatusCodes.UNPROCESSABLE_ENTITY);
+          const response = await agent
+            .post(TODOS_BASE_ROUTE)
+            .send({ ...newApiCreateTodoBody(), title: unexpectedTitleType })
+            .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
-        expectValidationError(response, 'title');
-      });
+          expectValidationError(response, 'title');
+        });
 
-      it('should reject todo creation when title exceed 225 characters', async () => {
-        const exceededTitle = newString({ length: 226 });
+        it('should return 422 when title exceed 225 characters', async () => {
+          const exceededTitle = newString({ length: 226 });
 
-        const response = await agent
-          .post(TODOS_CREATE_ROUTE)
-          .send({ ...newApiCreateTodoBody(), title: exceededTitle })
-          .expect(StatusCodes.UNPROCESSABLE_ENTITY);
+          const response = await agent
+            .post(TODOS_BASE_ROUTE)
+            .send({ ...newApiCreateTodoBody(), title: exceededTitle })
+            .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
-        expectValidationError(response, 'title');
+          expectValidationError(response, 'title');
+        });
       });
     });
   });
 
   describe('business logic errors', () => {
-    it('should reject todo creation when user is not authenticated', async () => {
+    it('should return 422 when user is not authenticated', async () => {
       const response = await supertest(app)
-        .post(TODOS_CREATE_ROUTE)
+        .post(TODOS_BASE_ROUTE)
         .send(newApiCreateTodoBody())
         .expect(StatusCodes.UNAUTHORIZED);
 
@@ -114,7 +117,7 @@ describe(`POST ${TODOS_CREATE_ROUTE}`, () => {
 
   describe('edge cases', () => {
     describe('title boundaries', () => {
-      it('should allow todo creation when title length is exactly 1 character', async () => {
+      it('should return 201 and the created todo when title length is exactly 1 character', async () => {
         const minTitle = newString({
           length: 1,
         });
@@ -124,14 +127,14 @@ describe(`POST ${TODOS_CREATE_ROUTE}`, () => {
         };
 
         const response = await agent
-          .post(TODOS_CREATE_ROUTE)
+          .post(TODOS_BASE_ROUTE)
           .send(creationDataWithMinTitle)
           .expect(StatusCodes.CREATED);
 
         expectCreatedTodo(response, creationDataWithMinTitle);
       });
 
-      it('should allow todo creation when title length is exactly 225 characters', async () => {
+      it('should return 201 and the created todo when title length is exactly 225 characters', async () => {
         const maxTitle = newString({
           length: 225,
         });
@@ -141,7 +144,7 @@ describe(`POST ${TODOS_CREATE_ROUTE}`, () => {
         };
 
         const response = await agent
-          .post(TODOS_CREATE_ROUTE)
+          .post(TODOS_BASE_ROUTE)
           .send(creationDataWithMaxTitle)
           .expect(StatusCodes.CREATED);
 
