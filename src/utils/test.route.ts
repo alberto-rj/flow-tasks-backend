@@ -9,6 +9,7 @@ import type { ApiCreateTodoBody, ApiUpdateTodoBody } from '@/schemas/todo';
 import { makeTodoRepository, makeUserRepository } from '@/utils/factory';
 import { isIsoDate, isUUID } from '@/utils/test';
 import type { TodoDto } from '@/dtos/todo';
+import type { TodoStats } from '@/entities';
 
 export const env = load('test');
 
@@ -186,6 +187,19 @@ export function expectUpdatedTodoWithBody(
   }
 }
 
+export function expectTodoStats(response: supertest.Response, data: TodoStats) {
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
+  const todoStats = response.body.data.results[0];
+
+  expect(todoStats).toStrictEqual({
+    total: data.total,
+    completed: data.completed,
+    active: data.active,
+  });
+}
+
 export function expectValidationError(
   response: supertest.Response,
   field: string,
@@ -258,7 +272,28 @@ export async function getCreatedTodo(
     .send(data)
     .expect(StatusCodes.CREATED);
 
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
   const createdTodo = response.body.data.results[0];
 
   return createdTodo as TodoDto;
+}
+
+export async function getCompletedTodo(
+  agent: SuperTestAgent,
+  data = newApiCreateTodoBody(),
+) {
+  const createdTodo = await getCreatedTodo(agent, data);
+
+  const response = await agent
+    .patch(`${TODOS_BASE_ROUTE}/${createdTodo.todoId}/completed`)
+    .expect(StatusCodes.OK);
+
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
+  const completedTodo = response.body.data.results[0] as TodoDto;
+
+  return completedTodo;
 }
