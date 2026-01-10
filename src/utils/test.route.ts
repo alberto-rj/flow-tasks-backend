@@ -303,3 +303,14 @@ export async function getCompletedTodo(
 
   return completedTodo;
 }
+
+export async function getTodoStatsResponse(agent: SuperTestAgent) {
+  const response = await agent
+    .get(`${TODOS_BASE_ROUTE}/stats`)
+    .expect(StatusCodes.OK);
+
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
+  return response;
+}
