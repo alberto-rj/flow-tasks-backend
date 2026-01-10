@@ -159,6 +159,9 @@ export function expectCreatedTodoWithBody(
   response: supertest.Response,
   data: ApiCreateTodoBody,
 ) {
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
   const createdTodo = response.body.data.results[0];
 
   expect(createdTodo.title).toBe(data.title);

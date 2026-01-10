@@ -8,8 +8,6 @@ import {
   cleanup,
   expectCreatedTodoWithBody,
   expectError,
-  expectResultsWithLength,
-  expectSuccess,
   expectValidationError,
   getAuthenticatedAgent,
   newApiCreateTodoBody,
@@ -37,9 +35,6 @@ describe(`POST ${TODOS_BASE_ROUTE}`, () => {
         .send(creationData)
         .expect(StatusCodes.CREATED);
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
-
       expectCreatedTodoWithBody(response, creationData);
     });
 
@@ -53,9 +48,6 @@ describe(`POST ${TODOS_BASE_ROUTE}`, () => {
         .post(TODOS_BASE_ROUTE)
         .send(creationDataWithWhiteSpace)
         .expect(StatusCodes.CREATED);
-
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
 
       expectCreatedTodoWithBody(response, {
         ...creationDataWithWhiteSpace,
