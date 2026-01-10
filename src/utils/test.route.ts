@@ -175,6 +175,9 @@ export function expectUpdatedTodoWithBody(
   response: supertest.Response,
   data: ApiUpdateTodoBody,
 ) {
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
   const updatedTodo = response.body.data.results[0];
 
   expect(updatedTodo.title).toBe(data.title);
@@ -299,4 +302,15 @@ export async function getCompletedTodo(
   const completedTodo = response.body.data.results[0] as TodoDto;
 
   return completedTodo;
+}
+
+export async function getTodoStatsResponse(agent: SuperTestAgent) {
+  const response = await agent
+    .get(`${TODOS_BASE_ROUTE}/stats`)
+    .expect(StatusCodes.OK);
+
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
+  return response;
 }
