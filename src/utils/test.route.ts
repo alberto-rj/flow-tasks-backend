@@ -175,6 +175,9 @@ export function expectUpdatedTodoWithBody(
   response: supertest.Response,
   data: ApiUpdateTodoBody,
 ) {
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
   const updatedTodo = response.body.data.results[0];
 
   expect(updatedTodo.title).toBe(data.title);

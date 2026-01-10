@@ -7,8 +7,6 @@ import { newString } from '@/utils/test';
 import {
   cleanup,
   expectError,
-  expectResultsWithLength,
-  expectSuccess,
   expectUpdatedTodoWithBody,
   expectValidationError,
   getAuthenticatedAgent,
@@ -42,9 +40,6 @@ describe(`PATCH ${TODOS_BASE_ROUTE}/:todoId`, () => {
         .send(updatingData)
         .expect(StatusCodes.OK);
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
-
       expectUpdatedTodoWithBody(response, updatingData);
     });
 
@@ -58,9 +53,6 @@ describe(`PATCH ${TODOS_BASE_ROUTE}/:todoId`, () => {
         .patch(`${TODOS_BASE_ROUTE}/${todoId}`)
         .send(updatingDataWithWhiteSpace)
         .expect(StatusCodes.OK);
-
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
 
       expectUpdatedTodoWithBody(response, {
         ...updatingDataWithWhiteSpace,
