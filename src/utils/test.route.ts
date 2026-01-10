@@ -154,7 +154,7 @@ export function expectAuthCookie(response: supertest.Response) {
   expect(authCookie).toContain('Path=/');
 }
 
-export function expectCreatedTodo(
+export function expectCreatedTodoWithBody(
   response: supertest.Response,
   data: ApiCreateTodoBody,
 ) {
@@ -167,7 +167,7 @@ export function expectCreatedTodo(
   expect(isIsoDate(createdTodo.updatedAt)).toBe(true);
 }
 
-export function expectUpdatedTodo(
+export function expectUpdatedTodoWithBody(
   response: supertest.Response,
   data: ApiUpdateTodoBody,
 ) {

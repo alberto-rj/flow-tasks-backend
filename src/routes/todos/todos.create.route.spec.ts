@@ -6,7 +6,7 @@ import { app } from '@/app';
 import { newString } from '@/utils/test';
 import {
   cleanup,
-  expectCreatedTodo,
+  expectCreatedTodoWithBody,
   expectError,
   expectResultsWithLength,
   expectSuccess,
@@ -40,7 +40,7 @@ describe(`POST ${TODOS_BASE_ROUTE}`, () => {
       expectSuccess(response);
       expectResultsWithLength(response, 1);
 
-      expectCreatedTodo(response, creationData);
+      expectCreatedTodoWithBody(response, creationData);
     });
 
     it('should return 201 and the created todo when title includes leading/trailing spaces', async () => {
@@ -57,7 +57,7 @@ describe(`POST ${TODOS_BASE_ROUTE}`, () => {
       expectSuccess(response);
       expectResultsWithLength(response, 1);
 
-      expectCreatedTodo(response, {
+      expectCreatedTodoWithBody(response, {
         ...creationDataWithWhiteSpace,
         title: creationDataWithWhiteSpace.title.trim(),
       });
@@ -131,7 +131,7 @@ describe(`POST ${TODOS_BASE_ROUTE}`, () => {
           .send(creationDataWithMinTitle)
           .expect(StatusCodes.CREATED);
 
-        expectCreatedTodo(response, creationDataWithMinTitle);
+        expectCreatedTodoWithBody(response, creationDataWithMinTitle);
       });
 
       it('should return 201 and the created todo when title length is exactly 225 characters', async () => {
@@ -148,7 +148,7 @@ describe(`POST ${TODOS_BASE_ROUTE}`, () => {
           .send(creationDataWithMaxTitle)
           .expect(StatusCodes.CREATED);
 
-        expectCreatedTodo(response, creationDataWithMaxTitle);
+        expectCreatedTodoWithBody(response, creationDataWithMaxTitle);
       });
     });
   });
