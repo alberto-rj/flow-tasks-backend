@@ -9,7 +9,7 @@ import {
   expectError,
   expectResultsWithLength,
   expectSuccess,
-  expectUpdatedTodo,
+  expectUpdatedTodoWithBody,
   expectValidationError,
   getAuthenticatedAgent,
   getCreatedTodo,
@@ -45,7 +45,7 @@ describe(`PATCH ${TODOS_BASE_ROUTE}/:todoId`, () => {
       expectSuccess(response);
       expectResultsWithLength(response, 1);
 
-      expectUpdatedTodo(response, updatingData);
+      expectUpdatedTodoWithBody(response, updatingData);
     });
 
     it('should return 200 and trim leading and trailing spaces from the title before updating', async () => {
@@ -62,7 +62,7 @@ describe(`PATCH ${TODOS_BASE_ROUTE}/:todoId`, () => {
       expectSuccess(response);
       expectResultsWithLength(response, 1);
 
-      expectUpdatedTodo(response, {
+      expectUpdatedTodoWithBody(response, {
         ...updatingDataWithWhiteSpace,
         title: updatingDataWithWhiteSpace.title.trim(),
       });
@@ -175,7 +175,7 @@ describe(`PATCH ${TODOS_BASE_ROUTE}/:todoId`, () => {
           .send(updatingDataWithMinTitle)
           .expect(StatusCodes.OK);
 
-        expectUpdatedTodo(response, updatingDataWithMinTitle);
+        expectUpdatedTodoWithBody(response, updatingDataWithMinTitle);
       });
 
       it('should return 200 and the updated todo when title length is exactly 225 characters', async () => {
@@ -192,7 +192,7 @@ describe(`PATCH ${TODOS_BASE_ROUTE}/:todoId`, () => {
           .send(updatingDataWithMaxTitle)
           .expect(StatusCodes.OK);
 
-        expectUpdatedTodo(response, updatingDataWithMaxTitle);
+        expectUpdatedTodoWithBody(response, updatingDataWithMaxTitle);
       });
     });
 
@@ -207,7 +207,7 @@ describe(`PATCH ${TODOS_BASE_ROUTE}/:todoId`, () => {
           .send(dataWithoutOrder)
           .expect(StatusCodes.OK);
 
-        expectUpdatedTodo(response, dataWithoutOrder);
+        expectUpdatedTodoWithBody(response, dataWithoutOrder);
       });
     });
   });
