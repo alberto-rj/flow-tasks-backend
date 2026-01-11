@@ -56,18 +56,23 @@ export const TodoOrderSchema = z
     minimum: 0,
   });
 
-export const ApiTodoFilterSchema = z.enum(['all', 'active', 'completed']);
+export const ApiTodoFilterSchema = z.enum(['all', 'active', 'completed'], {
+  error: 'filter must be only "all", "active" or "completed".',
+});
 
-export const ApiTodoSortBySchema = z.enum([
-  'title',
-  'order',
-  'createdAt',
-  'updatedAt',
-]);
+export const ApiTodoSortBySchema = z.enum(
+  ['title', 'order', 'createdAt', 'updatedAt'],
+  { error: 'sortBy must be only "title", "order", "createdAt" or "updatedAt"' },
+);
 
-export const ApiTodoOrderSchema = z.enum(['asc', 'desc']);
+export const ApiTodoOrderSchema = z.enum(['asc', 'desc'], {
+  error: 'order must be only "asc" or "dec".',
+});
 
-export const ApiTodoQuerySchema = z.string().optional();
+export const ApiTodoQuerySchema = z
+  .string({ error: 'query must be a string.' })
+  .max(225, { error: 'query cannot exceed 225 characters.' })
+  .optional();
 /* Base schemas (end) */
 
 /* Common schemas (start) */

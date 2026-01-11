@@ -206,6 +206,37 @@ export function expectTodoStats(response: supertest.Response, data: TodoStats) {
   });
 }
 
+export function expectTodoList(response: supertest.Response, list: TodoDto[]) {
+  expectSuccess(response);
+  expectResultsWithLength(response, list.length);
+
+  const filteredTodos = response.body.data.results as TodoDto[];
+
+  list.forEach((item) => {
+    const filteredTodo = filteredTodos.find(
+      (todo) => todo.todoId === item.todoId,
+    );
+
+    expect(filteredTodo).toStrictEqual(item);
+  });
+}
+
+export function expectTodoListSorted(
+  response: supertest.Response,
+  list: TodoDto[],
+  expectFn: (prev: TodoDto, current: TodoDto) => void,
+) {
+  expectTodoList(response, list);
+
+  const sortedTodos = response.body.data.results as TodoDto[];
+
+  for (let i = 1; i < sortedTodos.length; i++) {
+    const prev = sortedTodos[i - 1] as TodoDto;
+    const current = sortedTodos[i] as TodoDto;
+    expectFn(prev, current);
+  }
+}
+
 export function expectValidationError(
   response: supertest.Response,
   field: string,
@@ -284,6 +315,31 @@ export async function getCreatedTodo(
   const createdTodo = response.body.data.results[0];
 
   return createdTodo as TodoDto;
+}
+
+export async function getCreatedTodoList(agent: SuperTestAgent, limit: number) {
+  const items: TodoDto[] = [];
+
+  for (let i = 0; i < limit; i++) {
+    const item = await getCreatedTodo(agent);
+    items.push(item);
+  }
+
+  return items;
+}
+
+export async function getCompletedTodoList(
+  agent: SuperTestAgent,
+  limit: number,
+) {
+  const items: TodoDto[] = [];
+
+  for (let i = 0; i < limit; i++) {
+    const item = await getCompletedTodo(agent);
+    items.push(item);
+  }
+
+  return items;
 }
 
 export async function getCompletedTodo(
