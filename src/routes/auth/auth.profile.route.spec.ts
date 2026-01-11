@@ -1,20 +1,18 @@
 import { StatusCodes } from 'http-status-codes';
+import supertest from 'supertest';
 import { afterEach, describe, expect, it } from 'vitest';
 
-import {
-  getAuthenticatedAgent,
-  profileEndpoint,
-  cleanup,
-  expectSuccess,
-  expectResultsWithLength,
-  isUUID,
-  isIsoDate,
-  expectError,
-} from '@/utils/test';
-import supertest from 'supertest';
 import { app } from '@/app';
+import { cleanup, isUUID, isIsoDate } from '@/utils/test';
+import {
+  AUTH_PROFILE_ROUTE,
+  expectError,
+  expectResultsWithLength,
+  expectSuccess,
+  getAuthenticatedAgent,
+} from '@/utils/test.route';
 
-describe(`POST ${profileEndpoint}`, () => {
+describe(`POST ${AUTH_PROFILE_ROUTE}`, () => {
   afterEach(async () => {
     await cleanup();
   });
@@ -23,7 +21,9 @@ describe(`POST ${profileEndpoint}`, () => {
     it('should return user profile data', async () => {
       const agent = await getAuthenticatedAgent();
 
-      const response = await agent.get(profileEndpoint).expect(StatusCodes.OK);
+      const response = await agent
+        .get(AUTH_PROFILE_ROUTE)
+        .expect(StatusCodes.OK);
 
       expectSuccess(response);
       expectResultsWithLength(response, 1);
@@ -40,7 +40,9 @@ describe(`POST ${profileEndpoint}`, () => {
     it('should not expose password when returning user profile data', async () => {
       const agent = await getAuthenticatedAgent();
 
-      const response = await agent.get(profileEndpoint).expect(StatusCodes.OK);
+      const response = await agent
+        .get(AUTH_PROFILE_ROUTE)
+        .expect(StatusCodes.OK);
 
       expectSuccess(response);
       expectResultsWithLength(response, 1);
@@ -52,7 +54,7 @@ describe(`POST ${profileEndpoint}`, () => {
 
     it('should reject returning profile data for an unauthenticated user', async () => {
       const response = await supertest(app)
-        .get(profileEndpoint)
+        .get(AUTH_PROFILE_ROUTE)
         .expect(StatusCodes.UNAUTHORIZED);
 
       expectError(response);

@@ -4,20 +4,19 @@ import supertest from 'supertest';
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { app } from '@/app';
-import {
-  cleanup,
-  expectError,
-  expectResultsWithLength,
-  expectSuccess,
-  expectValidationError,
-  isIsoDate,
-  isUUID,
-  newApiRegisterBody,
-  newString,
-  registerEndpoint,
-} from '@/utils/test';
+import { cleanup, newString } from '@/utils/test';
 import { makeUserRepository } from '@/utils/factory';
 import { hasCorrectHash } from '@/utils/password';
+import {
+  AUTH_BASE_ROUTE,
+  expectUserWithRegisteredBody,
+  expectError,
+  expectValidationError,
+  newApiRegisterBody,
+  expectAuthCookie,
+} from '@/utils/test.route';
+
+const registerEndpoint = `${AUTH_BASE_ROUTE}/register`;
 
 describe(`POST ${registerEndpoint}`, () => {
   afterEach(async () => {
@@ -33,30 +32,7 @@ describe(`POST ${registerEndpoint}`, () => {
         .send(data)
         .expect(StatusCodes.CREATED);
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
-
-      const createdUser = response.body.data.results[0];
-      expect(createdUser).toMatchObject({
-        name: data.name,
-        email: data.email,
-      });
-      expect(isUUID(createdUser.userId)).toBe(true);
-      expect(isIsoDate(createdUser.createdAt)).toBe(true);
-      expect(isIsoDate(createdUser.updatedAt)).toBe(true);
-    });
-
-    it('should not expose password after registration', async () => {
-      const response = await supertest(app)
-        .post(registerEndpoint)
-        .send(newApiRegisterBody())
-        .expect(StatusCodes.CREATED);
-
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
-
-      const createdUser = response.body.data.results[0];
-      expect(createdUser).not.toHaveProperty('password');
+      expectUserWithRegisteredBody(response, data);
     });
 
     it('should return access token and set authentication cookie after registration', async () => {
@@ -65,18 +41,7 @@ describe(`POST ${registerEndpoint}`, () => {
         .send(newApiRegisterBody())
         .expect(StatusCodes.CREATED);
 
-      const cookies = response.headers['set-cookie'] as unknown as string[];
-
-      expect(cookies).toBeDefined();
-      expect(cookies.length).toBeGreaterThan(0);
-
-      const authCookie = cookies.find((cookie) =>
-        cookie.startsWith('accessToken='),
-      );
-
-      expect(authCookie).toBeDefined();
-      expect(authCookie).toContain('HttpOnly');
-      expect(authCookie).toContain('Path=/');
+      expectAuthCookie(response);
     });
 
     it('should trim name, email and password and save them without leading/trailing spaces after registration', async () => {
@@ -91,16 +56,15 @@ describe(`POST ${registerEndpoint}`, () => {
         .send(dataWithWhiteSpace)
         .expect(StatusCodes.CREATED);
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
-
-      const createdUser = response.body.data.results[0];
-      expect(createdUser.name).toBe(dataWithWhiteSpace.name.trim());
-      expect(createdUser.email).toBe(dataWithWhiteSpace.email.trim());
+      const { registeredUser } = expectUserWithRegisteredBody(response, {
+        ...dataWithWhiteSpace,
+        name: dataWithWhiteSpace.name.trim(),
+        email: dataWithWhiteSpace.email.trim(),
+      });
 
       // persistence
       const savedUser = await makeUserRepository().findById({
-        userId: createdUser.userId,
+        userId: registeredUser.userId,
       });
       await expect(
         hasCorrectHash(
@@ -250,19 +214,24 @@ describe(`POST ${registerEndpoint}`, () => {
 
   describe('edge cases', () => {
     it('should ignore unexpected fields upon registration', async () => {
+      const dataWithoutRole = newApiRegisterBody();
+
+      const dataWithRole = {
+        ...dataWithoutRole,
+        role: 'admin',
+      };
+
       const response = await supertest(app)
         .post(registerEndpoint)
-        .send({
-          ...newApiRegisterBody(),
-          role: 'admin',
-        })
+        .send(dataWithRole)
         .expect(StatusCodes.CREATED);
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
+      const { registeredUser } = expectUserWithRegisteredBody(
+        response,
+        dataWithoutRole,
+      );
 
-      const createdUser = response.body.data.results[0];
-      expect(createdUser).not.toHaveProperty('role');
+      expect(registeredUser).not.toHaveProperty('role');
     });
   });
 });

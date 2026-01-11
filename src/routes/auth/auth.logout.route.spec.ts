@@ -3,15 +3,15 @@ import supertest from 'supertest';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { app } from '@/app';
+import { cleanup } from '@/utils/test';
 import {
-  cleanup,
+  AUTH_LOGOUT_ROUTE,
+  AUTH_PROFILE_ROUTE,
   expectError,
   getAuthenticatedAgent,
-  logoutEndpoint,
-  profileEndpoint,
-} from '@/utils/test';
+} from '@/utils/test.route';
 
-describe(`POST ${logoutEndpoint}`, () => {
+describe(`POST ${AUTH_LOGOUT_ROUTE}`, () => {
   afterEach(async () => {
     await cleanup();
   });
@@ -21,7 +21,7 @@ describe(`POST ${logoutEndpoint}`, () => {
       const agent = await getAuthenticatedAgent();
 
       const response = await agent
-        .post(logoutEndpoint)
+        .post(AUTH_LOGOUT_ROUTE)
         .expect(StatusCodes.NO_CONTENT);
 
       const cookies = response.headers['set-cookie'] as unknown as string[];
@@ -33,12 +33,12 @@ describe(`POST ${logoutEndpoint}`, () => {
       expect(typeof authCookie).toBe('string');
       expect(authCookie).toContain('accessToken=;');
 
-      await agent.get(profileEndpoint).expect(StatusCodes.UNAUTHORIZED);
+      await agent.get(AUTH_PROFILE_ROUTE).expect(StatusCodes.UNAUTHORIZED);
     });
 
     it('should reject clearing for an unauthenticated user', async () => {
       const response = await supertest(app)
-        .post(logoutEndpoint)
+        .post(AUTH_LOGOUT_ROUTE)
         .expect(StatusCodes.UNAUTHORIZED);
 
       expectError(response);
