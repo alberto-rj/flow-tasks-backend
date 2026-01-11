@@ -3,16 +3,16 @@ import supertest from 'supertest';
 import { afterEach, describe, it } from 'vitest';
 
 import { app } from '@/app';
+import { cleanup } from '@/utils/test';
 import {
-  getAuthenticatedAgent,
-  refreshEndpoint,
-  profileEndpoint,
+  AUTH_PROFILE_ROUTE,
+  AUTH_REFRESH_ROUTE,
   expectAuthCookie,
-  cleanup,
   expectError,
-} from '@/utils/test';
+  getAuthenticatedAgent,
+} from '@/utils/test.route';
 
-describe(`POST ${refreshEndpoint}`, () => {
+describe(`POST ${AUTH_REFRESH_ROUTE}`, () => {
   afterEach(async () => {
     await cleanup();
   });
@@ -22,17 +22,17 @@ describe(`POST ${refreshEndpoint}`, () => {
       const agent = await getAuthenticatedAgent();
 
       const response = await agent
-        .post(refreshEndpoint)
+        .post(AUTH_REFRESH_ROUTE)
         .expect(StatusCodes.NO_CONTENT);
 
       expectAuthCookie(response);
 
-      await agent.get(profileEndpoint).expect(StatusCodes.OK);
+      await agent.get(AUTH_PROFILE_ROUTE).expect(StatusCodes.OK);
     });
 
     it('should reject updating for an unauthenticated user', async () => {
       const response = await supertest(app)
-        .post(refreshEndpoint)
+        .post(AUTH_REFRESH_ROUTE)
         .expect(StatusCodes.UNAUTHORIZED);
 
       expectError(response);

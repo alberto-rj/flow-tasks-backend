@@ -4,75 +4,58 @@ import supertest from 'supertest';
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { app } from '@/app';
+import { cleanup } from '@/utils/test';
 import {
-  cleanup,
-  expectError,
-  expectResultsWithLength,
-  expectSuccess,
-  expectValidationError,
-  isIsoDate,
-  isUUID,
-  newApiRegisterBody,
-  loginEndpoint,
-  registerEndpoint,
-  newApiLoginBody,
+  AUTH_LOGIN_ROUTE,
+  AUTH_REGISTER_ROUTE,
   expectAuthCookie,
-  registerAndLogin,
-} from '@/utils/test';
+  expectError,
+  expectUserWithRegisteredBody,
+  expectValidationError,
+  getAuthenticatedUser,
+  newApiLoginBody,
+  newApiRegisterBody,
+} from '@/utils/test.route';
 
-describe(`POST ${loginEndpoint}`, () => {
+describe(`POST ${AUTH_LOGIN_ROUTE}`, () => {
   afterEach(async () => {
     await cleanup();
   });
 
   describe('success cases', () => {
     it('should return user with correct structure', async () => {
-      const { registerData, response } = await registerAndLogin();
+      const registrationData = newApiRegisterBody();
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
+      const { response } = await getAuthenticatedUser(registrationData);
 
-      const createdUser = response.body.data.results[0];
-      expect(createdUser).toMatchObject({
-        name: registerData.name,
-        email: registerData.email,
-      });
-      expect(isUUID(createdUser.userId)).toBe(true);
-      expect(isIsoDate(createdUser.createdAt)).toBe(true);
-      expect(isIsoDate(createdUser.updatedAt)).toBe(true);
+      expectUserWithRegisteredBody(response, registrationData);
     });
 
     it('should not expose password after login', async () => {
-      const { response } = await registerAndLogin();
+      const { authenticatedUser } = await getAuthenticatedUser();
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
-
-      const createdUser = response.body.data.results[0];
-      expect(createdUser).not.toHaveProperty('password');
+      expect(authenticatedUser).not.toHaveProperty('password');
     });
 
     it('should return access token and set authentication cookie after login', async () => {
-      const { response } = await registerAndLogin();
+      const { response } = await getAuthenticatedUser();
 
       expectAuthCookie(response);
     });
 
     it('should allow login when email and password include leading/trailing spaces', async () => {
-      const { registerData: dataWithWhiteSpace, response } =
-        await registerAndLogin({
-          registerData: newApiRegisterBody({
-            includeLeadingWhiteSpace: true,
-            includeTrailingWhiteSpace: true,
-          }),
-        });
+      const dataWithWhiteSpace = newApiRegisterBody({
+        includeLeadingWhiteSpace: true,
+        includeTrailingWhiteSpace: true,
+      });
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
+      const { response } = await getAuthenticatedUser(dataWithWhiteSpace);
 
-      const createdUser = response.body.data.results[0];
-      expect(createdUser.name).toBe(dataWithWhiteSpace.name.trim());
-      expect(createdUser.email).toBe(dataWithWhiteSpace.email.trim());
+      expectUserWithRegisteredBody(response, {
+        ...dataWithWhiteSpace,
+        name: dataWithWhiteSpace.name.trim(),
+        email: dataWithWhiteSpace.email.trim(),
+      });
     });
   });
 
@@ -82,7 +65,7 @@ describe(`POST ${loginEndpoint}`, () => {
         const { email, ...dataWithoutEmail } = newApiLoginBody();
 
         const response = await supertest(app)
-          .post(loginEndpoint)
+          .post(AUTH_LOGIN_ROUTE)
           .send(dataWithoutEmail)
           .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
@@ -93,7 +76,7 @@ describe(`POST ${loginEndpoint}`, () => {
         const unexpectedEmailType = false;
 
         const response = await supertest(app)
-          .post(loginEndpoint)
+          .post(AUTH_LOGIN_ROUTE)
           .send({ ...newApiLoginBody(), email: unexpectedEmailType })
           .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
@@ -108,7 +91,7 @@ describe(`POST ${loginEndpoint}`, () => {
         };
 
         const response = await supertest(app)
-          .post(loginEndpoint)
+          .post(AUTH_LOGIN_ROUTE)
           .send(data)
           .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
@@ -121,7 +104,7 @@ describe(`POST ${loginEndpoint}`, () => {
         const { password, ...dataWithoutPassword } = newApiLoginBody();
 
         const response = await supertest(app)
-          .post(loginEndpoint)
+          .post(AUTH_LOGIN_ROUTE)
           .send(dataWithoutPassword)
           .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
@@ -132,7 +115,7 @@ describe(`POST ${loginEndpoint}`, () => {
         const unexpectedPasswordType = true;
 
         const response = await supertest(app)
-          .post(loginEndpoint)
+          .post(AUTH_LOGIN_ROUTE)
           .send({ ...newApiLoginBody(), password: unexpectedPasswordType })
           .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
@@ -147,7 +130,7 @@ describe(`POST ${loginEndpoint}`, () => {
         };
 
         const response = await supertest(app)
-          .post(loginEndpoint)
+          .post(AUTH_LOGIN_ROUTE)
           .send(dataWithWeakPassword)
           .expect(StatusCodes.UNPROCESSABLE_ENTITY);
 
@@ -163,12 +146,12 @@ describe(`POST ${loginEndpoint}`, () => {
       const { password } = registerData;
 
       await supertest(app)
-        .post(registerEndpoint)
+        .post(AUTH_REGISTER_ROUTE)
         .send(registerData)
         .expect(StatusCodes.CREATED);
 
       const response = await supertest(app)
-        .post(loginEndpoint)
+        .post(AUTH_LOGIN_ROUTE)
         .send({ email: wrongEmail, password })
         .expect(StatusCodes.BAD_REQUEST);
 
@@ -181,12 +164,12 @@ describe(`POST ${loginEndpoint}`, () => {
       const { email } = registerData;
 
       await supertest(app)
-        .post(registerEndpoint)
+        .post(AUTH_REGISTER_ROUTE)
         .send(registerData)
         .expect(StatusCodes.CREATED);
 
       const response = await supertest(app)
-        .post(loginEndpoint)
+        .post(AUTH_LOGIN_ROUTE)
         .send({ email, password: wrongPassword })
         .expect(StatusCodes.BAD_REQUEST);
 
@@ -195,7 +178,7 @@ describe(`POST ${loginEndpoint}`, () => {
 
     it('should not allow login for a non-existing user', async () => {
       const response = await supertest(app)
-        .post(loginEndpoint)
+        .post(AUTH_LOGIN_ROUTE)
         .send(newApiLoginBody())
         .expect(StatusCodes.BAD_REQUEST);
 

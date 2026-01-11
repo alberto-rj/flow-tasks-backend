@@ -1,8 +1,3 @@
-import { StatusCodes } from 'http-status-codes';
-import supertest from 'supertest';
-import { expect } from 'vitest';
-
-import { app } from '@/app';
 import { load } from '@/config/env';
 import type { RegisterDto } from '@/dtos/auth';
 import type { TodoCreateDto } from '@/dtos/todo';
@@ -259,95 +254,7 @@ export function isUUID(value: unknown) {
   return result.success;
 }
 
-export function expectSuccess(response: supertest.Response) {
-  expect(response.body.success).toBe(true);
-}
-
-export function expectResultsWithLength(
-  response: supertest.Response,
-  length: number,
-) {
-  expect(response.body.data.results).toHaveLength(length);
-}
-
-export function expectAuthCookie(response: supertest.Response) {
-  const cookies = response.headers['set-cookie'] as unknown as string[];
-
-  expect(cookies.length).toBeGreaterThan(0);
-
-  const authCookie = cookies.find((cookie) =>
-    cookie.startsWith('accessToken='),
-  );
-
-  expect(typeof authCookie).toBe('string');
-  expect(authCookie).toContain('HttpOnly');
-  expect(authCookie).toContain('Path=/');
-}
-
-export function expectValidationError(
-  response: supertest.Response,
-  field: string,
-) {
-  expect(response.body.success).toBe(false);
-  expect(response.body.data.error[field].errors).toBeInstanceOf(Array);
-}
-
-export function expectError(response: supertest.Response) {
-  expect(response.body.success).toBe(false);
-  expect(typeof response.body.data.error.message).toBe('string');
-}
-
 export async function cleanup() {
   await makeTodoRepository().clear();
   await makeUserRepository().clear();
-}
-
-export async function registerAndLogin(
-  options: {
-    registerData?: ApiRegisterBody;
-    registerStatus?: number;
-    loginStatus?: number;
-  } = {},
-) {
-  const {
-    registerData = newApiRegisterBody(),
-    registerStatus = StatusCodes.CREATED,
-    loginStatus = StatusCodes.OK,
-  } = options;
-
-  const loginData = {
-    email: registerData.email,
-    password: registerData.password,
-  };
-
-  await supertest(app)
-    .post(registerEndpoint)
-    .send(registerData)
-    .expect(registerStatus);
-
-  const response = await supertest(app)
-    .post(loginEndpoint)
-    .send(loginData)
-    .expect(loginStatus);
-
-  return { registerData, loginData, response };
-}
-
-export async function getAuthenticatedAgent() {
-  const agent = supertest.agent(app);
-
-  const registerData = newApiRegisterBody();
-  const { email, password } = registerData;
-
-  await agent
-    .post(registerEndpoint)
-    .send(registerData)
-    .expect(StatusCodes.CREATED);
-
-  await agent
-    .post(loginEndpoint)
-    .send({ email, password })
-    .expect(StatusCodes.OK);
-
-  return agent;
 }

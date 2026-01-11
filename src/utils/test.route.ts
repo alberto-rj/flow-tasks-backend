@@ -4,12 +4,13 @@ import { expect } from 'vitest';
 
 import { app } from '@/app';
 import { load } from '@/config/env';
+import type { TodoDto } from '@/dtos/todo';
+import type { UserDto } from '@/dtos/user';
+import type { TodoStats } from '@/entities';
 import type { ApiLoginBody, ApiRegisterBody } from '@/schemas/auth';
 import type { ApiCreateTodoBody, ApiUpdateTodoBody } from '@/schemas/todo';
 import { makeTodoRepository, makeUserRepository } from '@/utils/factory';
 import { isIsoDate, isUUID } from '@/utils/test';
-import type { TodoDto } from '@/dtos/todo';
-import type { TodoStats } from '@/entities';
 
 export const env = load('test');
 
@@ -17,11 +18,11 @@ export type SuperTestAgent = Awaited<ReturnType<typeof getAuthenticatedAgent>>;
 
 /* Auth endpoints */
 export const AUTH_BASE_ROUTE = '/api/auth';
-export const registerEndpoint = '/api/auth/register';
-export const loginEndpoint = '/api/auth/login';
-export const logoutEndpoint = '/api/auth/logout';
-export const refreshEndpoint = '/api/auth/refresh';
-export const profileEndpoint = '/api/auth/me';
+export const AUTH_REGISTER_ROUTE = '/api/auth/register';
+export const AUTH_LOGIN_ROUTE = '/api/auth/login';
+export const AUTH_LOGOUT_ROUTE = '/api/auth/logout';
+export const AUTH_REFRESH_ROUTE = '/api/auth/refresh';
+export const AUTH_PROFILE_ROUTE = '/api/auth/me';
 
 /* Todo endpoints */
 export const TODOS_BASE_ROUTE = '/api/todos';
@@ -155,23 +156,25 @@ export function expectAuthCookie(response: supertest.Response) {
   expect(authCookie).toContain('Path=/');
 }
 
-export function expectCreatedUserWithBody(
+export function expectUserWithRegisteredBody(
   response: supertest.Response,
   data: ApiRegisterBody,
 ) {
   expectSuccess(response);
   expectResultsWithLength(response, 1);
 
-  const createdUser = response.body.data.results[0];
+  const registeredUser = response.body.data.results[0] as UserDto;
 
-  expect(createdUser).toMatchObject({
+  expect(registeredUser).toMatchObject({
     name: data.name,
     email: data.email,
   });
-  expect(isUUID(createdUser.userId)).toBe(true);
-  expect(isIsoDate(createdUser.createdAt)).toBe(true);
-  expect(isIsoDate(createdUser.updatedAt)).toBe(true);
-  expect(createdUser).not.toHaveProperty('password');
+  expect(isUUID(registeredUser.userId)).toBe(true);
+  expect(isIsoDate(registeredUser.createdAt)).toBe(true);
+  expect(isIsoDate(registeredUser.updatedAt)).toBe(true);
+  expect(registeredUser).not.toHaveProperty('password');
+
+  return { registeredUser };
 }
 
 export function expectCreatedTodoWithBody(
@@ -181,7 +184,7 @@ export function expectCreatedTodoWithBody(
   expectSuccess(response);
   expectResultsWithLength(response, 1);
 
-  const createdTodo = response.body.data.results[0];
+  const createdTodo = response.body.data.results[0] as TodoDto;
 
   expect(createdTodo.title).toBe(data.title);
   expect(isUUID(createdTodo.todoId)).toBe(true);
@@ -269,35 +272,63 @@ export function expectError(response: supertest.Response) {
   expect(typeof response.body.data.error.message).toBe('string');
 }
 
-export async function registerAndLogin(
-  options: {
-    registerData?: ApiRegisterBody;
-    registerStatus?: number;
-    loginStatus?: number;
-  } = {},
-) {
-  const {
-    registerData = newApiRegisterBody(),
-    registerStatus = StatusCodes.CREATED,
-    loginStatus = StatusCodes.OK,
-  } = options;
+export async function getRegisteredUser(data = newApiRegisterBody()) {
+  const response = await supertest(app)
+    .post(AUTH_REGISTER_ROUTE)
+    .send(data)
+    .expect(StatusCodes.CREATED);
+
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
+  const registeredUser = response.body.data.results[0] as UserDto;
+
+  return { registeredUser, response };
+}
+
+export async function getAuthenticatedUser(data = newApiRegisterBody()) {
+  const { registeredUser } = await getRegisteredUser(data);
 
   const loginData = {
-    email: registerData.email,
-    password: registerData.password,
+    email: registeredUser.email,
+    password: data.password,
+  };
+
+  const response = await supertest(app)
+    .post(AUTH_LOGIN_ROUTE)
+    .send(loginData)
+    .expect(StatusCodes.OK);
+
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
+  const authenticatedUser = response.body.data.results[0] as UserDto;
+
+  return { authenticatedUser, response };
+}
+
+export async function registerAndLogin(data = newApiRegisterBody()) {
+  const loginData = {
+    email: data.email,
+    password: data.password,
   };
 
   await supertest(app)
-    .post(registerEndpoint)
-    .send(registerData)
-    .expect(registerStatus);
+    .post(AUTH_REGISTER_ROUTE)
+    .send(data)
+    .expect(StatusCodes.CREATED);
 
   const response = await supertest(app)
-    .post(loginEndpoint)
+    .post(AUTH_LOGIN_ROUTE)
     .send(loginData)
-    .expect(loginStatus);
+    .expect(StatusCodes.OK);
 
-  return { registerData, loginData, response };
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
+  const userData = response.body.data.results[0];
+
+  return { registerData: data, userData, loginData, response };
 }
 
 export async function getAuthenticatedAgent() {
@@ -307,12 +338,12 @@ export async function getAuthenticatedAgent() {
   const { email, password } = registerData;
 
   await agent
-    .post(registerEndpoint)
+    .post(AUTH_REGISTER_ROUTE)
     .send(registerData)
     .expect(StatusCodes.CREATED);
 
   await agent
-    .post(loginEndpoint)
+    .post(AUTH_LOGIN_ROUTE)
     .send({ email, password })
     .expect(StatusCodes.OK);
 
