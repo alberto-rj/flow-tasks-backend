@@ -155,6 +155,25 @@ export function expectAuthCookie(response: supertest.Response) {
   expect(authCookie).toContain('Path=/');
 }
 
+export function expectCreatedUserWithBody(
+  response: supertest.Response,
+  data: ApiRegisterBody,
+) {
+  expectSuccess(response);
+  expectResultsWithLength(response, 1);
+
+  const createdUser = response.body.data.results[0];
+
+  expect(createdUser).toMatchObject({
+    name: data.name,
+    email: data.email,
+  });
+  expect(isUUID(createdUser.userId)).toBe(true);
+  expect(isIsoDate(createdUser.createdAt)).toBe(true);
+  expect(isIsoDate(createdUser.updatedAt)).toBe(true);
+  expect(createdUser).not.toHaveProperty('password');
+}
+
 export function expectCreatedTodoWithBody(
   response: supertest.Response,
   data: ApiCreateTodoBody,

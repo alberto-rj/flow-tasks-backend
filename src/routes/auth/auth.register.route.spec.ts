@@ -4,20 +4,20 @@ import supertest from 'supertest';
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { app } from '@/app';
+import { cleanup, newString } from '@/utils/test';
+import { makeUserRepository } from '@/utils/factory';
+import { hasCorrectHash } from '@/utils/password';
 import {
-  cleanup,
+  AUTH_BASE_ROUTE,
+  expectCreatedUserWithBody,
   expectError,
   expectResultsWithLength,
   expectSuccess,
   expectValidationError,
-  isIsoDate,
-  isUUID,
   newApiRegisterBody,
-  newString,
-  registerEndpoint,
-} from '@/utils/test';
-import { makeUserRepository } from '@/utils/factory';
-import { hasCorrectHash } from '@/utils/password';
+} from '@/utils/test.route';
+
+const registerEndpoint = `${AUTH_BASE_ROUTE}/register`;
 
 describe(`POST ${registerEndpoint}`, () => {
   afterEach(async () => {
@@ -33,30 +33,7 @@ describe(`POST ${registerEndpoint}`, () => {
         .send(data)
         .expect(StatusCodes.CREATED);
 
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
-
-      const createdUser = response.body.data.results[0];
-      expect(createdUser).toMatchObject({
-        name: data.name,
-        email: data.email,
-      });
-      expect(isUUID(createdUser.userId)).toBe(true);
-      expect(isIsoDate(createdUser.createdAt)).toBe(true);
-      expect(isIsoDate(createdUser.updatedAt)).toBe(true);
-    });
-
-    it('should not expose password after registration', async () => {
-      const response = await supertest(app)
-        .post(registerEndpoint)
-        .send(newApiRegisterBody())
-        .expect(StatusCodes.CREATED);
-
-      expectSuccess(response);
-      expectResultsWithLength(response, 1);
-
-      const createdUser = response.body.data.results[0];
-      expect(createdUser).not.toHaveProperty('password');
+      expectCreatedUserWithBody(response, data);
     });
 
     it('should return access token and set authentication cookie after registration', async () => {
@@ -250,12 +227,14 @@ describe(`POST ${registerEndpoint}`, () => {
 
   describe('edge cases', () => {
     it('should ignore unexpected fields upon registration', async () => {
+      const data = {
+        ...newApiRegisterBody(),
+        role: 'admin',
+      };
+
       const response = await supertest(app)
         .post(registerEndpoint)
-        .send({
-          ...newApiRegisterBody(),
-          role: 'admin',
-        })
+        .send(data)
         .expect(StatusCodes.CREATED);
 
       expectSuccess(response);
