@@ -1,5 +1,9 @@
 import z from '@/config/zod';
-import { CreatedAtSchema, UpdatedAtSchema } from '@/schemas/shared';
+import {
+  createApiResultResponseSchema,
+  CreatedAtSchema,
+  UpdatedAtSchema,
+} from '@/schemas/common';
 
 export const UserIdSchema = z
   .string({
@@ -88,3 +92,6 @@ export const ApiUserSchema = z.object({
   createdAt: CreatedAtSchema,
   updatedAt: UpdatedAtSchema,
 });
+
+export const ApiUserResultResponseSchema =
+  createApiResultResponseSchema(ApiUserSchema);

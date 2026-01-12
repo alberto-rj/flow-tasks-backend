@@ -1,34 +1,48 @@
 import cookieParser from 'cookie-parser';
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 
 import { load } from '@/config/env';
 import { errorHandler, notFoundHandler } from '@/middlewares';
 import { authRoute, healthRoute, todosRoute } from '@/routes';
+import { openapi } from '@/openapi';
 
 const { PORT, NODE_ENV } = load();
 
 export const app = express();
 
-// global middlewares
+// Global middlewares
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+/* Swagger UI */
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(openapi, {
+    customSiteTitle: 'FlowTasks API Documentation',
+  }),
+);
 
 // API routes
 app.use('/api/auth', authRoute);
 app.use('/api/todos', todosRoute);
 app.use('/api/health', healthRoute);
 
-// middleware for not found routes
+// Middleware for not found routes
 app.use(notFoundHandler);
 
-// middleware for global error handling
+// Middleware for global error handling
 app.use(errorHandler);
 
 if (NODE_ENV !== 'test') {
   app.listen(PORT, () => {
+    // eslint-disable-next-line no-console
     console.log(
       `Server is running at http://localhost:${PORT} in "${NODE_ENV}" mode.`,
     );
+    // eslint-disable-next-line no-console
+    console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
   });
 }
