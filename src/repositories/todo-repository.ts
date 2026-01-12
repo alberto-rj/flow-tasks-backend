@@ -1,4 +1,3 @@
-import type { Todo, TodoStats } from '@/entities';
 import type {
   TodoCreateDto,
   TodoFindByIdDto,
@@ -11,6 +10,7 @@ import type {
   TodoReorderByIdDto,
   TodoGetStatsByUserIdDto,
 } from '@/dtos/todo';
+import type { Todo, TodoStats } from '@/entities';
 
 export interface TodoRepository {
   create: (params: TodoCreateDto) => Promise<Todo>;
