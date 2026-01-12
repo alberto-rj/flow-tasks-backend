@@ -1,5 +1,10 @@
 import z from '@/config/zod';
-import { CreatedAtSchema, UpdatedAtSchema } from '@/schemas/shared';
+import {
+  createApiResultListResponseSchema,
+  createApiResultResponseSchema,
+  CreatedAtSchema,
+  UpdatedAtSchema,
+} from '@/schemas/common';
 import { UserIdSchema } from '@/schemas/user';
 
 /* Base schemas (start) */
@@ -181,3 +186,18 @@ export const ApiDeleteTodoSchema = z.object({
 export type ApiDeleteTodo = z.infer<typeof ApiDeleteTodoSchema>;
 export type ApiDeleteTodoParams = z.infer<typeof ApiDeleteTodoParamsSchemas>;
 /* Deletion schemas (end) */
+
+export const ApiTodoResultResponseSchema =
+  createApiResultResponseSchema(ApiTodoSchema);
+
+export const ApiTodoResultListResponseSchema =
+  createApiResultListResponseSchema(ApiTodoSchema);
+
+export const ApiTodosStatsSchema = z.object({
+  total: z.int().min(0),
+  active: z.int().min(0),
+  completed: z.int().min(0),
+});
+
+export const ApiTodoStatsResultResponseSchema =
+  createApiResultResponseSchema(ApiTodosStatsSchema);
