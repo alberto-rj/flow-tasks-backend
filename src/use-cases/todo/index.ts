@@ -12,6 +12,11 @@ export {
   DeleteTodoListUseCase,
 } from './delete-todo-list-use-case';
 export {
+  type FindTodoUseCaseParams,
+  type FindTodoUseCaseResult,
+  FindTodoUseCase,
+} from './find-todo-use-case';
+export {
   type GetTodoStatsUseCaseParams,
   type GetTodoStatsUseCaseResult,
   GetTodoStatsUseCase,
