@@ -11,7 +11,7 @@ export const listRegistry = new OpenAPIRegistry();
 
 listRegistry.registerPath({
   method: 'get',
-  path: '/api/todos',
+  path: '/todos',
   summary: 'List todos',
   description:
     'Returns a list of todos for the authenticated user with optional filtering, search, and sorting.',

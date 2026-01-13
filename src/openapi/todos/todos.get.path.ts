@@ -7,23 +7,22 @@ import {
   unprocessableEntityResponse,
   notFoundResponse,
 } from '../common';
-import { ApiDeleteTodoParamsSchemas } from '@/schemas/todo';
+import { ApiFindTodoParamsSchemas } from '@/schemas/todo';
 
-export const deleteRegistry = new OpenAPIRegistry();
+export const getRegistry = new OpenAPIRegistry();
 
-deleteRegistry.registerPath({
-  method: 'delete',
+getRegistry.registerPath({
+  method: 'get',
   path: '/todos/{todoId}',
-  summary: 'Delete an existing todo item',
-  description:
-    'Deletes a todo item identified by todoId. Only the owner of the todo can delete it.',
+  summary: 'Get todo by id',
+  description: 'Returns a single todo item owned by the authenticated user.',
   security: [{ cookieAuth: [] }],
   request: {
-    params: ApiDeleteTodoParamsSchemas,
+    params: ApiFindTodoParamsSchemas,
   },
   responses: {
-    [StatusCodes.NO_CONTENT]: {
-      description: 'Todo item successfully deleted. No content is returned.',
+    [StatusCodes.OK]: {
+      description: 'Todo found',
     },
     ...unauthorizedResponse,
     ...notFoundResponse,

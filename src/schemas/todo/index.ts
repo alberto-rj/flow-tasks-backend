@@ -199,8 +199,10 @@ export type ApiFindTodoParams = z.infer<typeof ApiFindTodoParamsSchemas>;
 export const ApiTodoResultResponseSchema =
   createApiResultResponseSchema(ApiTodoSchema);
 
+export const ApiTodoResultListSchema = z.array(ApiTodoSchema);
+
 export const ApiTodoResultListResponseSchema =
-  createApiResultListResponseSchema(ApiTodoSchema);
+  createApiResultListResponseSchema(ApiTodoResultListSchema);
 
 export const ApiTodosStatsSchema = z.object({
   total: z.int().min(0),

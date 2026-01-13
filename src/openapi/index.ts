@@ -42,13 +42,4 @@ export const openapi = generator.generateDocument({
       description: 'User authentication management',
     },
   ],
-  components: {
-    securitySchemes: {
-      cookieAuth: {
-        type: 'apiKey',
-        in: 'cookie',
-        name: 'accessToken',
-      },
-    },
-  },
 });

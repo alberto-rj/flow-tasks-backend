@@ -8,7 +8,7 @@ export const profileRegistry = new OpenAPIRegistry();
 
 profileRegistry.registerPath({
   method: 'get',
-  path: '/api/auth/me',
+  path: '/auth/me',
   summary: 'Get authenticated user profile',
   description:
     'Returns the profile information of the currently authenticated user based on the active authentication cookie.',

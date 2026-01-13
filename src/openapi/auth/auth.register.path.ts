@@ -13,7 +13,7 @@ export const registerRegistry = new OpenAPIRegistry();
 
 registerRegistry.registerPath({
   method: 'post',
-  path: '/api/auth/register',
+  path: '/auth/register',
   summary: 'Create a new user account',
   description:
     'Creates a new user account and sets an authentication cookie on success.',

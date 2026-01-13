@@ -13,7 +13,7 @@ export const reorderListRegistry = new OpenAPIRegistry();
 
 reorderListRegistry.registerPath({
   method: 'patch',
-  path: '/api/todos',
+  path: '/todos',
   summary: 'Reorder multiple todos',
   description: 'Updates the order of multiple todos.',
   security: [{ cookieAuth: [] }],
