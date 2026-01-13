@@ -6,12 +6,14 @@ import { toggleRegistry } from './todos.toggle';
 import { updateRegistry } from './todos.update';
 import { statsRegistry } from './todos.stats.path';
 import { listRegistry } from './todos.list.path';
+import { getRegistry } from './todos.get.path';
 
 export const todosDefinitions = [
   ...createRegistry.definitions,
   ...updateRegistry.definitions,
   ...toggleRegistry.definitions,
   ...deleteRegistry.definitions,
+  ...getRegistry.definitions,
   ...deleteListRegistry.definitions,
   ...reorderListRegistry.definitions,
   ...statsRegistry.definitions,
