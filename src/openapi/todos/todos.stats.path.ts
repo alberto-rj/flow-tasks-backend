@@ -8,7 +8,7 @@ export const statsRegistry = new OpenAPIRegistry();
 
 statsRegistry.registerPath({
   method: 'get',
-  path: '/api/todos/stats',
+  path: '/todos/stats',
   summary: 'Get todo statistics',
   description:
     'Returns total, active, and completed todos counts for the user.',

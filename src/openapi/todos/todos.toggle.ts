@@ -16,7 +16,7 @@ export const toggleRegistry = new OpenAPIRegistry();
 
 toggleRegistry.registerPath({
   method: 'patch',
-  path: '/api/todos/{todoId}/completed',
+  path: '/todos/{todoId}/completed',
   summary: 'Toggle todo completion',
   description:
     'Toggles the completion state of a todo owned by the authenticated user.',

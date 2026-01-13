@@ -7,7 +7,7 @@ export const refreshRegistry = new OpenAPIRegistry();
 
 refreshRegistry.registerPath({
   method: 'post',
-  path: '/api/auth/refresh',
+  path: '/auth/refresh',
   summary: 'Refresh authentication session',
   description:
     'Refreshes the authentication session by issuing a new authentication cookie for the currently authenticated user.',

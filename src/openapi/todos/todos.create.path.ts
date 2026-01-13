@@ -15,7 +15,7 @@ export const createRegistry = new OpenAPIRegistry();
 
 createRegistry.registerPath({
   method: 'post',
-  path: '/api/todos',
+  path: '/todos',
   summary: 'Create todo',
   description: 'Creates a new todo for the authenticated user.',
   security: [{ cookieAuth: [] }],

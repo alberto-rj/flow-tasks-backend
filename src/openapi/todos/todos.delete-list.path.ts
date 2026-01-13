@@ -12,7 +12,7 @@ export const deleteListRegistry = new OpenAPIRegistry();
 
 deleteListRegistry.registerPath({
   method: 'delete',
-  path: '/api/todos',
+  path: '/todos',
   summary: 'Delete todos',
   description: 'Deletes todos of the authenticated user based on the filter.',
   security: [{ cookieAuth: [] }],

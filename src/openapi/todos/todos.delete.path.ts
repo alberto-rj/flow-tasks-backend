@@ -13,7 +13,7 @@ export const deleteRegistry = new OpenAPIRegistry();
 
 deleteRegistry.registerPath({
   method: 'delete',
-  path: '/api/todos/{todoId}',
+  path: '/todos/{todoId}',
   summary: 'Delete an existing todo item',
   description:
     'Deletes a todo item identified by todoId. Only the owner of the todo can delete it.',

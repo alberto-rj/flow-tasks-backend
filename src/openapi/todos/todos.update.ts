@@ -17,7 +17,7 @@ export const updateRegistry = new OpenAPIRegistry();
 
 updateRegistry.registerPath({
   method: 'patch',
-  path: '/api/todos/{todoId}',
+  path: '/todos/{todoId}',
   summary: 'Update todo',
   description: 'Updates fields of a todo owned by the authenticated user.',
   security: [{ cookieAuth: [] }],

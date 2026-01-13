@@ -13,7 +13,7 @@ export const loginRegistry = new OpenAPIRegistry();
 
 loginRegistry.registerPath({
   method: 'post',
-  path: '/api/auth/login',
+  path: '/auth/login',
   summary: 'Authenticate a user',
   description:
     'Authenticates a user using email and password. On success, an authentication cookie is set, allowing access to protected endpoints.',

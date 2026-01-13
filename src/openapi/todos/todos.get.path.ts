@@ -13,7 +13,7 @@ export const getRegistry = new OpenAPIRegistry();
 
 getRegistry.registerPath({
   method: 'get',
-  path: '/api/todos/{todoId}',
+  path: '/todos/{todoId}',
   summary: 'Get todo by id',
   description: 'Returns a single todo item owned by the authenticated user.',
   security: [{ cookieAuth: [] }],

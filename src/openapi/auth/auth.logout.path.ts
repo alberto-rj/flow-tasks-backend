@@ -7,7 +7,7 @@ export const logoutRegistry = new OpenAPIRegistry();
 
 logoutRegistry.registerPath({
   method: 'post',
-  path: '/api/auth/logout',
+  path: '/auth/logout',
   summary: 'Logout authenticated user',
   description:
     'Logs out the currently authenticated user by clearing the authentication cookie and invalidating the active session.',
