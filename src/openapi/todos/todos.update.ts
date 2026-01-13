@@ -18,16 +18,14 @@ export const updateRegistry = new OpenAPIRegistry();
 updateRegistry.registerPath({
   method: 'patch',
   path: '/api/todos/{todoId}',
-  summary: 'Update an existing todo item',
-  description:
-    'Updates one or more fields of an existing todo item associated with the currently authenticated user. Only the provided fields are updated.',
+  summary: 'Update todo',
+  description: 'Updates fields of a todo owned by the authenticated user.',
   security: [{ cookieAuth: [] }],
   request: {
     params: ApiUpdateTodoParamsSchema,
     body: {
       required: true,
-      description:
-        'Todo update payload. Only the provided fields will be updated.',
+      description: 'Todo update payload',
       content: {
         'application/json': {
           schema: ApiUpdateTodoBodySchema,
@@ -37,7 +35,7 @@ updateRegistry.registerPath({
   },
   responses: {
     [StatusCodes.OK]: {
-      description: 'Todo item successfully updated.',
+      description: 'Todo updated',
       content: {
         'application/json': {
           schema: ApiTodoResultResponseSchema,

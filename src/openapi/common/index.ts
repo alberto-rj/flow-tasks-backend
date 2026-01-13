@@ -19,7 +19,7 @@ export const unauthorizedResponse = {
 
 export const notFoundResponse = {
   [StatusCodes.NOT_FOUND]: {
-    description: 'Resource not found.',
+    description: 'The requested resource was not found or is not accessible.',
     content: {
       'application/json': {
         schema: ApiErrorResponseSchema,

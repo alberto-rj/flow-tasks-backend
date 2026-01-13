@@ -16,15 +16,12 @@ export const createRegistry = new OpenAPIRegistry();
 createRegistry.registerPath({
   method: 'post',
   path: '/api/todos',
-  summary: 'Create a new todo item',
-  description:
-    'Creates a new todo item associated with the currently authenticated user.',
+  summary: 'Create todo',
+  description: 'Creates a new todo for the authenticated user.',
   security: [{ cookieAuth: [] }],
   request: {
     body: {
       required: true,
-      description:
-        'Todo creation payload containing the required fields to create a new todo item.',
       content: {
         'application/json': {
           schema: ApiCreateTodoBodySchema,
@@ -34,8 +31,7 @@ createRegistry.registerPath({
   },
   responses: {
     [StatusCodes.CREATED]: {
-      description:
-        'Todo item successfully created and associated with the authenticated user.',
+      description: 'Todo created',
       content: {
         'application/json': {
           schema: ApiTodoResultResponseSchema,
