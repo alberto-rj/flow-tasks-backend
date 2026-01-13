@@ -3,19 +3,11 @@ import type { RegisterDto } from '@/dtos/auth';
 import type { TodoCreateDto } from '@/dtos/todo';
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
-import type { ApiLoginBody, ApiRegisterBody } from '@/schemas/auth';
 import { makeTodoRepository, makeUserRepository } from '@/utils/factory';
 import { isoDateSchema, uuidSchema } from '@/utils/schemas';
 import { uuid } from '@/utils/uuid';
 
 export const env = load('test');
-
-/* Auth endpoints */
-export const registerEndpoint = '/api/auth/register';
-export const loginEndpoint = '/api/auth/login';
-export const logoutEndpoint = '/api/auth/logout';
-export const refreshEndpoint = '/api/auth/refresh';
-export const profileEndpoint = '/api/auth/me';
 
 type CreateTodoListParams = {
   todoRepository: TodoRepository;
@@ -174,48 +166,6 @@ export function newString({
   return newStr;
 }
 
-export function newApiRegisterBody(
-  options: {
-    includeLeadingWhiteSpace: boolean;
-    includeTrailingWhiteSpace: boolean;
-  } = {
-    includeLeadingWhiteSpace: false,
-    includeTrailingWhiteSpace: false,
-  },
-): ApiRegisterBody {
-  let name = 'John Doe';
-  let email = 'johndoe@example.com';
-  let password = 'johnDoe1234';
-  const emptySpace = '    ';
-
-  const { includeLeadingWhiteSpace, includeTrailingWhiteSpace } = options;
-
-  if (includeLeadingWhiteSpace) {
-    name = `${emptySpace}${name}`;
-    email = `${emptySpace}${email}`;
-    password = `${emptySpace}${password}`;
-  }
-
-  if (includeTrailingWhiteSpace) {
-    name = `${name}${emptySpace}`;
-    email = `${email}${emptySpace}`;
-    password = `${password}${emptySpace}`;
-  }
-
-  return {
-    name,
-    email,
-    password,
-  };
-}
-
-export function newApiLoginBody(): ApiLoginBody {
-  return {
-    email: 'johndoe@example.com',
-    password: 'johnDoe1234',
-  };
-}
-
 export function newRegisterDto(): RegisterDto {
   return {
     name: 'John Doe',
@@ -252,9 +202,4 @@ export function isIsoDate(value: unknown) {
 export function isUUID(value: unknown) {
   const result = uuidSchema.safeParse(value);
   return result.success;
-}
-
-export async function cleanup() {
-  await makeTodoRepository().clear();
-  await makeUserRepository().clear();
 }

@@ -15,6 +15,7 @@ import {
   CreateTodoUseCase,
   DeleteTodoListUseCase,
   DeleteTodoUseCase,
+  FindTodoUseCase,
   GetTodoStatsUseCase,
   ListTodoUseCase,
   ReorderTodoListUseCase,
@@ -79,6 +80,12 @@ export function makeListTodoUseCase(
   todoRepository: TodoRepository = makeTodoRepository(),
 ) {
   return new ListTodoUseCase(todoRepository);
+}
+
+export function makeFindTodoUseCase(
+  todoRepository: TodoRepository = makeTodoRepository(),
+) {
+  return new FindTodoUseCase(todoRepository);
 }
 
 export function makeUpdateTodoUseCase(

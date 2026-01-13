@@ -187,6 +187,15 @@ export type ApiDeleteTodo = z.infer<typeof ApiDeleteTodoSchema>;
 export type ApiDeleteTodoParams = z.infer<typeof ApiDeleteTodoParamsSchemas>;
 /* Deletion schemas (end) */
 
+/* Find schemas (start) */
+export const ApiFindTodoParamsSchemas = ApiTodoIdParamsSchema;
+export const ApiFindTodoSchema = z.object({
+  params: ApiFindTodoParamsSchemas,
+});
+export type ApiFindTodo = z.infer<typeof ApiFindTodoSchema>;
+export type ApiFindTodoParams = z.infer<typeof ApiFindTodoParamsSchemas>;
+/* Find schemas (end) */
+
 export const ApiTodoResultResponseSchema =
   createApiResultResponseSchema(ApiTodoSchema);
 

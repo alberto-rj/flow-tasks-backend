@@ -3,9 +3,10 @@ import supertest from 'supertest';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { app } from '@/app';
-import { cleanup, isUUID, isIsoDate } from '@/utils/test';
+import { isUUID, isIsoDate } from '@/utils/test';
 import {
   AUTH_PROFILE_ROUTE,
+  cleanup,
   expectError,
   expectResultsWithLength,
   expectSuccess,

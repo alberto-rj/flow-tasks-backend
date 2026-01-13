@@ -5,6 +5,7 @@ import {
   ApiCreateTodoBodySchema,
   ApiDeleteTodoListQuerySchema,
   ApiDeleteTodoParamsSchemas,
+  ApiFindTodoParamsSchemas,
   ApiListTodoQuerySchema,
   ApiReorderTodoListBodySchema,
   ApiToggleTodoParamsSchema,
@@ -13,6 +14,7 @@ import {
   type ApiCreateTodoBody,
   type ApiDeleteTodoListQuery,
   type ApiDeleteTodoParams,
+  type ApiFindTodoParams,
   type ApiListTodoQuery,
   type ApiReorderTodoListBody,
   type ApiToggleTodoParams,
@@ -23,6 +25,7 @@ import {
   makeCreateTodoUseCase,
   makeDeleteTodoListUseCase,
   makeDeleteTodoUseCase,
+  makeFindTodoUseCase,
   makeGetTodoStatsUseCase,
   makeListTodoUseCase,
   makeReorderTodoListUseCase,
@@ -224,9 +227,33 @@ async function stats(req: AuthRequest, res: Response, next: NextFunction) {
   }
 }
 
+async function find(req: AuthRequest, res: Response, next: NextFunction) {
+  try {
+    const { userId } = req.payload as AuthPayload;
+
+    const { todoId } = parse<ApiFindTodoParams>(
+      ApiFindTodoParamsSchemas,
+      req.params,
+    );
+
+    const useCase = makeFindTodoUseCase();
+    const { item } = await useCase.execute({
+      data: {
+        todoId,
+        userId,
+      },
+    });
+
+    res.status(StatusCodes.OK).json(result(item));
+  } catch (error) {
+    next(error);
+  }
+}
+
 export const todoController = {
   create,
   list,
+  find,
   stats,
   reorderList,
   toggle,
