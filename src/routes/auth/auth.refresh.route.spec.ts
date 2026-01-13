@@ -3,10 +3,10 @@ import supertest from 'supertest';
 import { afterEach, describe, it } from 'vitest';
 
 import { app } from '@/app';
-import { cleanup } from '@/utils/test';
 import {
   AUTH_PROFILE_ROUTE,
   AUTH_REFRESH_ROUTE,
+  cleanup,
   expectAuthCookie,
   expectError,
   getAuthenticatedAgent,

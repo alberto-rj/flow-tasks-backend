@@ -4,10 +4,10 @@ import supertest from 'supertest';
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { app } from '@/app';
-import { cleanup } from '@/utils/test';
 import {
   AUTH_LOGIN_ROUTE,
   AUTH_REGISTER_ROUTE,
+  cleanup,
   expectAuthCookie,
   expectError,
   expectUserWithRegisteredBody,

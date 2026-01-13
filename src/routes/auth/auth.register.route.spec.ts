@@ -4,7 +4,7 @@ import supertest from 'supertest';
 import { describe, it, expect, afterEach } from 'vitest';
 
 import { app } from '@/app';
-import { cleanup, newString } from '@/utils/test';
+import { newString } from '@/utils/test';
 import { makeUserRepository } from '@/utils/factory';
 import { hasCorrectHash } from '@/utils/password';
 import {
@@ -14,6 +14,7 @@ import {
   expectValidationError,
   newApiRegisterBody,
   expectAuthCookie,
+  cleanup,
 } from '@/utils/test.route';
 
 const registerEndpoint = `${AUTH_BASE_ROUTE}/register`;

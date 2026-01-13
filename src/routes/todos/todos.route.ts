@@ -20,3 +20,5 @@ todosRoute.delete('/', authenticate, todoController.removeList);
 todosRoute.get('/', authenticate, todoController.list);
 
 todosRoute.get('/stats', authenticate, todoController.stats);
+
+todosRoute.get('/:todoId', authenticate, todoController.find);
