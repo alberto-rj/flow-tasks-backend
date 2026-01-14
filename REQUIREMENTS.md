@@ -1,4 +1,4 @@
-# 📋 FlowTasks - Requisitos do Sistema - Checklist Completo
+# 📋 FlowTasks - Requisitos do Sistema
 
 ## 1️⃣ REQUISITOS FUNCIONAIS (RF)
 
@@ -7,26 +7,24 @@
 #### RF-001: Registro de Utilizador
 
 - [x] O sistema deve permitir que novos utilizadores se registem com email, senha e nome
-- [ ] O sistema deve validar formato de email
-- [ ] O sistema deve exigir senha com mínimo 8 caracteres
-- [ ] O sistema deve criptografar senhas usando bcrypt
-- [x] O sistema deve impedir registro com emails duplicados
+- [x] O sistema deve validar formato de email (respeitando RN-001)
+- [x] O sistema deve exigir senha (respeitando RN-002)
 - [x] O sistema deve retornar token JWT após registro bem-sucedido
 
 #### RF-002: Login de Utilizador
 
 - [x] O sistema deve permitir login com email e senha
-- [ ] O sistema deve validar credenciais contra a base de dados
+- [x] O sistema deve validar credenciais contra a base de dados
 - [x] O sistema deve retornar token JWT válido após login bem-sucedido
-- [ ] O sistema deve armazenar token em HTTP-only cookie
-- [ ] O sistema deve retornar erro 401 para credenciais inválidas
+- [x] O sistema deve armazenar token em HTTP-only cookie
+- [x] O sistema deve retornar erro 401 para credenciais inválidas
 
 #### RF-003: Logout de Utilizador
 
-- [ ] O sistema deve permitir que utilizadores autenticados façam logout
-- [ ] O sistema deve invalidar/limpar token JWT
-- [ ] O sistema deve limpar cookie de autenticação
-- [ ] O sistema deve retornar confirmação de logout bem-sucedido
+- [x] O sistema deve permitir que utilizadores autenticados façam logout
+- [x] O sistema deve invalidar/limpar token JWT
+- [x] O sistema deve limpar cookie de autenticação
+- [x] O sistema deve retornar confirmação de logout bem-sucedido
 
 #### RF-004: Obter Dados do Utilizador Autenticado
 
@@ -60,8 +58,8 @@
 - [x] O sistema deve associar todo ao utilizador autenticado
 - [x] O sistema deve definir `completedAt` como nulo por padrão
 - [x] O sistema deve calcular próxima posição automaticamente (`maxOrder + 1`)
-- [ ] O sistema deve validar que `title` não está vazio
-- [ ] O sistema deve validar que `title` tem máximo 500 caracteres
+- [x] O sistema deve validar que `title` não está vazio
+- [x] O sistema deve validar que `title` tem máximo 225 caracteres
 - [x] O sistema deve retornar todo criado com id gerado
 - [x] O sistema deve definir timestamps (`createdAt`, `updatedAt`)
 
@@ -71,7 +69,7 @@
 - [x] O sistema deve permitir actualizar `order` do todo
 - [x] O sistema deve permitir alternar `completedAt`
 - [x] O sistema deve validar que todo pertence ao utilizador autenticado
-- [ ] O sistema deve validar que `title` (se fornecido) não está vazio e tem máx 500 caracteres
+- [x] O sistema deve validar que `title` (se fornecido) não está vazio e tem máx 225 caracteres
 - [x] O sistema deve actualizar timestamp `updatedAt` automaticamente
 - [x] O sistema deve retornar todo actualizado
 - [x] O sistema deve retornar erro se todo não existir
@@ -115,32 +113,32 @@
 
 #### RN-001: Validação de Email
 
-- [ ] Email deve ter formato válido (conter @ e domínio)
-- [ ] Email deve ser único no sistema
+- [x] Email deve ter formato válido (conter @ e domínio)
+- [x] Email deve ser único no sistema
 
 #### RN-002: Validação de Senha
 
-- [ ] Senha deve ter mínimo 8 caracteres
-- [ ] Senha deve conter pelo menos 1 letra maiúscula
-- [ ] Senha deve conter pelo menos 1 letra minúscula
-- [ ] Senha deve conter pelo menos 1 número
-- [ ] Senha deve ser hasheada com bcrypt (salt rounds: 10)
-- [ ] Senha nunca deve ser retornada em responses
+- [x] Senha deve ter mínimo 8 caracteres
+- [x] Senha deve conter pelo menos 1 letra maiúscula
+- [x] Senha deve conter pelo menos 1 letra minúscula
+- [x] Senha deve conter pelo menos 1 número
+- [x] Senha deve ser hasheada com bcrypt
+- [x] Senha nunca deve ser retornada em responses
 
 #### RN-003: Token JWT
 
 - [ ] Token deve expirar em 7 dias
-- [ ] Token deve conter userId e email no payload
-- [ ] Token deve ser assinado com secret seguro
-- [ ] Token deve ser armazenado em HTTP-only cookie
-- [ ] Cookie deve ter flag 'secure' em produção (HTTPS)
-- [ ] Cookie deve ter flag 'sameSite: strict'
+- [x] Token deve conter userId e email no payload
+- [x] Token deve ser assinado com secret seguro
+- [x] Token deve ser armazenado em HTTP-only cookie
+- [x] Cookie deve ter flag 'secure' em produção (HTTPS)
+- [x] Cookie deve ter flag 'sameSite: strict'
 
 #### RN-004: Sessões
 
 - [ ] Utilizador só pode ter uma sessão ativa por vez (opcional)
-- [ ] Logout deve invalidar token imediatamente
-- [ ] Token expirado deve retornar erro 401
+- [x] Logout deve invalidar token imediatamente
+- [x] Token expirado deve retornar erro 401
 
 ---
 
@@ -148,10 +146,10 @@
 
 #### RN-005: Criação de Todos
 
-- [ ] Todo deve sempre ter utilizador associado (`userId`)
-- [ ] `title` é obrigatório e não pode ser vazio
-- [ ] `title` deve ter máximo 500 caracteres
-- [ ] `title` deve ter espaços em branco removidos (trim)
+- [x] Todo deve sempre ter utilizador associado (`userId`)
+- [x] `title` é obrigatório e não pode ser vazio
+- [x] `title` deve ter máximo 225 caracteres
+- [x] `title` deve ter espaços em branco removidos (trim)
 - [x] `completedAt` é nulo por padrão
 - [x] `order` é calculada automaticamente (`max(order) + 1`)
 - [x] Timestamps são gerados automaticamente
@@ -160,7 +158,7 @@
 
 - [x] Utilizador só pode editar seus próprios todos
 - [x] `completedAt` pode ser alternado entre Date/Nulo
-- [ ] `title`, se atualizado, deve seguir mesmas regras de criação
+- [x] `title`, se atualizado, deve seguir mesmas regras de criação
 - [x] `order` pode ser actualizada para reordenação
 - [x] `updatedAt` deve ser atualizado automaticamente
 
@@ -198,10 +196,10 @@
 
 #### RNF-001: Autenticação e Autorização
 
-- [ ] Todas as rotas de todos devem exigir autenticação
-- [ ] Token JWT deve ser validado em cada request
-- [ ] Senhas devem usar bcrypt com mínimo 10 salt rounds
-- [ ] Tokens devem ter tempo de expiração configurável
+- [x] Todas as rotas de todos devem exigir autenticação
+- [x] Token JWT deve ser validado em cada request
+- [x] Senhas devem usar bcrypt
+- [x] Tokens devem ter tempo de expiração configurável
 - [ ] Sistema deve impedir SQL Injection usando prepared statements
 - [ ] Sistema deve sanitizar inputs para prevenir XSS
 
@@ -299,16 +297,16 @@
 
 - [x] Código deve ter mínimo 70% de cobertura
 - [x] Testes unitários devem cobrir lógica de negócio
-- [ ] Testes de integração devem cobrir endpoints da API
+- [x] Testes de integração devem cobrir endpoints da API
 - [x] Testes devem usar base de dados de teste isolada
 - [ ] Testes devem ser executados em CI/CD
 
 #### RNF-014: Documentação de API
 
-- [ ] Todos os endpoints devem estar documentados
-- [ ] Documentação deve incluir exemplos de request/response
-- [ ] Schemas devem estar definidos
-- [ ] Códigos de erro devem estar documentados
+- [x] Todos os endpoints devem estar documentados
+- [x] Documentação deve incluir exemplos de request/response
+- [] Schemas devem estar definidos
+- [x] Códigos de erro devem estar documentados
 
 ---
 
@@ -316,10 +314,10 @@
 
 #### RNF-015: API Design
 
-- [ ] API deve seguir padrões RESTful
-- [ ] Respostas devem ser consistentes (sempre JSON)
-- [ ] Erros devem ter formato padronizado: {success, message, errors}
-- [ ] Status codes HTTP devem ser apropriados:
+- [x] API deve seguir padrões RESTful
+- [x] Respostas devem ser consistentes (sempre JSON)
+- [x] Erros devem ter formato padronizado
+- [x] Status codes HTTP devem ser apropriados:
   - [x] 200: Sucesso
   - [x] 201: Criado
   - [x] 400: Bad Request
@@ -331,8 +329,8 @@
 
 #### RNF-016: Mensagens de Erro
 
-- [ ] Erros devem ser claros e descritivos
-- [ ] Erros devem indicar campo problemático (validação)
+- [x] Erros devem ser claros e descritivos
+- [x] Erros devem indicar campo problemático (validação)
 - [ ] Erros não devem expor informações sensíveis em produção
 - [ ] Erros devem ter i18n (inglês por padrão)
 
