@@ -1,5 +1,10 @@
 # FlowTasks
 
-FlowTasks Backend built with TypeScript, Node.js, Express.js and PostgreSQL.
+## Built with
 
-## Useful Resources
+- TypeScript
+- Vitest
+- Supertest
+- PostgreSQL
+- Express.js
+- Node.js
