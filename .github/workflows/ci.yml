@@ -58,3 +58,17 @@ jobs:
 
       - name: Test coverage
         run: npm run test:coverage
+
+  ci-success:
+    name: CI Success
+    runs-on: ubuntu-latest
+    needs: [style, test]
+    if: always()
+
+    steps:
+      - name: Check all jobs
+        run: |
+          if [[ "${{ needs.style.result }}" != "success" ]] || [[ "${{ needs.test.result }}" != "success" ]]; then
+            echo "One or more jobs failed"
+            exit 1
+          fi
