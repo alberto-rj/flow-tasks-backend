@@ -15,7 +15,8 @@ export function errorHandler(
   _next: NextFunction,
 ) {
   if (NODE_ENV === 'development') {
-    // console.log(err);
+    // eslint-disable-next-line no-console
+    console.log(err);
   }
 
   if (err instanceof AppError) {
