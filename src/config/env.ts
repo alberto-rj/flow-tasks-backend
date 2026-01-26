@@ -14,6 +14,7 @@ const instructionsURL = 'https://github.com/alberto-rj/flow-tasks-backend';
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(4224),
+  SERVER_URL: z.string(),
   NODE_ENV: z
     .enum(['development', 'test', 'production'])
     .default('development'),
