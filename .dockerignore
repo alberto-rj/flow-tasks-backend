@@ -6,24 +6,33 @@ yarn-error.log*
 pnpm-debug.log*
 
 # Build output
-build
 dist
+build
 coverage
 
-
-# OS / Editor
-log
-.DS_STORE
-.vscode
+# TypeScript
+*.tsbuildinfo
 
 # Environment variables
 .env
 .env.*
 !.env.example
 
+# Git
+.git
+.gitignore
+
 # Docker
+Dockerfile
 .docker-compose*.yml
-!.docker-compose.example.yml
+
+# OS / Editor
+.vscode
+
+# Tests
+__tests__
+*.spec.ts
+*.test.ts
 
 # Logs
 logs

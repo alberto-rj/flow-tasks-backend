@@ -4,9 +4,9 @@ import { z } from 'zod';
 type LoadFileType = 'development' | 'test' | 'production' | 'default';
 
 const envPaths: Record<LoadFileType, string> = {
-  development: '.env.development',
+  development: '.env.dev',
   test: '.env.test',
-  production: '.env.production',
+  production: '.env.prod',
   default: '.env',
 };
 
