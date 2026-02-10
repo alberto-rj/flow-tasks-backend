@@ -24,7 +24,7 @@ coverage
 
 # Docker
 Dockerfile
-.docker-compose*.yml
+docker-compose*.yml
 
 # OS / Editor
 .vscode
