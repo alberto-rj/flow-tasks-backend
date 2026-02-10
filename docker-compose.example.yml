@@ -3,7 +3,6 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: app
     container_name: app-api
     ports:
       - '4224:4224'
