@@ -20,7 +20,7 @@ services:
     env_file:
       - .env.example
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/18/docker
     restart: unless-stopped
 
 volumes:
