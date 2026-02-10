@@ -22,8 +22,8 @@ log
 !.env.example
 
 # Docker
-.docker-compose*.yml
-!.docker-compose.example.yml
+docker-compose*.yml
+!docker-compose.example.yml
 
 # Logs
 logs
