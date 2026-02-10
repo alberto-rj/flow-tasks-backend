@@ -1,7 +1,10 @@
 import { OpenApiGeneratorV31 } from '@asteasolutions/zod-to-openapi';
 
+import { load } from '@/config/env';
 import { authDefinitions } from './auth';
 import { todosDefinitions } from './todos';
+
+const { SERVER_URL } = load();
 
 const definitions = [...todosDefinitions, ...authDefinitions];
 
@@ -24,12 +27,8 @@ export const openapi = generator.generateDocument({
   },
   servers: [
     {
-      url: 'https://api.flowtasks.com/api',
-      description: 'Production server',
-    },
-    {
-      url: 'http://localhost:4224/api',
-      description: 'Development server',
+      url: `${SERVER_URL}/api`,
+      description: 'Server',
     },
   ],
   tags: [

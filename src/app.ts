@@ -7,7 +7,7 @@ import { errorHandler, notFoundHandler } from '@/middlewares';
 import { authRoute, healthRoute, todosRoute } from '@/routes';
 import { openapi } from '@/openapi';
 
-const { PORT, NODE_ENV } = load();
+const { PORT, NODE_ENV, SERVER_URL } = load();
 
 export const app = express();
 
@@ -39,10 +39,8 @@ app.use(errorHandler);
 if (NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     // eslint-disable-next-line no-console
-    console.log(
-      `Server is running at http://localhost:${PORT} in "${NODE_ENV}" mode.`,
-    );
+    console.log(`Server is running at ${SERVER_URL} in "${NODE_ENV}" mode.`);
     // eslint-disable-next-line no-console
-    console.log(`Swagger UI is available at http://localhost:${PORT}/api-docs`);
+    console.log(`Swagger UI is available at ${SERVER_URL}/api-docs`);
   });
 }
