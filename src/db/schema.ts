@@ -7,13 +7,21 @@ import {
   varchar,
 } from 'drizzle-orm/pg-core';
 
+const createdAt = timestamp('created_at', { withTimezone: true })
+  .notNull()
+  .defaultNow();
+
+const updatedAt = timestamp('updated_at', { withTimezone: true })
+  .notNull()
+  .defaultNow();
+
 export const users = pgTable('users', {
   userId: uuid('user_id').primaryKey(),
   name: varchar('name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   password: varchar('password', { length: 255 }).notNull(),
-  createAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  createdAt,
+  updatedAt,
 });
 
 export const todos = pgTable('todos', {
@@ -21,8 +29,8 @@ export const todos = pgTable('todos', {
   title: varchar('title', { length: 255 }).notNull(),
   order: integer('order').notNull(),
   completedAt: timestamp('completed_at'),
-  createdAt: timestamp('created_at').defaultNow(),
-  updatedAt: timestamp('updated_at').defaultNow(),
+  createdAt,
+  updatedAt,
   userId: uuid()
     .notNull()
     .references(() => users.userId),
