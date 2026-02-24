@@ -20,6 +20,7 @@ const envSchema = z.object({
     .default('development'),
   JWT_ACCESS_SECRET: z.string().default('secret'),
   JWT_ACCESS_EXPIRES_IN_DAYS: z.coerce.number().default(7),
+  DATABASE_URL: z.string(),
 });
 
 export function load(type: LoadFileType = 'default') {

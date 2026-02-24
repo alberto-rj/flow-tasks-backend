@@ -10,6 +10,8 @@ build
 dist
 coverage
 
+# Drizzle
+drizzle
 
 # OS / Editor
 log
