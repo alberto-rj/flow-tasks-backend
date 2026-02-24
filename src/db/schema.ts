@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import {
   integer,
   pgTable,
@@ -16,7 +16,9 @@ const updatedAt = timestamp('updated_at', { withTimezone: true })
   .defaultNow();
 
 export const users = pgTable('users', {
-  userId: uuid('user_id').primaryKey(),
+  userId: uuid('user_id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   name: varchar('name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   password: varchar('password', { length: 255 }).notNull(),
@@ -25,10 +27,12 @@ export const users = pgTable('users', {
 });
 
 export const todos = pgTable('todos', {
-  todoId: uuid('todo_id').primaryKey(),
+  todoId: uuid('todo_id')
+    .primaryKey()
+    .default(sql`gen_random_uuid()`),
   title: varchar('title', { length: 255 }).notNull(),
   order: integer('order').notNull(),
-  completedAt: timestamp('completed_at'),
+  completedAt: timestamp('completed_at', { withTimezone: true }),
   createdAt,
   updatedAt,
   userId: uuid()
