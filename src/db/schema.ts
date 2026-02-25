@@ -13,7 +13,8 @@ const createdAt = timestamp('created_at', { withTimezone: true })
 
 const updatedAt = timestamp('updated_at', { withTimezone: true })
   .notNull()
-  .defaultNow();
+  .defaultNow()
+  .$onUpdateFn(() => new Date());
 
 export const users = pgTable('users', {
   userId: uuid('user_id')

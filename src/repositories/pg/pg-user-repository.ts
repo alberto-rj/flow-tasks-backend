@@ -14,8 +14,6 @@ import type { UserRepository } from '@/repositories';
 const { NODE_ENV } = load();
 
 export class PGUserRepository implements UserRepository {
-  private items: Map<string, User> = new Map();
-
   async create({ name, email, password }: UserCreateDto) {
     const [createdUser] = await db
       .insert(users)
@@ -55,6 +53,6 @@ export class PGUserRepository implements UserRepository {
     if (NODE_ENV !== 'test') {
       throw new Error('clear users table only in the test environment');
     }
-    this.items.clear();
+    await db.delete(users);
   }
 }
