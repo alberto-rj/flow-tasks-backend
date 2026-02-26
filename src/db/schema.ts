@@ -1,6 +1,7 @@
 import { relations, sql } from 'drizzle-orm';
 import {
   integer,
+  pgSequence,
   pgTable,
   timestamp,
   uuid,
@@ -17,9 +18,7 @@ const updatedAt = timestamp('updated_at', { withTimezone: true })
   .$onUpdateFn(() => new Date());
 
 export const users = pgTable('users', {
-  userId: uuid('user_id')
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
+  userId: uuid('user_id').primaryKey().defaultRandom(),
   name: varchar('name', { length: 255 }).notNull(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   password: varchar('password', { length: 255 }).notNull(),
@@ -27,18 +26,21 @@ export const users = pgTable('users', {
   updatedAt,
 });
 
+export const todosOrderSeq = pgSequence('todos_order_seq', {
+  startWith: 1,
+  increment: 1,
+});
+
 export const todos = pgTable('todos', {
-  todoId: uuid('todo_id')
-    .primaryKey()
-    .default(sql`gen_random_uuid()`),
+  todoId: uuid('todo_id').primaryKey().defaultRandom(),
   title: varchar('title', { length: 255 }).notNull(),
   order: integer('order')
-    .notNull()
-    .default(sql`nextval('todos_order_seq')`),
+    .default(sql`nextval('todos_order_seq')`)
+    .notNull(),
   completedAt: timestamp('completed_at', { withTimezone: true }),
   createdAt,
   updatedAt,
-  userId: uuid()
+  userId: uuid('user_id')
     .notNull()
     .references(() => users.userId),
 });

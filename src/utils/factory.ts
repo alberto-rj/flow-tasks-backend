@@ -3,6 +3,8 @@ import {
   GlobalUserRepository,
   InMemoryTodoRepository,
   InMemoryUserRepository,
+  PgTodoRepository,
+  PgUserRepository,
   type TodoRepository,
   type UserRepository,
 } from '@/repositories';
@@ -25,31 +27,31 @@ import {
 
 type RepositoryType = 'pg' | 'in-memory' | 'global';
 
-const defaultUserRepository: RepositoryType = 'global';
-const defaultTodoRepository: RepositoryType = 'global';
+const defaultUserRepository: RepositoryType = 'pg';
+const defaultTodoRepository: RepositoryType = 'pg';
 
 export function makeUserRepository(
   type: RepositoryType = defaultUserRepository,
 ): UserRepository {
-  if (type === 'in-memory') {
-    return new InMemoryUserRepository();
-  }
-  if (type === 'global') {
-    return new GlobalUserRepository();
-  }
-  return new GlobalUserRepository();
+  const userRepositories: Record<RepositoryType, UserRepository> = {
+    'in-memory': new InMemoryUserRepository(),
+    global: new GlobalUserRepository(),
+    pg: new PgUserRepository(),
+  };
+
+  return userRepositories[type];
 }
 
 export function makeTodoRepository(
   type: RepositoryType = defaultTodoRepository,
 ): TodoRepository {
-  if (type === 'in-memory') {
-    return new InMemoryTodoRepository();
-  }
-  if (type === 'global') {
-    return new GlobalTodoRepository();
-  }
-  return new GlobalTodoRepository();
+  const todoRepositories: Record<RepositoryType, TodoRepository> = {
+    'in-memory': new InMemoryTodoRepository(),
+    global: new GlobalTodoRepository(),
+    pg: new PgTodoRepository(),
+  };
+
+  return todoRepositories[type];
 }
 
 export function makeRegisterUseCase(
