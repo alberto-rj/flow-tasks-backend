@@ -1,18 +1,15 @@
-import { eq, and } from 'drizzle-orm';
+import { eq, and, asc, isNotNull, isNull, desc, ilike, sql } from 'drizzle-orm';
 
+import { load } from '@/config/env';
 import { db } from '@/db';
 import { todos } from '@/db/schema';
 import type {
   TodoCreateDto,
   TodoDeleteByIdDto,
   TodoDeleteManyByUserIdDto,
-  TodoFilterDto,
   TodoFindByIdDto,
   TodoFindByUserIdWithOrderDto,
   TodoFindManyByUserIdDto,
-  TodoOrderDto,
-  TodoQueryDto,
-  TodoSortByDto,
   TodoToggleByIdDto,
   TodoUpdateByIdDto,
   TodoReorderByIdDto,
@@ -21,16 +18,16 @@ import type {
 import type { Todo } from '@/entities';
 import type { TodoRepository } from '@/repositories';
 
+const { NODE_ENV } = load();
+
 export class PgTodoRepository implements TodoRepository {
-  private items: Map<string, Todo> = new Map();
-
   async create({ title, userId }: TodoCreateDto): Promise<Todo> {
-    const order = this.getNexOrder();
-
-    const [createdTodo] = await db
+    const createdTodos = await db
       .insert(todos)
-      .values({ title, userId, order })
+      .values({ title, userId })
       .returning();
+
+    const [createdTodo] = createdTodos.map(PgTodoRepository.toTodo);
 
     return createdTodo as Todo;
   }
@@ -80,302 +77,161 @@ export class PgTodoRepository implements TodoRepository {
     sortBy = 'order',
     order = 'asc',
   }: TodoFindManyByUserIdDto) {
-    const userItems = this.getItemsByUserId(userId);
-    const queryItems = this.queryItems({
-      items: userItems,
-      query,
-    });
-    const filteredItems = this.filterItems({
-      items: queryItems,
-      filter,
-    });
-    const sortedItems = this.sortItems({
-      items: filteredItems,
-      sortBy,
-      order,
-    });
+    const baseCondition = eq(todos.userId, userId);
 
-    return sortedItems;
+    let condition;
+    if (typeof query === 'string') {
+      condition = and(baseCondition, ilike(todos.title, `%${query}%`));
+    } else {
+      condition = baseCondition;
+    }
+
+    const filterConditions = {
+      all: condition,
+      active: and(condition, isNull(todos.completedAt)),
+      completed: and(condition, isNotNull(todos.completedAt)),
+    } as const;
+
+    const orderByClause = {
+      asc: asc(todos[sortBy]),
+      desc: desc(todos[sortBy]),
+    } as const;
+
+    const foundTodos = await db
+      .select()
+      .from(todos)
+      .where(filterConditions[filter])
+      .orderBy(orderByClause[order]);
+
+    return foundTodos.map(PgTodoRepository.toTodo);
   }
 
   async deleteById({ todoId, userId }: TodoDeleteByIdDto) {
-    const foundTodo = await db
+    const [deletedTodo] = await db
       .delete(todos)
-      .where(and(eq(todos.todoId, todoId), eq(todos.userId, userId)));
+      .where(and(eq(todos.todoId, todoId), eq(todos.userId, userId)))
+      .returning();
 
-    if (foundTodo) {
+    if (!deletedTodo) {
       return null;
     }
 
-    return null;
+    return PgTodoRepository.toTodo(deletedTodo);
   }
 
   async deleteManyByUserId({
     userId,
     filter = 'completed',
   }: TodoDeleteManyByUserIdDto) {
-    const userItems = this.getItemsByUserId(userId);
+    const baseCondition = eq(todos.userId, userId);
 
-    this.filterItems({
-      items: userItems,
-      filter,
-    }).forEach((item) => this.items.delete(item.todoId));
+    const filterConditions = {
+      all: baseCondition,
+      active: and(baseCondition, isNull(todos.completedAt)),
+      completed: and(baseCondition, isNotNull(todos.completedAt)),
+    } as const;
+
+    const condition = filterConditions[filter];
+
+    await db.delete(todos).where(condition);
   }
 
   async updateById({ todoId, title, order, userId }: TodoUpdateByIdDto) {
-    const item = this.items.get(todoId);
+    const [updatedTodo] = await db
+      .update(todos)
+      .set({ title, order })
+      .where(and(eq(todos.todoId, todoId), eq(todos.userId, userId)))
+      .returning();
 
-    if (typeof item === 'undefined') {
+    if (!updatedTodo) {
       return null;
     }
 
-    if (item.userId !== userId) {
-      return null;
-    }
-
-    let newItem: Todo;
-
-    if (typeof order === 'number') {
-      newItem = {
-        ...item,
-        title,
-        order,
-        updatedAt: new Date(),
-      };
-    } else {
-      newItem = { ...item, title, updatedAt: new Date() };
-    }
-
-    this.items.set(todoId, newItem);
-
-    return newItem;
+    return updatedTodo as Todo;
   }
 
   async toggleById({ todoId, userId }: TodoToggleByIdDto) {
-    const item = this.items.get(todoId);
+    const [updatedTodo] = await db
+      .update(todos)
+      .set({
+        completedAt: sql`
+          CASE 
+            WHEN ${todos.completedAt} IS NULL THEN NOW() 
+            ELSE NULL 
+          END
+          `,
+      })
+      .where(and(eq(todos.todoId, todoId), eq(todos.userId, userId)))
+      .returning();
 
-    const isExistingItem =
-      typeof item !== 'undefined' && item.userId === userId;
-
-    if (!isExistingItem) {
+    if (!updatedTodo) {
       return null;
     }
 
-    let newItem: Todo;
-    const { completedAt, ...itemProps } = item;
-
-    if (typeof completedAt === 'undefined') {
-      newItem = {
-        ...itemProps,
-        completedAt: new Date(),
-        updatedAt: new Date(),
-      };
-    } else {
-      newItem = {
-        ...itemProps,
-        updatedAt: new Date(),
-      };
-    }
-
-    this.items.set(todoId, newItem);
-
-    return newItem;
+    return PgTodoRepository.toTodo(updatedTodo);
   }
 
   async reorderById({ todoId, order, userId }: TodoReorderByIdDto) {
-    const item = this.items.get(todoId);
-    const isExistingItem = item && item.userId === userId;
+    const [updatedTodo] = await db
+      .update(todos)
+      .set({ order })
+      .where(and(eq(todos.todoId, todoId), eq(todos.userId, userId)))
+      .returning();
 
-    if (!isExistingItem) {
+    if (!updatedTodo) {
       return null;
     }
 
-    const newItem: Todo = {
-      ...item,
-      order,
-      updatedAt: new Date(),
-    };
-
-    this.items.set(todoId, newItem);
-
-    return newItem;
+    return PgTodoRepository.toTodo(updatedTodo);
   }
 
   async getStats({ userId }: TodoGetStatsByUserIdDto) {
-    const userItems = this.getItemsByUserId(userId);
-
-    const active = userItems.filter(
-      (item) => typeof item.completedAt === 'undefined',
-    ).length;
-    const total = userItems.length;
-    const completed = total - active;
+    const [result] = await db
+      .select({
+        total: sql<number>`COUNT(*)`,
+        active: sql<number>`COUNT(*) FILTER (WHERE ${todos.completedAt} IS NULL)`,
+        completed: sql<number>`COUNT(*) FILTER (WHERE ${todos.completedAt}) IS NOT NULL`,
+      })
+      .from(todos)
+      .where(eq(todos.userId, userId));
 
     return {
-      total,
-      active,
-      completed,
+      total: Number(result?.total || 0),
+      active: Number(result?.active || 0),
+      completed: Number(result?.completed || 0),
     };
   }
 
   async clear() {
-    this.items.clear();
+    if (NODE_ENV !== 'test') {
+      throw new Error(
+        'Only clear the todos table in the test development mode.',
+      );
+    }
+    await db.delete(todos);
   }
 
-  private getItemsByUserId(userId: string) {
-    const userItems: Todo[] = [];
-
-    for (const [, item] of this.items) {
-      if (item.userId === userId) {
-        userItems.push(item);
-      }
-    }
-
-    return userItems;
-  }
-
-  private getNexOrder(): number {
-    let orders: number[] = [];
-
-    for (const [, a] of this.items) {
-      orders.push(a.order);
-    }
-
-    orders.sort((a, b) => b - a);
-
-    const [max] = orders;
-
-    if (typeof max === 'undefined') {
-      return 0;
-    }
-
-    return max + 1;
-  }
-
-  private queryItems({
-    items,
-    query,
+  private static toTodo({
+    completedAt,
+    ...todoProps
   }: {
-    items: Todo[];
-    query: TodoQueryDto;
-  }): Todo[] {
-    if (typeof query === 'undefined') {
-      return items;
+    todoId: string;
+    title: string;
+    order: number;
+    completedAt: Date | null;
+    createdAt: Date;
+    updatedAt: Date;
+    userId: string;
+  }): Todo {
+    if (completedAt === null) {
+      return {
+        ...todoProps,
+      };
     }
-    const regex = new RegExp(`${query}`, 'im');
-    return items.filter((item) => regex.test(item.title));
-  }
 
-  private filterItems({
-    items,
-    filter,
-  }: {
-    items: Todo[];
-    filter: TodoFilterDto;
-  }): Todo[] {
-    if (filter === 'active') {
-      return this.getActiveItemsByUserId(items);
-    } else if (filter === 'completed') {
-      return this.getCompletedItemsByUserId(items);
-    }
-    return items;
-  }
-
-  private getActiveItemsByUserId(items: Todo[]) {
-    return items.filter((item) => !item.completedAt);
-  }
-
-  private getCompletedItemsByUserId(items: Todo[]) {
-    return items.filter((item) => item.completedAt);
-  }
-
-  private sortItems({
-    items,
-    sortBy,
-    order,
-  }: {
-    items: Todo[];
-    sortBy: TodoSortByDto;
-    order: TodoOrderDto;
-  }): Todo[] {
-    if (sortBy === 'createdAt') {
-      return this.sortItemsByCreatedAt({ items, order });
-    } else if (sortBy === 'updatedAt') {
-      return this.sortItemsByUpdatedAt({ items, order });
-    } else if (sortBy === 'order') {
-      return this.sortItemsByOrder({ items, order });
-    }
-    return this.sortItemsByTitle({ items, order });
-  }
-
-  private sortItemsByTitle({
-    items,
-    order,
-  }: {
-    items: Todo[];
-    order: TodoOrderDto;
-  }) {
-    if (order === 'desc') {
-      return items.sort((a, b) => this.compareTitle.bind(this)(b, a));
-    }
-    return items.sort(this.compareTitle.bind(this));
-  }
-
-  private sortItemsByOrder({
-    items,
-    order,
-  }: {
-    items: Todo[];
-    order: TodoOrderDto;
-  }) {
-    if (order === 'desc') {
-      return items.sort((a, b) => this.compareOrder.bind(this)(b, a));
-    }
-    return items.sort(this.compareOrder.bind(this));
-  }
-
-  private sortItemsByUpdatedAt({
-    items,
-    order,
-  }: {
-    items: Todo[];
-    order: TodoOrderDto;
-  }) {
-    if (order === 'desc') {
-      return items.sort((a, b) => this.compareUpdatedAt.bind(this)(b, a));
-    }
-    return items.sort(this.compareUpdatedAt.bind(this));
-  }
-
-  private sortItemsByCreatedAt({
-    items,
-    order,
-  }: {
-    items: Todo[];
-    order: TodoOrderDto;
-  }) {
-    if (order === 'desc') {
-      return items.sort((a, b) => this.compareCreatedAt.bind(this)(b, a));
-    }
-    return items.sort(this.compareCreatedAt.bind(this));
-  }
-
-  private compareTitle(a: Todo, b: Todo) {
-    const collator = new Intl.Collator('en-US', {
-      sensitivity: 'base',
-      ignorePunctuation: true,
-    });
-    return collator.compare(a.title, b.title);
-  }
-
-  private compareOrder(a: Todo, b: Todo) {
-    return a.order - b.order;
-  }
-
-  private compareCreatedAt(a: Todo, b: Todo) {
-    return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
-  }
-
-  private compareUpdatedAt(a: Todo, b: Todo) {
-    return new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime();
+    return {
+      completedAt,
+      ...todoProps,
+    };
   }
 }

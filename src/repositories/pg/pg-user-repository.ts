@@ -13,7 +13,7 @@ import type { UserRepository } from '@/repositories';
 
 const { NODE_ENV } = load();
 
-export class PGUserRepository implements UserRepository {
+export class PgUserRepository implements UserRepository {
   async create({ name, email, password }: UserCreateDto) {
     const [createdUser] = await db
       .insert(users)
