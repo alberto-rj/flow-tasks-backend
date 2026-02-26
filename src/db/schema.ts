@@ -32,7 +32,9 @@ export const todos = pgTable('todos', {
     .primaryKey()
     .default(sql`gen_random_uuid()`),
   title: varchar('title', { length: 255 }).notNull(),
-  order: integer('order').notNull(),
+  order: integer('order')
+    .notNull()
+    .default(sql`nextval('todos_order_seq')`),
   completedAt: timestamp('completed_at', { withTimezone: true }),
   createdAt,
   updatedAt,

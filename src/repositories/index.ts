@@ -7,4 +7,5 @@ export { InMemoryTodoRepository } from './in-memory/in-memory-todo-repository';
 export { GlobalUserRepository } from './global/global-user-repository';
 export { GlobalTodoRepository } from './global/global-todo-repository';
 
-export { PGUserRepository } from './pg/pg-user-repository';
+export { PgUserRepository } from './pg/pg-user-repository';
+export { PgTodoRepository } from './pg/pg-todo-repository';
