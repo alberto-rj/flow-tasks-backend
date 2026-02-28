@@ -6,8 +6,8 @@ import type {
   UserFindByEmailDto,
   UserFindByIdDto,
 } from '@/dtos/user';
-import { db } from '@/db';
-import { users } from '@/db/schema';
+import { db } from '@/drizzle';
+import { users } from '@/drizzle/schemas';
 import type { User } from '@/entities';
 import type { UserRepository } from '@/repositories';
 

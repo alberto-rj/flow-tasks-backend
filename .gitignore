@@ -11,7 +11,7 @@ dist
 coverage
 
 # Drizzle
-drizzle
+src/drizzle/migrations
 
 # OS / Editor
 log

@@ -1,4 +1,4 @@
-import { relations, sql } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import {
   integer,
   pgSequence,
@@ -42,16 +42,5 @@ export const todos = pgTable('todos', {
   updatedAt,
   userId: uuid('user_id')
     .notNull()
-    .references(() => users.userId),
+    .references(() => users.userId, { onDelete: 'cascade' }),
 });
-
-export const userRelations = relations(users, ({ many }) => ({
-  todos: many(todos),
-}));
-
-export const todosRelations = relations(todos, ({ one }) => ({
-  user: one(users, {
-    fields: [todos.userId],
-    references: [users.userId],
-  }),
-}));

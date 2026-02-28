@@ -11,8 +11,8 @@ build
 coverage
 
 # Drizzle
-drizzle
 drizzle.config.ts
+src/drizzle/migrations
 
 # TypeScript
 *.tsbuildinfo
