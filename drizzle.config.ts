@@ -5,10 +5,12 @@ import { load } from './src/config/env';
 const { DATABASE_URL } = load();
 
 export default defineConfig({
-  out: './drizzle',
-  schema: './src/db/schema.ts',
+  out: './src/drizzle/migrations',
+  schema: './src/drizzle/schemas',
   dialect: 'postgresql',
   dbCredentials: {
     url: DATABASE_URL,
   },
+  strict: true,
+  verbose: true,
 });

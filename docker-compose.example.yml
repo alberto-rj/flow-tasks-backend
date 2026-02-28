@@ -6,6 +6,8 @@ services:
     container_name: app-api
     ports:
       - '4224:4224'
+    networks:
+      - app-network
     env_file:
       - .env.example
     depends_on:
@@ -17,6 +19,8 @@ services:
     container_name: app-db
     ports:
       - '5432:5432'
+    networks:
+      - app-network
     env_file:
       - .env.example
     volumes:
@@ -25,3 +29,6 @@ services:
 
 volumes:
   pgdata:
+
+networks:
+  app-network:

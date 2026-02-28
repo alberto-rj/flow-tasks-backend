@@ -1,8 +1,8 @@
 import { eq, and, asc, isNotNull, isNull, desc, ilike, sql } from 'drizzle-orm';
 
 import { load } from '@/config/env';
-import { db } from '@/db';
-import { todos } from '@/db/schema';
+import { db } from '@/drizzle';
+import { todos } from '@/drizzle/schemas';
 import type {
   TodoCreateDto,
   TodoDeleteByIdDto,
