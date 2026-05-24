@@ -10,7 +10,8 @@ const envPaths: Record<LoadFileType, string> = {
   default: '.env',
 };
 
-const instructionsURL = 'https://github.com/alberto-rj/flow-tasks-backend';
+const instructionsURL =
+  'https://github.com/alberto-rj/flow-tasks-backend#environment-variables';
 
 const envSchema = z.object({
   PORT: z.coerce.number().default(4224),
